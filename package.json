@@ -15,6 +15,7 @@
 		"astro": "^5.15.1"
 	},
 	"devDependencies": {
+		"@biomejs/biome": "2.3.0",
 		"@types/node": "^24.9.1",
 		"wrangler": "^4.45.0"
 	}
