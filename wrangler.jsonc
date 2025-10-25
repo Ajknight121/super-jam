@@ -7,10 +7,7 @@
 	"name": "placeholder-name-when2meetclone",
 	"main": "./dist/_worker.js/index.js",
 	"compatibility_date": "2025-10-24",
-	"compatibility_flags": [
-		"nodejs_compat",
-		"global_fetch_strictly_public"
-	],
+	"compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
 	"assets": {
 		"binding": "ASSETS",
 		"directory": "./dist"
