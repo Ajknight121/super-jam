@@ -4,7 +4,7 @@
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "super-jam",
+	"name": "placeholder-name-when2meetclone",
 	"main": "./dist/_worker.js/index.js",
 	"compatibility_date": "2025-10-24",
 	"compatibility_flags": [
