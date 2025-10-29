@@ -1,22 +1,24 @@
 {
-	"name": "placeholder-name-when2meetclone",
-	"type": "module",
-	"version": "0.0.1",
-	"scripts": {
-		"dev": "astro dev",
-		"build": "astro build",
-		"preview": "astro build && wrangler dev",
-		"astro": "astro",
-		"deploy": "astro build && wrangler deploy",
-		"cf-typegen": "wrangler types"
-	},
-	"dependencies": {
-		"@astrojs/cloudflare": "^12.6.10",
-		"astro": "^5.15.1"
-	},
-	"devDependencies": {
-		"@biomejs/biome": "2.3.0",
-		"@types/node": "^24.9.1",
-		"wrangler": "^4.45.0"
-	}
+  "name": "placeholder-name-when2meetclone",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro build && wrangler dev",
+    "astro": "astro",
+    "deploy": "astro build && wrangler deploy",
+    "cf-typegen": "wrangler types",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@astrojs/cloudflare": "^12.6.10",
+    "astro": "^5.15.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.3.0",
+    "@types/node": "^24.9.1",
+    "vitest": "^4.0.5",
+    "wrangler": "^4.45.0"
+  }
 }
