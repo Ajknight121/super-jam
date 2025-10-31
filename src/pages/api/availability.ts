@@ -1,3 +1,5 @@
+export const prerender = false;
+
 export const GET = () => {
   return new Response("This should really return availability.", {
     status: 405,
