@@ -1,5 +1,5 @@
 // Low priority.
-// The properties of a user, including their name.
+// This should be a `MeetingAvailability` for all of the relevant users' availabilities for [meetingId].
 export const prerender = false;
 
 export const GET = () => {

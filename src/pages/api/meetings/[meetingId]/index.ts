@@ -1,5 +1,5 @@
-// Low priority.
-// The properties of a user, including their name.
+// TODO: For MVP.
+// This should be a `Meeting` (see `src/types-and-validators.ts`).
 export const prerender = false;
 
 export const GET = () => {
