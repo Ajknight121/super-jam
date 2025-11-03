@@ -3,10 +3,11 @@
 import * as zod from "zod/mini";
 
 // A helper for confirming that all the elements of an array of numbers or strings are unique.
-const allUnique = (arr: (number | string)[]) =>
-  new Set(arr).size === arr.length;
+const allUnique = (arr: (number | string)[]) => new Set(arr).size === arr.length;
 
-const Times = zod.array(zod.int()).check(zod.refine(allUnique));
+const Time = zod.string().check(zod.iso.datetime({ offset: true, precision: 3 }));
+
+const Times = zod.array(Time).check(zod.refine(allUnique));
 
 // TODO: Fix with info about how to do ids. https://piazza.com/class/mdt3addszda1is/post/78
 //
@@ -33,15 +34,7 @@ export type UserAvailability = zod.infer<typeof UserAvailability>;
 export const MeetingAvailability = zod.map(zod.uuid(), UserAvailability);
 export type MeetingAvailability = zod.infer<typeof MeetingAvailability>;
 
-const DayOfTheWeek = zod.enum([
-  "monday",
-  "tuesday",
-  "wednesday",
-  "thursday",
-  "friday",
-  "saturday",
-  "sunday",
-]);
+const DayOfTheWeek = zod.enum(["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]);
 export type DayOfTheWeek = zod.infer<typeof DayOfTheWeek>;
 
 const AvailableDayConstraints = zod.discriminatedUnion("type", [
@@ -58,8 +51,8 @@ const AvailableDayConstraints = zod.discriminatedUnion("type", [
 export type AvailableDayConstraints = zod.infer<typeof AvailableDayConstraints>;
 
 const TimeRange = zod.object({
-  start: zod.int(),
-  end: zod.int(),
+  start: Time,
+  end: Time,
 });
 export type TimeRange = zod.infer<typeof TimeRange>;
 
