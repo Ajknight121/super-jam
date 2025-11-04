@@ -5,7 +5,7 @@ import * as zod from "zod/mini";
 // A helper for confirming that all the elements of an array of numbers or strings are unique.
 const allUnique = (arr: (number | string)[]) => new Set(arr).size === arr.length;
 
-const Time = zod.string().check(zod.iso.datetime({ offset: true, precision: 3 }));
+const Time = zod.string().check(zod.iso.datetime({ offset: true, precision: 0 }));
 
 const Times = zod.array(Time).check(zod.refine(allUnique));
 
