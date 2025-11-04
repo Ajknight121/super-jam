@@ -1,6 +1,6 @@
 import { sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-export const events = sqliteTable("events", {
+export const meetings = sqliteTable("meetings", {
   id: text().primaryKey(), // UUID
   jsonData: text().notNull(),
 });

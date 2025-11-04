@@ -3,12 +3,13 @@
 
 import type { APIContext } from "astro";
 import { drizzle } from "drizzle-orm/d1";
-import { events } from "#/src/db/schema";
+import { meetings } from "#/src/db/schema";
 
 export const prerender = false;
 
-export const GET = async ({ locals, request }: APIContext) => {
+export const GET = async ({ params, locals }: APIContext) => {
   const db = drizzle(locals.runtime.env.DB);
-  const result = await db.select().from(events).all();
-  return Response.json(result);
+
+  const _result = await db.select().from(meetings).all();
+  return Response.json(params.meetingId);
 };
