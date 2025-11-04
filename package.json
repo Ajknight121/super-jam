@@ -9,7 +9,11 @@
     "astro": "astro",
     "deploy": "astro build && wrangler deploy",
     "cf-typegen": "wrangler types",
-    "test": "vitest"
+    "test": "vitest",
+    "migrate:local": "wrangler d1 migrations apply makemeet-dev-db --local",
+    "migrate:prod": "wrangler d1 migrations apply makemeet-dev-db",
+    "db:count:users": "wrangler d1 execute makemeet-dev-db --local --command \"SELECT COUNT(*) AS cnt FROM users;\"",
+    "db:count:events": "wrangler d1 execute makemeet-dev-db --local --command \"SELECT COUNT(*) AS cnt FROM events;\""
   },
   "dependencies": {
     "@astrojs/cloudflare": "^12.6.10",
@@ -17,6 +21,8 @@
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "astro": "^5.15.1",
+    "dotenv": "^17.2.3",
+    "drizzle-orm": "^0.44.7",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "zod": "^4.1.12"
@@ -24,6 +30,7 @@
   "devDependencies": {
     "@biomejs/biome": "2.3.0",
     "@types/node": "^24.9.1",
+    "drizzle-kit": "^0.31.6",
     "vitest": "^4.0.5",
     "wrangler": "^4.45.0"
   }
