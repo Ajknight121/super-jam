@@ -1,9 +1,9 @@
 // TODO: For MVP.
 // This should be a `Meeting` (see `src/types-and-validators.ts`).
 
+import type { APIContext } from "astro";
 import { drizzle } from "drizzle-orm/d1";
 import { events } from "#/src/db/schema";
-import type { APIContext } from "astro";
 
 export const prerender = false;
 
