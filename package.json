@@ -10,10 +10,10 @@
     "deploy": "astro build && wrangler deploy",
     "cf-typegen": "wrangler types",
     "test": "vitest",
-    "migrate:local": "wrangler d1 migrations apply makemeet-dev-db --local",
-    "migrate:prod": "wrangler d1 migrations apply makemeet-dev-db --remote",
-    "db:count:users": "wrangler d1 execute makemeet-dev-db --local --command \"SELECT COUNT(*) AS cnt FROM users;\"",
-    "db:count:meetings": "wrangler d1 execute makemeet-dev-db --local --command \"SELECT COUNT(*) AS cnt FROM meetings;\""
+    "migrate:local": "wrangler d1 migrations apply makemeet-db --local",
+    "migrate:prod": "wrangler d1 migrations apply makemeet-db --remote",
+    "db:count:users": "wrangler d1 execute makemeet-db --local --command \"SELECT COUNT(*) AS cnt FROM users;\"",
+    "db:count:meetings": "wrangler d1 execute makemeet-db --local --command \"SELECT COUNT(*) AS cnt FROM meetings;\""
   },
   "dependencies": {
     "@astrojs/cloudflare": "^12.6.10",
