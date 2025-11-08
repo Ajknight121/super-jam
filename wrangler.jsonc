@@ -29,8 +29,8 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "makemeet-dev-db",
-      "database_id": "d2a84df3-8971-420b-be1b-da1b5c697d2a",
+      "database_name": "makemeet-db",
+      "database_id": "233908bb-4e4f-4216-9a1f-606ef1d8ab89",
       "migrations_dir": "./drizzle/",
     },
   ],
