@@ -10,10 +10,10 @@
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "assets": {
     "binding": "ASSETS",
-    "directory": "./dist",
+    "directory": "./dist"
   },
   "observability": {
-    "enabled": true,
+    "enabled": true
   },
   /**
    * Smart Placement
@@ -31,9 +31,9 @@
       "binding": "DB",
       "database_name": "makemeet-db",
       "database_id": "233908bb-4e4f-4216-9a1f-606ef1d8ab89",
-      "migrations_dir": "./drizzle/",
-    },
-  ],
+      "migrations_dir": "./drizzle/"
+    }
+  ]
   /**
    * Environment Variables
    * https://developers.cloudflare.com/workers/wrangler/configuration/#environment-variables
