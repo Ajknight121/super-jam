@@ -1,6 +1,36 @@
+import assert from "node:assert";
+import type { APIContext } from "astro";
+import { drizzle } from "drizzle-orm/d1";
+import { nanoid } from "nanoid";
+import { meetings } from "#/src/db/schema";
+import { Meeting } from "#/src/types-and-validators";
+
 // TODO: For final project.
 export const prerender = false;
 
-export const POST = () => {
-  return new Response("Unimplemented", { status: 405 });
+export const POST = async ({ locals, request }: APIContext) => {
+  const db = drizzle(locals.runtime.env.DB);
+
+  const meetingResult = Meeting.safeParse(await request.json());
+
+  if (meetingResult.error) {
+    return Response.json(JSON.parse(meetingResult.error.message), {
+      status: 400,
+    });
+  }
+  const meeting = meetingResult.data;
+
+  const dbResult = await db
+    .insert(meetings)
+    .values([{ id: nanoid(), jsonData: JSON.stringify(meeting) }])
+    .returning();
+
+  assert(dbResult.length === 1);
+
+  return Response.json(JSON.parse(dbResult[0].jsonData), {
+    status: 201,
+    headers: {
+      Location: `/api/meetings/${dbResult[0].id}`,
+    },
+  });
 };

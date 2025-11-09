@@ -51,12 +51,13 @@ export type DayOfTheWeek = zod.infer<typeof DayOfTheWeek>;
 
 const AvailableDayConstraints = zod.discriminatedUnion("type", [
   zod.object({
-    type: "specificDays",
+    type: zod.literal("specificDays"),
     // The timestamps of the starts of the days, in UTC.
     days: Times,
   }),
   zod.object({
-    type: "daysOfWeek",
+    type: zod.literal("daysOfWeek"),
+    // TODO: Must all be on Jan 1st, 1970.
     days: zod.array(DayOfTheWeek).check(zod.refine(allUnique)),
   }),
 ]);
@@ -100,3 +101,9 @@ export const Meeting = zod.object({
   timeZone: IanaTimezone,
 });
 export type Meeting = zod.infer<typeof Meeting>;
+
+export const User = zod.object({
+  defaultName: zod.string().check(zod.minLength(1)),
+  // STRETCH: Support different names for each meeting. This may be the most sensitive data we deal with, honestly!
+});
+export type User = zod.infer<typeof User>;

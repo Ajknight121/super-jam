@@ -6,7 +6,12 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**", "!!**/dist", "!!worker-configuration.d.ts"]
+    "includes": [
+      "**",
+      "!!**/dist",
+      "!!worker-configuration.d.ts",
+      "!!**/drizzle"
+    ]
   },
   "formatter": {
     "enabled": true,
