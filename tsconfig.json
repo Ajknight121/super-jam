@@ -9,6 +9,8 @@
     "baseUrl": ".",
     "paths": {
       "#/src/*": ["src/*"]
-    }
+    },
+    "lib": ["ES2021", "DOM"],
+    "target": "ES2021"
   }
 }
