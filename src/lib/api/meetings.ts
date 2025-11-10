@@ -1,26 +1,26 @@
 import type {
+  Meeting,
   MeetingAvailability,
-  Meeting as MeetingType,
   UserAvailability,
-} from "#/src/types-and-validators";
+} from "#/src/api-types-and-schemas";
 import {
-  MeetingAvailability as MeetingAvailabilitySchema,
-  Meeting as MeetingSchema,
-  UserAvailability as UserAvailabilitySchema,
-} from "#/src/types-and-validators";
+  MeetingAvailabilitySchema,
+  MeetingSchema,
+  UserAvailabilitySchema,
+} from "#/src/api-types-and-schemas";
 import { handleApiResponse } from "./index";
 
 // Get a meeting by id
 export async function getMeeting(
   meetingId: string,
-): Promise<MeetingType | undefined> {
+): Promise<Meeting | undefined> {
   const res = await fetch(`/api/meetings/${encodeURIComponent(meetingId)}`);
   return handleApiResponse(res, (json) => MeetingSchema.parse(json));
 }
 
 // Create a meeting - stub
 export async function createMeeting(
-  meeting: Partial<MeetingType>,
+  meeting: Partial<Meeting>,
 ): Promise<{ id: string } | undefined> {
   const res = await fetch(`/api/meetings`, {
     method: "POST",

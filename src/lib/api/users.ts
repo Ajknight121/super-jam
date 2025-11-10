@@ -1,4 +1,4 @@
-import type { User } from "#/src/types-and-validators";
+import type { User } from "#/src/api-types-and-schemas";
 import { handleApiResponse } from "./index";
 
 export async function createUser(

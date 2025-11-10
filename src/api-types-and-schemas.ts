@@ -26,8 +26,8 @@ const Times = zod.array(Time).check(zod.refine(allUnique));
 // ```json
 // ["2025-11-03T18:45:00Z","2025-11-03T19:00:00Z","2025-11-03T19:15:00Z","2025-11-03T19:30:00Z","2025-11-03T19:45:00Z","2025-11-03T20:00:00Z","2025-11-03T20:15:00Z","2025-11-03T20:30:00Z"]
 // ```
-export const UserAvailability = Times;
-export type UserAvailability = zod.infer<typeof UserAvailability>;
+export const UserAvailabilitySchema = Times;
+export type UserAvailability = zod.infer<typeof UserAvailabilitySchema>;
 
 // This is an object that stores everyone's availabilities for one meeting.
 // It should look something like this:
@@ -40,8 +40,11 @@ export type UserAvailability = zod.infer<typeof UserAvailability>;
 // That's a "map" (JSON object) from user ids to their availabilities. The availabilities are arrays of timestamps, each one representing a 15-minute chunk for which that person is available.
 //
 // The order of the timestamps in the array is not significant, but we should endeavor to produce arrays with ascending timestamps. (an instance of the [Robustness Principle](https://en.wikipedia.org/wiki/Robustness_principle))
-export const MeetingAvailability = zod.record(zod.nanoid(), UserAvailability);
-export type MeetingAvailability = zod.infer<typeof MeetingAvailability>;
+export const MeetingAvailabilitySchema = zod.record(
+  zod.nanoid(),
+  UserAvailabilitySchema,
+);
+export type MeetingAvailability = zod.infer<typeof MeetingAvailabilitySchema>;
 
 const DayOfTheWeek = zod.enum([
   "monday",
@@ -54,7 +57,7 @@ const DayOfTheWeek = zod.enum([
 ]);
 export type DayOfTheWeek = zod.infer<typeof DayOfTheWeek>;
 
-const AvailableDayConstraints = zod.discriminatedUnion("type", [
+const AvailableDayConstraintsSchema = zod.discriminatedUnion("type", [
   zod.object({
     type: zod.literal("specificDays"),
     // The timestamps of the starts of the days, in UTC.
@@ -66,9 +69,11 @@ const AvailableDayConstraints = zod.discriminatedUnion("type", [
     days: zod.array(DayOfTheWeek).check(zod.refine(allUnique)),
   }),
 ]);
-export type AvailableDayConstraints = zod.infer<typeof AvailableDayConstraints>;
+export type AvailableDayConstraints = zod.infer<
+  typeof AvailableDayConstraintsSchema
+>;
 
-const TimeRange = zod
+const TimeRangeSchema = zod
   .object({
     start: Time,
     end: Time,
@@ -78,16 +83,18 @@ const TimeRange = zod
       +new Date(timeRange.start) < +new Date(timeRange.end);
     }),
   );
-export type TimeRange = zod.infer<typeof TimeRange>;
+export type TimeRange = zod.infer<typeof TimeRangeSchema>;
 
-export const AvailabilityContraints = zod.object({
-  availableDayConstraints: AvailableDayConstraints,
-  timeRangeForEachDay: TimeRange,
+export const AvailabilityContraintsSchema = zod.object({
+  availableDayConstraints: AvailableDayConstraintsSchema,
+  timeRangeForEachDay: TimeRangeSchema,
 });
 
-export type AvailabilityContraints = zod.infer<typeof AvailabilityContraints>;
+export type AvailabilityContraints = zod.infer<
+  typeof AvailabilityContraintsSchema
+>;
 
-export const IanaTimezone = zod.string().check(
+export const IanaTimezoneSchema = zod.string().check(
   zod.refine(
     (val) => {
       // STRETCH: Support other locales.
@@ -104,17 +111,17 @@ export const IanaTimezone = zod.string().check(
   ),
 );
 
-export const Meeting = zod.object({
+export const MeetingSchema = zod.object({
   // Meeting names must be at least one character long.
   name: zod.string().check(zod.minLength(1)),
-  availability: MeetingAvailability,
-  availabilityBounds: AvailabilityContraints,
-  timeZone: IanaTimezone,
+  availability: MeetingAvailabilitySchema,
+  availabilityBounds: AvailabilityContraintsSchema,
+  timeZone: IanaTimezoneSchema,
 });
-export type Meeting = zod.infer<typeof Meeting>;
+export type Meeting = zod.infer<typeof MeetingSchema>;
 
-export const User = zod.object({
+export const UserSchema = zod.object({
   defaultName: zod.string().check(zod.minLength(1)),
   // STRETCH: Support different names for each meeting. This may be the most sensitive data we deal with, honestly!
 });
-export type User = zod.infer<typeof User>;
+export type User = zod.infer<typeof UserSchema>;
