@@ -9,14 +9,6 @@ import {
 } from "#/src/types-and-validators";
 import { handleApiResponse } from "./index";
 
-// Convert plain object into a Map for zod.map parsing.
-function parseMeetingAvailabilityObject(obj: any) {
-  // obj should be an object whose keys are ids and values are arrays
-  const entries = Object.entries(obj);
-  const map = new Map<string, any>(entries);
-  return MeetingAvailabilitySchema.parse(map);
-}
-
 // Get a meeting by id
 export async function getMeeting(
   meetingId: string,
@@ -43,7 +35,9 @@ export async function getMeetingAvailability(meetingId: string) {
   const res = await fetch(
     `/api/meetings/${encodeURIComponent(meetingId)}/availability`,
   );
-  return handleApiResponse(res, (json) => parseMeetingAvailabilityObject(json));
+  return handleApiResponse(res, (json) =>
+    MeetingAvailabilitySchema.parse(json),
+  );
 }
 
 // Get a single user's availability for a meeting
