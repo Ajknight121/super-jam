@@ -34,6 +34,9 @@ export async function handleApiResponse<T>(
 
   // Fallback - try JSON but give a helpful message on parse failures
   try {
+    console.log(
+      "WARNING: Incorrectly set 'Content-Type', trying to parse as JSON.",
+    );
     const json = await res.json();
     return parseFn ? parseFn(json) : (json as T);
   } catch {

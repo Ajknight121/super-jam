@@ -1,4 +1,5 @@
 import type {
+  MeetingAvailability,
   Meeting as MeetingType,
   UserAvailability,
 } from "#/src/types-and-validators";
@@ -31,7 +32,9 @@ export async function createMeeting(
 }
 
 // Get availability for a meeting (all users)
-export async function getMeetingAvailability(meetingId: string) {
+export async function getMeetingAvailability(
+  meetingId: string,
+): Promise<MeetingAvailability | undefined> {
   const res = await fetch(
     `/api/meetings/${encodeURIComponent(meetingId)}/availability`,
   );

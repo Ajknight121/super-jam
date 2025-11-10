@@ -1,3 +1,4 @@
+import type { User } from "#/src/types-and-validators";
 import { handleApiResponse } from "./index";
 
 export async function createUser(
@@ -12,9 +13,7 @@ export async function createUser(
   return handleApiResponse(res);
 }
 
-export async function getUser(
-  userId: string,
-): Promise<{ id: string; name: string } | undefined> {
+export async function getUser(userId: string): Promise<User | undefined> {
   const res = await fetch(`/api/users/${encodeURIComponent(userId)}`);
   return handleApiResponse(res);
 }
