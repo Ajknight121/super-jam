@@ -12,6 +12,7 @@ export const POST = async ({ locals, request }: APIContext) => {
   const db = drizzle(locals.runtime.env.DB);
 
   const meetingResult = MeetingSchema.safeParse(await request.json());
+  // TODO: Ensure no availability is listed here. Too much of an authentication nightmare.
 
   if (meetingResult.error) {
     return Response.json(JSON.parse(meetingResult.error.message), {
@@ -30,7 +31,7 @@ export const POST = async ({ locals, request }: APIContext) => {
   return Response.json(JSON.parse(dbResult[0].jsonData), {
     status: 201,
     headers: {
-      Location: `/api/meetings/${dbResult[0].id}`,
+      Location: `/api/meetings/${encodeURIComponent(dbResult[0].id)}`,
     },
   });
 };

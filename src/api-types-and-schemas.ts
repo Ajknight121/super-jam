@@ -65,7 +65,6 @@ const AvailableDayConstraintsSchema = zod.discriminatedUnion("type", [
   }),
   zod.object({
     type: zod.literal("daysOfWeek"),
-    // TODO: Must all be on Jan 1st, 1970.
     days: zod.array(DayOfTheWeek).check(zod.refine(allUnique)),
   }),
 ]);
@@ -75,13 +74,15 @@ export type AvailableDayConstraints = zod.infer<
 
 const TimeRangeSchema = zod
   .object({
+    // TODO: Must both be on Jan 1st, 1970.
     start: Time,
     end: Time,
   })
   .check(
-    zod.refine((timeRange) => {
-      +new Date(timeRange.start) < +new Date(timeRange.end);
-    }),
+    // The start of the time range must be before (*actually* before) the end of the time range.
+    zod.refine(
+      (timeRange) => +new Date(timeRange.start) < +new Date(timeRange.end),
+    ),
   );
 export type TimeRange = zod.infer<typeof TimeRangeSchema>;
 
