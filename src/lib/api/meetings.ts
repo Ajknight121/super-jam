@@ -7,7 +7,7 @@ import {
   Meeting as MeetingSchema,
   UserAvailability as UserAvailabilitySchema,
 } from "#/src/types-and-validators";
-import { handleJsonResponse } from "./index";
+import { handleApiResponse } from "./index";
 
 // Convert plain object into a Map for zod.map parsing.
 function parseMeetingAvailabilityObject(obj: any) {
@@ -22,7 +22,7 @@ export async function getMeeting(
   meetingId: string,
 ): Promise<MeetingType | undefined> {
   const res = await fetch(`/api/meetings/${encodeURIComponent(meetingId)}`);
-  return handleJsonResponse(res, (json) => MeetingSchema.parse(json));
+  return handleApiResponse(res, (json) => MeetingSchema.parse(json));
 }
 
 // Create a meeting - stub
@@ -35,7 +35,7 @@ export async function createMeeting(
     body: JSON.stringify(meeting),
   });
 
-  return handleJsonResponse(res);
+  return handleApiResponse(res);
 }
 
 // Get availability for a meeting (all users)
@@ -43,9 +43,7 @@ export async function getMeetingAvailability(meetingId: string) {
   const res = await fetch(
     `/api/meetings/${encodeURIComponent(meetingId)}/availability`,
   );
-  return handleJsonResponse(res, (json) =>
-    parseMeetingAvailabilityObject(json),
-  );
+  return handleApiResponse(res, (json) => parseMeetingAvailabilityObject(json));
 }
 
 // Get a single user's availability for a meeting
@@ -56,7 +54,7 @@ export async function getUserAvailability(
   const res = await fetch(
     `/api/meetings/${encodeURIComponent(meetingId)}/availability/${encodeURIComponent(userId)}`,
   );
-  return handleJsonResponse(res, (json) => UserAvailabilitySchema.parse(json));
+  return handleApiResponse(res, (json) => UserAvailabilitySchema.parse(json));
 }
 
 // Set a user's availability for a meeting
@@ -73,7 +71,7 @@ export async function setUserAvailability(
       body: JSON.stringify(availability),
     },
   );
-  await handleJsonResponse(res);
+  await handleApiResponse(res);
 }
 
 // Get or set a meeting name
@@ -84,7 +82,7 @@ export async function getMeetingName(
   const res = await fetch(
     `/api/meetings/${encodeURIComponent(meetingId)}/name`,
   );
-  return handleJsonResponse(res);
+  return handleApiResponse(res);
 }
 
 export async function setMeetingName(
@@ -100,5 +98,5 @@ export async function setMeetingName(
     },
   );
 
-  await handleJsonResponse(res);
+  await handleApiResponse(res);
 }

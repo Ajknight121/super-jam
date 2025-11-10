@@ -1,4 +1,4 @@
-export async function handleJsonResponse<T>(
+export async function handleApiResponse<T>(
   res: Response,
   parseFn?: (json: unknown) => T,
 ): Promise<T | undefined> {

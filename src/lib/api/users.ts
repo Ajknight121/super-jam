@@ -1,4 +1,4 @@
-import { handleJsonResponse } from "./index";
+import { handleApiResponse } from "./index";
 
 export async function createUser(
   name: string,
@@ -9,12 +9,12 @@ export async function createUser(
     body: JSON.stringify({ name }),
   });
 
-  return handleJsonResponse(res);
+  return handleApiResponse(res);
 }
 
 export async function getUser(
   userId: string,
 ): Promise<{ id: string; name: string } | undefined> {
   const res = await fetch(`/api/users/${encodeURIComponent(userId)}`);
-  return handleJsonResponse(res);
+  return handleApiResponse(res);
 }
