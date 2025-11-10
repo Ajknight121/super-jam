@@ -2,14 +2,19 @@
 // Not all of the validation logic is here! Some is too complicated to be easily expressed in Zod (it would be voodoo IMO, though I do understand it). See https://chatgpt.com/s/t_690646e3ec608191bc1114d90d95e02a, especially paragraph 1, for how to do it. (I only read paragraph 1.)
 import * as zod from "zod/mini";
 
+// Number of seconds of granularity for any times.
+export const GRANULARITY = 15 /*minutes */ * 60; /* seconds per minute */
+
 // A helper for confirming that all the elements of an array of numbers or strings are unique.
 const allUnique = (arr: (number | string)[]) =>
   new Set(arr).size === arr.length;
 
 // All timestamps in the API are ISO-8601 timestamps with second precision, ending with "Z" (meaning they are UTC time).
-const Time = zod
-  .string()
-  .check(zod.iso.datetime({ offset: false, local: false, precision: 0 }));
+const Time = zod.string().check(
+  zod.iso.datetime({ offset: false, local: false, precision: 0 }),
+  // All times are multiples of the GRANULARITY.
+  zod.refine((time) => +new Date(time) % GRANULARITY === 0),
+);
 
 const Times = zod.array(Time).check(zod.refine(allUnique));
 
@@ -32,7 +37,7 @@ export type UserAvailability = zod.infer<typeof UserAvailability>;
 //   "[userId2]" : ["2025-11-03T18:45:00Z","2025-11-03T19:00:00Z","2025-11-03T19:15:00Z","2025-11-03T19:30:00Z","2025-11-03T19:45:00Z","2025-11-03T20:00:00Z","2025-11-03T20:15:00Z","2025-11-03T20:30:00Z"]
 // }
 // ```
-// That's a map from user ids to their availabilities. The availabilities are arrays of timestamps, each one representing a 15-minute chunk for which that person is available.
+// That's a "map" (JSON object) from user ids to their availabilities. The availabilities are arrays of timestamps, each one representing a 15-minute chunk for which that person is available.
 //
 // The order of the timestamps in the array is not significant, but we should endeavor to produce arrays with ascending timestamps. (an instance of the [Robustness Principle](https://en.wikipedia.org/wiki/Robustness_principle))
 export const MeetingAvailability = zod.record(zod.nanoid(), UserAvailability);
@@ -63,10 +68,16 @@ const AvailableDayConstraints = zod.discriminatedUnion("type", [
 ]);
 export type AvailableDayConstraints = zod.infer<typeof AvailableDayConstraints>;
 
-const TimeRange = zod.object({
-  start: Time,
-  end: Time,
-});
+const TimeRange = zod
+  .object({
+    start: Time,
+    end: Time,
+  })
+  .check(
+    zod.refine((timeRange) => {
+      +new Date(timeRange.start) < +new Date(timeRange.end);
+    }),
+  );
 export type TimeRange = zod.infer<typeof TimeRange>;
 
 export const AvailabilityContraints = zod.object({
