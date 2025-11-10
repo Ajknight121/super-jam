@@ -1,6 +1,6 @@
 export async function handleJsonResponse<T>(
   res: Response,
-  parseFn?: (json: any) => T,
+  parseFn?: (json: unknown) => T,
 ): Promise<T | undefined> {
   if (!res.ok) {
     // Provide a helpful error for 405 vs other errors
@@ -29,7 +29,7 @@ export async function handleJsonResponse<T>(
   if (contentType.startsWith("text/") || contentType === "") {
     const txt = await res.text().catch(() => "");
 
-    return parseFn ? parseFn(txt) : (txt as any as T);
+    return parseFn ? parseFn(txt) : (txt as T);
   }
 
   // Fallback - try JSON but give a helpful message on parse failures

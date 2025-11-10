@@ -1,5 +1,3 @@
-import type { UserAvailability } from "#/src/types-and-validators";
-import { UserAvailability as UserAvailabilitySchema } from "#/src/types-and-validators";
 import { handleJsonResponse } from "./index";
 
 export async function createUser(

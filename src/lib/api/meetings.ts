@@ -64,7 +64,7 @@ export async function setUserAvailability(
   meetingId: string,
   userId: string,
   availability: UserAvailability,
-): Promise<void | undefined> {
+): Promise<void> {
   const res = await fetch(
     `/api/meetings/${encodeURIComponent(meetingId)}/availability/${encodeURIComponent(userId)}`,
     {
@@ -90,7 +90,7 @@ export async function getMeetingName(
 export async function setMeetingName(
   meetingId: string,
   name: string,
-): Promise<void | undefined> {
+): Promise<void> {
   const res = await fetch(
     `/api/meetings/${encodeURIComponent(meetingId)}/name`,
     {
