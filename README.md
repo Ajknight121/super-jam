@@ -1,3 +1,10 @@
+# Links to Other things:
+Google Doc: https://docs.google.com/document/d/1-4do1cLZw08uzDUYntzfALCMOkoH-w7LRtUgW3cs1Yc/edit?usp=drivesdk
+
+Figma: https://www.figma.com/file/4oVfPhHyw6Ly7gCcOtonXx?node-id=0:1&t=rNSL0lxVJkj0BNzJ-1&locale=en&type=design
+
+Adrian's cloudflare deployment, automatic from main branch: https://makemeet.cloudcs484-0.workers.dev/
+
 # Astro Starter Kit: Basics
 
 ```sh
