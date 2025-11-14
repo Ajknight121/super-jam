@@ -1,5 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import AvailabilityChart from "../AvailabiltyChart";
 
 
 const isSignedIn = false;
@@ -53,7 +54,7 @@ const primary_bg = "#8CA9FF"
         </div>
         <div class="label">{maxAvailable}/{totalPeople}</div>
       </div>
-
+      <AvailabilityChart client:load meetingId=""/>
     </div>
 
     <div class="login">

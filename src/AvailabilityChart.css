@@ -1,0 +1,43 @@
+
+
+.availability-chart {
+  background-color: aquamarine;
+  overflow-x: scroll;
+}
+
+.availability-chart-days {
+  display: flex;
+  flex-direction: row;
+  width: fit-content;
+  background-color: aliceblue;
+  overflow-x: scroll;
+}
+
+.availability-chart-day {
+  background-color: #AAC4F5;
+  box-sizing: border-box;
+  width: 120px;
+  margin: 5px;
+  text-transform: capitalize;
+}
+
+.availability-chart-grid {
+  display: flex;
+  flex-direction: row;
+  width: fit-content;
+  height: 300px;
+  background-color: brown;
+  overflow-y: scroll;
+}
+
+.availability-chart-grid-day {
+  box-sizing: border-box;
+  width: 120px;
+  margin: 5px;
+}
+
+.cell {
+  height: 15px;
+  background-color: white;
+  border-bottom: solid black 1px;
+}
