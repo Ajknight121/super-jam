@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getMeeting } from "./lib/api/meetings";
+import { getMeeting } from "../lib/api/meetings";
 import type {
   Meeting,
   MeetingAvailability,
@@ -7,6 +7,7 @@ import type {
 } from "#/src/api-types-and-schemas";
 
 import "./AvailabilityChart.css"
+import { Root, InputCell } from "./DragSelect";
 
 /**
  * Calculates the number of 15-minute slots between a start and end time.
@@ -25,6 +26,7 @@ function calculateTimeSlots(start: string, end: string): number {
 export default function AvailabilityChart({meetingId}) {
   const [meeting, setMeeting] = useState<Meeting | undefined>(undefined);
   const [error, setError] = useState(null);
+  const [selectedCells, setSelectedCells] = useState([]); // TODO set to user's fetched availability
 
   const exampleMeeting: Meeting = {
     name: "Example Meeting (Failed to Load)",
@@ -38,7 +40,7 @@ export default function AvailabilityChart({meetingId}) {
       },
       availableDayConstraints: {
         type: "daysOfWeek",
-        days: ["monday", "tuesday", "wednesday", "thursday", "friday"],
+        days: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday","sunday"],
       },
     },
     timeZone:"CST"
@@ -76,7 +78,18 @@ export default function AvailabilityChart({meetingId}) {
   const numberOfSlots = calculateTimeSlots(timeRangeForEachDay.start, timeRangeForEachDay.end);
   const timeSlots = Array.from({ length: numberOfSlots }, (_, i) => i);
 
+  
+
+  const addCell = () => {
+
+  }
+
+  const handleCellRepot = (cellName) => {
+    console.log(cellName)
+  }
+
   return (
+    
     <div className="availability-chart">
       <div className="availability-chart-days">
         {availabilityBounds.availableDayConstraints.type === "daysOfWeek" ? 
@@ -95,15 +108,18 @@ export default function AvailabilityChart({meetingId}) {
         }
       </div>
       
+      <Root>
+
       <div className="availability-chart-grid">
         {availableDayConstraints.days.map((day) => (
           <div key={day} className="availability-chart-grid-day">
-            {timeSlots.map((slotIndex) => (
-              <div key={slotIndex} className="cell"></div>
+            {timeSlots.map((slotIndex, index) => (
+              <InputCell key={day + "-" + index} timeId={day + "-" + index}/>
             ))}
           </div>
         ))}
       </div>
+      </Root>
     </div>
   )
 }
