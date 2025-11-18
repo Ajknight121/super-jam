@@ -1,12 +1,12 @@
+import assert from "node:assert";
+import type { APIContext } from "astro";
+import { eq } from "drizzle-orm";
+import { drizzle } from "drizzle-orm/d1";
 import {
   MeetingSchema,
   UserAvailabilitySchema,
 } from "#/src/api-types-and-schemas";
 import { meetings, users } from "#/src/db/schema";
-import type { APIContext } from "astro";
-import { eq } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/d1";
-import assert from "node:assert";
 
 // This should be a `UserAvailability` (see `src/types-and-validators.ts`) with [userId]'s availability for [meetingId].
 export const prerender = false;
@@ -102,7 +102,7 @@ export const PUT = async ({ params, locals, request }: APIContext) => {
   // If this fails, we updated too many rows!
   assert(newMeetingUpdateDbResult.length === 1);
 
-  let responseInit;
+  let responseInit: ResponseInit;
   if (params.userId in initialMeeting.availability) {
     console.log("hi");
     responseInit = {
