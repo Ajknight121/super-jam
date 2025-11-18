@@ -7,5 +7,5 @@ export const meetings = sqliteTable("meetings", {
 
 export const users = sqliteTable("users", {
   id: text().primaryKey(), // nanoID
-  name: text().notNull(),
+  defaultName: text().notNull(),
 });
