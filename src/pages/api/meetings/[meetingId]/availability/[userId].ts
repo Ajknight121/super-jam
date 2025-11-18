@@ -104,13 +104,14 @@ export const PUT = async ({ params, locals, request }: APIContext) => {
 
   let responseInit;
   if (params.userId in initialMeeting.availability) {
+    console.log("hi");
     responseInit = {
       status: 200,
     };
   } else {
     responseInit = {
       status: 201,
-      Headers: {
+      headers: {
         Location: request.url,
       },
     };
@@ -119,8 +120,6 @@ export const PUT = async ({ params, locals, request }: APIContext) => {
   return Response.json(
     MeetingSchema.parse(JSON.parse(newMeetingUpdateDbResult[0].jsonData))
       .availability[params.userId],
-    {
-      status: 200,
-    },
+    responseInit,
   );
 };
