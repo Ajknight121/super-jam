@@ -15,6 +15,13 @@
       "when": 1762272493566,
       "tag": "0001_lively_nico_minoru",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1763487828927,
+      "tag": "0002_happy_talon",
+      "breakpoints": true
     }
   ]
 }

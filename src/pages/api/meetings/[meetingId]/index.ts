@@ -1,16 +1,16 @@
 // TODO: For MVP.
-// This should be a `Meeting` (see `src/types-and-validators.ts`).
+// This should be a `Meeting` (see `src/api-types-and-schemas.ts`).
 
 import assert from "node:assert";
 import type { APIContext } from "astro";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import { meetings } from "#/src/db/schema";
+import { MeetingSchema } from "#/src/api-types-and-schemas";
 
 export const prerender = false;
 
 export const GET = async ({ params, locals }: APIContext) => {
-  const db = drizzle(locals.runtime.env.DB);
   if (params.meetingId === undefined) {
     // TODO(samuel-skean): Under what conditions can this be triggered?
     return Response.json(
@@ -19,6 +19,7 @@ export const GET = async ({ params, locals }: APIContext) => {
     );
   }
 
+  const db = drizzle(locals.runtime.env.DB);
   const dbResult = await db
     .select()
     .from(meetings)
@@ -33,5 +34,5 @@ export const GET = async ({ params, locals }: APIContext) => {
     );
   }
 
-  return Response.json(JSON.parse(dbResult[0].jsonData));
+  return Response.json(MeetingSchema.parse(JSON.parse(dbResult[0].jsonData)));
 };

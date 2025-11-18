@@ -5,14 +5,14 @@ import { nanoid } from "nanoid";
 import { MeetingSchema } from "#/src/api-types-and-schemas";
 import { meetings } from "#/src/db/schema";
 
-// TODO: For final project.
+// TODO: For MVP.
 export const prerender = false;
 
 export const POST = async ({ locals, request }: APIContext) => {
   const db = drizzle(locals.runtime.env.DB);
 
   const meetingResult = MeetingSchema.safeParse(await request.json());
-  // TODO: Ensure no availability is listed here. Too much of an authentication nightmare.
+  // TODO(samuel-skean): Ensure no availability is listed here. Too much of an authentication nightmare.
 
   if (meetingResult.error) {
     return Response.json(JSON.parse(meetingResult.error.message), {
