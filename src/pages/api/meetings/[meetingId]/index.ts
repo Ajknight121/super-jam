@@ -5,8 +5,8 @@ import assert from "node:assert";
 import type { APIContext } from "astro";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
+import { type MakemeetError, MeetingSchema } from "#/src/api-types-and-schemas";
 import { meetings } from "#/src/db/schema";
-import { MeetingSchema } from "#/src/api-types-and-schemas";
 
 export const prerender = false;
 
@@ -14,7 +14,7 @@ export const GET = async ({ params, locals }: APIContext) => {
   if (params.meetingId === undefined) {
     // TODO(samuel-skean): Under what conditions can this be triggered?
     return Response.json(
-      { customMakemeetError: "Malformed meeting URL." },
+      { customMakemeetError: "Malformed meeting URL." } satisfies MakemeetError,
       { status: 404 },
     );
   }
@@ -29,7 +29,7 @@ export const GET = async ({ params, locals }: APIContext) => {
 
   if (dbResult.length === 0) {
     return Response.json(
-      { customMakemeetError: "No such meeting." },
+      { customMakemeetError: "No such meeting." } satisfies MakemeetError,
       { status: 404 },
     );
   }

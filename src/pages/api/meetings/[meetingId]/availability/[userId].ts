@@ -3,6 +3,7 @@ import type { APIContext } from "astro";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import {
+  type MakemeetError,
   MeetingSchema,
   UserAvailabilitySchema,
 } from "#/src/api-types-and-schemas";
@@ -24,7 +25,9 @@ export const PUT = async ({ params, locals, request }: APIContext) => {
   if (params.meetingId === undefined || params.userId === undefined) {
     // TODO(samuel-skean): Under what conditions can this be triggered?
     return Response.json(
-      { customMakemeetError: "Malformed user availability URL." },
+      {
+        customMakemeetError: "Malformed user availability URL.",
+      } satisfies MakemeetError,
       { status: 404 },
     );
   }
@@ -56,7 +59,7 @@ export const PUT = async ({ params, locals, request }: APIContext) => {
       {
         // TODO(samuel-skean): Does this leak info that we don't want to leak? I don't think so.
         customMakemeetError: "No such user.",
-      },
+      } satisfies MakemeetError,
       { status: 404 },
     );
   }
@@ -74,7 +77,7 @@ export const PUT = async ({ params, locals, request }: APIContext) => {
     return Response.json(
       {
         customMakemeetError: "No such meeting.",
-      },
+      } satisfies MakemeetError,
       { status: 404 },
     );
   }

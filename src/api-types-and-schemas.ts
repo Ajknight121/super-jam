@@ -126,3 +126,10 @@ export const UserSchema = zod.object({
   // STRETCH: Support different names for each meeting. This may be the most sensitive data we deal with, honestly!
 });
 export type User = zod.infer<typeof UserSchema>;
+
+const MakemeetErrorSchema = zod.object({
+  // We could validate better, but as it stands, this Schema doesn't actually get used to do anything but infer the type, so that would be lost and lazy.
+  customMakemeetError: zod.string(),
+});
+
+export type MakemeetError = zod.infer<typeof MakemeetErrorSchema>;

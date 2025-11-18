@@ -1,9 +1,9 @@
-import { UserSchema, type User } from "#/src/api-types-and-schemas";
-import { users } from "#/src/db/schema";
+import assert from "node:assert";
 import type { APIContext } from "astro";
 import { drizzle } from "drizzle-orm/d1";
 import { nanoid } from "nanoid";
-import assert from "node:assert";
+import { type User, UserSchema } from "#/src/api-types-and-schemas";
+import { users } from "#/src/db/schema";
 
 // TODO: For final project.
 export const prerender = false;

@@ -2,7 +2,7 @@ import assert from "node:assert";
 import type { APIContext } from "astro";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
-import { UserSchema, type User } from "#/src/api-types-and-schemas";
+import type { MakemeetError, User } from "#/src/api-types-and-schemas";
 import { users } from "#/src/db/schema";
 
 // The properties of a user, including their name.
@@ -15,7 +15,7 @@ export const GET = async ({ locals, params }: APIContext) => {
     return Response.json(
       {
         customMakemeetError: "Malformed user availability URL.",
-      },
+      } satisfies MakemeetError,
       { status: 404 },
     );
   }
@@ -31,7 +31,7 @@ export const GET = async ({ locals, params }: APIContext) => {
 
   if (dbResult.length === 0) {
     return Response.json(
-      { customMakemeetError: "No such user." },
+      { customMakemeetError: "No such user." } satisfies MakemeetError,
       { status: 404 },
     );
   }
