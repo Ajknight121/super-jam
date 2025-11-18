@@ -10,13 +10,13 @@ const allUnique = (arr: (number | string)[]) =>
   new Set(arr).size === arr.length;
 
 // All timestamps in the API are ISO-8601 timestamps with second precision, ending with "Z" (meaning they are UTC time).
-const Time = zod.string().check(
+const TimeSchema = zod.string().check(
   zod.iso.datetime({ offset: false, local: false, precision: 0 }),
   // All times are multiples of the GRANULARITY.
   zod.refine((time) => +new Date(time) % GRANULARITY === 0),
 );
 
-const Times = zod.array(Time).check(zod.refine(allUnique));
+const TimesSchema = zod.array(TimeSchema).check(zod.refine(allUnique));
 
 // It seems Kanich doesn't love this idea, but I (Skean) feel pretty strongly for it: https://piazza.com/class/mdt3addszda1is/post/78
 //
@@ -26,7 +26,7 @@ const Times = zod.array(Time).check(zod.refine(allUnique));
 // ```json
 // ["2025-11-03T18:45:00Z","2025-11-03T19:00:00Z","2025-11-03T19:15:00Z","2025-11-03T19:30:00Z","2025-11-03T19:45:00Z","2025-11-03T20:00:00Z","2025-11-03T20:15:00Z","2025-11-03T20:30:00Z"]
 // ```
-export const UserAvailabilitySchema = Times;
+export const UserAvailabilitySchema = TimesSchema;
 export type UserAvailability = zod.infer<typeof UserAvailabilitySchema>;
 
 // This is an object that stores everyone's availabilities for one meeting.
@@ -61,7 +61,7 @@ const AvailableDayConstraintsSchema = zod.discriminatedUnion("type", [
   zod.object({
     type: zod.literal("specificDays"),
     // The timestamps of the starts of the days, in UTC.
-    days: Times,
+    days: TimesSchema,
   }),
   zod.object({
     type: zod.literal("daysOfWeek"),
@@ -75,8 +75,8 @@ export type AvailableDayConstraints = zod.infer<
 const TimeRangeSchema = zod
   .object({
     // TODO: Must both be on Jan 1st, 1970.
-    start: Time,
-    end: Time,
+    start: TimeSchema,
+    end: TimeSchema,
   })
   .check(
     // The start of the time range must be before (*actually* before) the end of the time range.

@@ -8,6 +8,7 @@ export async function handleApiResponse<T>(
     if (res.status === 405) {
       throw new Error(`Endpoint not implemented (405).`);
     }
+    // TODO: Is this error handling achieving anything?
     const text = await res.text().catch(() => "");
     throw new Error(`HTTP ${res.status}: ${text || res.statusText}`);
   }
@@ -28,6 +29,7 @@ export async function handleApiResponse<T>(
 
   // For endpoints that return plain text
   if (contentType.startsWith("text/") || contentType === "") {
+    // TODO: Is this error handling achieving anything?
     const txt = await res.text().catch(() => "");
 
     return parseFn ? parseFn(txt) : (txt as T);

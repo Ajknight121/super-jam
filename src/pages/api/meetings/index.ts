@@ -5,7 +5,7 @@ import { nanoid } from "nanoid";
 import { MeetingSchema } from "#/src/api-types-and-schemas";
 import { meetings } from "#/src/db/schema";
 
-// TODO: For final project.
+// TODO: For MVP.
 export const prerender = false;
 
 export const POST = async ({ locals, request }: APIContext) => {

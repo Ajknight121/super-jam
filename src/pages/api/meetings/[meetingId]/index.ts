@@ -10,7 +10,6 @@ import { meetings } from "#/src/db/schema";
 export const prerender = false;
 
 export const GET = async ({ params, locals }: APIContext) => {
-  const db = drizzle(locals.runtime.env.DB);
   if (params.meetingId === undefined) {
     // TODO(samuel-skean): Under what conditions can this be triggered?
     return Response.json(
@@ -19,6 +18,7 @@ export const GET = async ({ params, locals }: APIContext) => {
     );
   }
 
+  const db = drizzle(locals.runtime.env.DB);
   const dbResult = await db
     .select()
     .from(meetings)
