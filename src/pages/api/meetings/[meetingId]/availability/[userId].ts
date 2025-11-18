@@ -112,7 +112,7 @@ export const PUT = async ({ params, locals, request }: APIContext) => {
     responseInit = {
       status: 201,
       headers: {
-        Location: request.url,
+        Location: new URL(request.url).pathname,
       },
     };
   }
