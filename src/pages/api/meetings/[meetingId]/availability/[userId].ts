@@ -8,7 +8,7 @@ import {
 } from "#/src/api-types-and-schemas";
 import { meetings, users } from "#/src/db/schema";
 
-// This should be a `UserAvailability` (see `src/types-and-validators.ts`) with [userId]'s availability for [meetingId].
+// This should be a `UserAvailability` (see `src/api-types-and-schemas.ts`) with [userId]'s availability for [meetingId].
 export const prerender = false;
 
 export const GET = () => {
@@ -49,6 +49,8 @@ export const PUT = async ({ params, locals, request }: APIContext) => {
 
   assert(userExistsDbResult.length <= 1);
 
+  // NOTE: It's kinda weird that we report the non-existence of the user if both the user and the meeting do not exist. It makes the hypothetical change to using fewer queries (mentioned in a below comment) easier, but otherwise it just seems slightly wrong?
+
   if (userExistsDbResult.length === 0) {
     return Response.json(
       {
@@ -82,6 +84,7 @@ export const PUT = async ({ params, locals, request }: APIContext) => {
   );
   const { availability: initialMeetingAvailability } = initialMeeting;
 
+  // TODO(samuel-skean): Ensure the user IDs are always sorted based on themselves! As it stands, we leak info about what order availability was uploaded in.
   const newMeeting = {
     ...initialMeeting,
     availability: {
