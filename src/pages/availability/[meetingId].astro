@@ -1,7 +1,10 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import AvailabilityChart from "../components/AvailabiltyChart";
+export const prerender = false;
+import Layout from "../../layouts/Layout.astro"
+import AvailabilityChart from "../../components/AvailabilityChart";
 
+const { meetingId } = Astro.params;
+const userId = "1"; // Placeholder for the current user
 
 const isSignedIn = false;
 const isEditing = false;
@@ -54,7 +57,7 @@ const primary_bg = "#8CA9FF"
         </div>
         <div class="label">{maxAvailable}/{totalPeople}</div>
       </div>
-      <AvailabilityChart client:load meetingId=""/>
+      <AvailabilityChart client:load meetingId={meetingId} userId={userId} />
     </div>
 
     <div class="login">

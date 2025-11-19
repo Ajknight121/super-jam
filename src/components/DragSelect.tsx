@@ -80,13 +80,22 @@ function shallowEqual(x: Record<string, boolean>, y: Record<string, boolean>) {
 
 const SelectedItemContext = createContext<Record<string, boolean>>({})
 
-export function Root({ children }: { children?: ReactNode }) {
+export function Root({
+    children,
+    initialItems,
+    onSelectionChange,
+}: {
+    children?: ReactNode
+    initialItems?: Record<string, boolean>
+    onSelectionChange?: (items: Record<string, boolean>) => void
+}) {
     const [isDragging, setIsDragging] = useState(false)
+    const [dragMode, _setDragMode] = useState<'select' | 'deselect'>('select')
 
     const [dragVector, setDragVector] = useState<DOMVector | null>(null)
     const [scrollVector, setScrollVector] = useState<DOMVector | null>(null)
     const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>(
-        {},
+        initialItems ?? {},
     )
     const containerRef = useRef<HTMLDivElement>(null)
 
@@ -96,7 +105,7 @@ export function Root({ children }: { children?: ReactNode }) {
             scrollVector: DOMVector,
         ) {
             if (containerRef.current == null) return
-            const next: Record<string, boolean> = {}
+            const next = { ...selectedItems }
             const containerRect = containerRef.current.getBoundingClientRect()
             containerRef.current.querySelectorAll('[data-item]').forEach(el => {
                 if (!(el instanceof HTMLElement)) return
@@ -122,15 +131,20 @@ export function Root({ children }: { children?: ReactNode }) {
                 )
                     return
 
-                if (el.dataset.item && typeof el.dataset.item === 'string') {
-                    next[el.dataset.item] = true
+                const itemId = el.dataset.item
+                if (itemId && typeof itemId === 'string') {
+                    if (dragMode === 'select') {
+                        next[itemId] = true
+                    } else {
+                        delete next[itemId]
+                    }
                 }
             })
             if (!shallowEqual(next, selectedItems)) {
                 setSelectedItems(next)
             }
         },
-        [selectedItems],
+        [selectedItems, dragMode],
     )
 
     useEffect(() => {
@@ -157,7 +171,6 @@ export function Root({ children }: { children?: ReactNode }) {
             containerRect.height - currentPointer.y < 20
             const shouldScrollUp = currentPointer.y < 20
             
-            console.log("should scroll down", shouldScrollDown)
             const left = shouldScrollRight
                 ? clamp(20 - containerRect.width + currentPointer.x, 0, 20)
                 : shouldScrollLeft
@@ -232,6 +245,22 @@ export function Root({ children }: { children?: ReactNode }) {
                 onPointerDown={function (e) {
                     if (e.button !== 0) return
 
+                    const target = e.target as HTMLElement
+                    const itemElement = target.closest<HTMLElement>(
+                        '[data-item]',
+                    )
+
+                    if (itemElement?.dataset.item) {
+                        const itemId = itemElement.dataset.item
+                        if (selectedItems[itemId]) {
+                            _setDragMode('deselect')
+                        } else {
+                            _setDragMode('select')
+                        }
+                    } else {
+                        _setDragMode('select')
+                    }
+
                     const containerRect =
                         e.currentTarget.getBoundingClientRect()
                     setDragVector(
@@ -289,16 +318,31 @@ export function Root({ children }: { children?: ReactNode }) {
                     setDragVector(nextDragVector)
                     updateSelectedItems(nextDragVector, scrollVector)
                 }}
-                onPointerUp={function () {
+                onPointerUp={function (e) {
                     if (!isDragging) {
-                        setSelectedItems({})
-                        setDragVector(null)
-                        setScrollVector(null)
+                        const target = e.target as HTMLElement
+                        const itemElement = target.closest<HTMLElement>(
+                            '[data-item]',
+                        )
+                        if (itemElement?.dataset.item) {
+                            const itemId = itemElement.dataset.item
+                            setSelectedItems(prev => {
+                                const next = { ...prev }
+                                if (next[itemId]) {
+                                    delete next[itemId]
+                                } else {
+                                    next[itemId] = true
+                                }
+                                onSelectionChange?.(next)
+                                return next
+                            })
+                        }
                     } else {
-                        setDragVector(null)
-                        setScrollVector(null)
+                        onSelectionChange?.(selectedItems)
                         setIsDragging(false)
                     }
+                    setDragVector(null)
+                    setScrollVector(null)
                 }}
                 tabIndex={-1}
                 onKeyDown={e => {
@@ -306,6 +350,7 @@ export function Root({ children }: { children?: ReactNode }) {
                         e.preventDefault()
                         setSelectedItems({})
                         setDragVector(null)
+                        onSelectionChange?.({})
                         setScrollVector(null)
                         setIsDragging(false)
                     }
@@ -337,7 +382,7 @@ export function Item({ children, id }: { id: string; children: ReactNode }) {
     return (
         <div
             data-item={id}
-            className={clsx(
+            className={clsx('pointer-events-none',
                 'border-2 size-10 border-black flex justify-center items-center',
                 selectedItems[id]
                     ? 'bg-black text-white'
@@ -353,6 +398,6 @@ export function InputCell({timeId}) {
   const selectedItems = useContext(SelectedItemContext)
 
   return (
-    <div data-item={timeId} className={`cell ${selectedItems[timeId] ? "selected": ""}`}></div>
+    <div data-item={timeId} className={`cell pointer-events-none ${selectedItems[timeId] ? "selected": ""}`}></div>
   )
 }

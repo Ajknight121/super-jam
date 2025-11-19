@@ -2,12 +2,20 @@
   position: relative;
 }
 
+.absolute {
+  position: absolute;
+}
+
 .flex {
   display: flex;
 }
 
 .flex-row {
   flex-direction: row;
+}
+
+.border-black {
+  border: 1px solid black;
 }
 
 .availability-chart {
@@ -44,7 +52,7 @@
   height: 100%;
   background-color: brown;
   /* overflow-y: scroll; */
-  pointer-events: none;
+  /* pointer-events: none; */
 }
 
 .availability-chart-grid-day {
