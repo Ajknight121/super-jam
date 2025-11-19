@@ -215,14 +215,14 @@ export function Root({
     return (
         <div>
             <div className="relative z-10 flex flex-row justify-between">
-                <div className="px-2 border-2 border-black bg-white">
+                {/* <div className="px-2 border-2 border-black bg-white">
                     selectable area
-                </div>
-                {Object.keys(selectedItems).length > 0 && (
+                </div> */}
+                {/* {Object.keys(selectedItems).length > 0 && (
                     <div className="px-2 border-2 border-black bg-white">
                         count: {Object.keys(selectedItems).length}
                     </div>
-                )}
+                )} */}
             </div>
             <div
                 className="availability-chart-grid-container relative z-0 border-2 border-black grid grid-cols-[repeat(20,min-content)] gap-4 p-4 max-h-96 overflow-auto focus:outline-none focus:border-dashed -translate-y-0.5"
@@ -397,7 +397,15 @@ export function Item({ children, id }: { id: string; children: ReactNode }) {
 export function InputCell({timeId}) {
   const selectedItems = useContext(SelectedItemContext)
 
+  const timeString = (() => {
+    const isoString = timeId.split('-').slice(1).join('-')
+    const date = new Date(isoString)
+    const hours = date.getUTCHours().toString().padStart(2, '0')
+    const minutes = date.getUTCMinutes().toString().padStart(2, '0')
+    return `${hours}:${minutes}`
+  })()
+
   return (
-    <div data-item={timeId} className={`cell pointer-events-none ${selectedItems[timeId] ? "selected": ""}`}></div>
+    <div data-item={timeId} className={`cell pointer-events-none select-none ${selectedItems[timeId] ? "selected": ""}`}>{timeString}</div>
   )
 }
