@@ -1,5 +1,6 @@
 // Types and Zod schemas for things shared frontend and backend.
 // Not all of the validation logic is here! Some is too complicated to be easily expressed in Zod (it would be voodoo IMO, though I do understand it). See https://chatgpt.com/s/t_690646e3ec608191bc1114d90d95e02a, especially paragraph 1, for how to do it. (I only read paragraph 1.)
+
 import * as zod from "zod/mini";
 
 // Number of seconds of granularity for any times.
@@ -129,7 +130,7 @@ export type User = zod.infer<typeof UserSchema>;
 
 // Errors:
 
-const MakemeetErrorSchema = zod.object({
+const MakemeetErrorSchema = zod.looseObject({
   // We could validate better, but as it stands, this Schema doesn't actually get used to do anything but infer the type, so that would be lost and lazy.
   customMakemeetErrorMessage: zod.string(),
 });
@@ -150,3 +151,16 @@ export const noSuchMeetingResponse = Response.json(
   } satisfies MakemeetError,
   { status: 404 },
 );
+
+export const zodErrorResponse = (zodError: zod.core.$ZodError) => {
+  return Response.json(
+    {
+      customMakemeetErrorMessage:
+        "Validation error (produced by zod) in field `validationError`.",
+      validationError: JSON.parse(zodError.message),
+    } satisfies MakemeetError,
+    {
+      status: 400,
+    },
+  );
+};

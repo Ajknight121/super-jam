@@ -8,6 +8,7 @@ import {
   noSuchMeetingResponse,
   noSuchUserResponse,
   UserAvailabilitySchema,
+  zodErrorResponse,
 } from "#/src/api-types-and-schemas";
 import { meetings, users } from "#/src/db/schema";
 
@@ -39,9 +40,7 @@ export const PUT = async ({ params, locals, request }: APIContext) => {
   );
 
   if (newAvailabilityResult.error) {
-    return Response.json(JSON.parse(newAvailabilityResult.error.message), {
-      status: 400,
-    });
+    return zodErrorResponse(newAvailabilityResult.error);
   }
 
   const newAvailability = newAvailabilityResult.data;
