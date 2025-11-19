@@ -110,7 +110,6 @@ export const PUT = async ({ params, locals, request }: APIContext) => {
 
   let responseInit: ResponseInit;
   if (params.userId in initialMeeting.availability) {
-    console.log("hi");
     responseInit = {
       status: 200,
     };
