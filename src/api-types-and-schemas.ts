@@ -127,9 +127,26 @@ export const UserSchema = zod.object({
 });
 export type User = zod.infer<typeof UserSchema>;
 
+// Errors:
+
 const MakemeetErrorSchema = zod.object({
   // We could validate better, but as it stands, this Schema doesn't actually get used to do anything but infer the type, so that would be lost and lazy.
-  customMakemeetError: zod.string(),
+  customMakemeetErrorMessage: zod.string(),
 });
 
 export type MakemeetError = zod.infer<typeof MakemeetErrorSchema>;
+
+export const noSuchUserResponse = Response.json(
+  {
+    // TODO(samuel-skean): Does this leak info that we don't want to leak? I don't think so.
+    customMakemeetErrorMessage: "No such user.",
+  } satisfies MakemeetError,
+  { status: 404 },
+);
+
+export const noSuchMeetingResponse = Response.json(
+  {
+    customMakemeetErrorMessage: "No such meeting.",
+  } satisfies MakemeetError,
+  { status: 404 },
+);
