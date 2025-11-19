@@ -10,6 +10,11 @@ export const GRANULARITY = 15 /*minutes */ * 60; /* seconds per minute */
 const allUnique = (arr: (number | string)[]) =>
   new Set(arr).size === arr.length;
 
+const isOnJan1st1970 = (date: Date) =>
+  date.getUTCMonth() === 1 &&
+  date.getUTCDate() === 1 &&
+  date.getUTCFullYear() === 1970;
+
 // All timestamps in the API are ISO-8601 timestamps with second precision, ending with "Z" (meaning they are UTC time).
 const TimeSchema = zod.string().check(
   zod.iso.datetime({ offset: false, local: false, precision: 0 }),
@@ -75,7 +80,6 @@ export type AvailableDayConstraints = zod.infer<
 
 const TimeRangeSchema = zod
   .object({
-    // TODO: Must both be on Jan 1st, 1970.
     start: TimeSchema,
     end: TimeSchema,
   })
@@ -83,6 +87,12 @@ const TimeRangeSchema = zod
     // The start of the time range must be before (*actually* before) the end of the time range.
     zod.refine(
       (timeRange) => +new Date(timeRange.start) < +new Date(timeRange.end),
+    ),
+    // Must both be on Jan 1st, 1970.
+    zod.refine(
+      (timeRange) =>
+        isOnJan1st1970(new Date(timeRange.start)) &&
+        isOnJan1st1970(new Date(timeRange.end)),
     ),
   );
 export type TimeRange = zod.infer<typeof TimeRangeSchema>;
@@ -149,6 +159,16 @@ export const noSuchMeetingResponse = Response.json(
     customMakemeetErrorMessage: "No such meeting.",
   } satisfies MakemeetError,
   { status: 404 },
+);
+
+export const undefinedInRequiredURLParamResponse = Response.json(
+  {
+    customMakemeetErrorMessage:
+      "One of the `params` in the APIContext was undefined. This is unexpected! Please let the devs know. If you are a dev, this contradicts https://chatgpt.com/share/691e4f15-4c7c-8006-a55b-c58efcb9a073 (though ChatGPT couldn't give me a satisfactory source there.",
+  } satisfies MakemeetError,
+  {
+    status: 500,
+  },
 );
 
 export const zodErrorResponse = (zodError: zod.core.$ZodError) => {

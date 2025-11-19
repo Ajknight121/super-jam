@@ -3,9 +3,9 @@ import type { APIContext } from "astro";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import {
-  type MakemeetError,
   noSuchUserResponse,
   type User,
+  undefinedInRequiredURLParamResponse,
 } from "#/src/api-types-and-schemas";
 import { users } from "#/src/db/schema";
 
@@ -15,13 +15,7 @@ export const prerender = false;
 // TODO: For MVP.
 export const GET = async ({ locals, params }: APIContext) => {
   if (params.userId === undefined) {
-    // TODO(samuel-skean): Under what conditions can this be triggered?
-    return Response.json(
-      {
-        customMakemeetErrorMessage: "Malformed user availability URL.",
-      } satisfies MakemeetError,
-      { status: 404 },
-    );
+    return undefinedInRequiredURLParamResponse;
   }
 
   const db = drizzle(locals.runtime.env.DB);

@@ -3,11 +3,11 @@ import type { APIContext } from "astro";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import {
-  type MakemeetError,
   MeetingSchema,
   noSuchMeetingResponse,
   noSuchUserResponse,
   UserAvailabilitySchema,
+  undefinedInRequiredURLParamResponse,
   zodErrorResponse,
 } from "#/src/api-types-and-schemas";
 import { meetings, users } from "#/src/db/schema";
@@ -26,13 +26,7 @@ export const PUT = async ({ params, locals, request }: APIContext) => {
   // TODO(samuel-skean): Remove the user's id as a key if the user's availability is set to empty.
 
   if (params.meetingId === undefined || params.userId === undefined) {
-    // TODO(samuel-skean): Under what conditions can this be triggered?
-    return Response.json(
-      {
-        customMakemeetErrorMessage: "Malformed user availability URL.",
-      } satisfies MakemeetError,
-      { status: 404 },
-    );
+    return undefinedInRequiredURLParamResponse;
   }
 
   const newAvailabilityResult = UserAvailabilitySchema.safeParse(

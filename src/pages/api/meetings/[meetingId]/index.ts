@@ -6,9 +6,9 @@ import type { APIContext } from "astro";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import {
-  type MakemeetError,
   MeetingSchema,
   noSuchMeetingResponse,
+  undefinedInRequiredURLParamResponse,
 } from "#/src/api-types-and-schemas";
 import { meetings } from "#/src/db/schema";
 
@@ -16,13 +16,7 @@ export const prerender = false;
 
 export const GET = async ({ params, locals }: APIContext) => {
   if (params.meetingId === undefined) {
-    // TODO(samuel-skean): Under what conditions can this be triggered?
-    return Response.json(
-      {
-        customMakemeetErrorMessage: "Malformed meeting URL.",
-      } satisfies MakemeetError,
-      { status: 404 },
-    );
+    return undefinedInRequiredURLParamResponse;
   }
 
   const db = drizzle(locals.runtime.env.DB);
