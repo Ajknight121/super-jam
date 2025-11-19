@@ -139,7 +139,6 @@ export type MakemeetError = zod.infer<typeof MakemeetErrorSchema>;
 
 export const noSuchUserResponse = Response.json(
   {
-    // TODO(samuel-skean): Does this leak info that we don't want to leak? I don't think so.
     customMakemeetErrorMessage: "No such user.",
   } satisfies MakemeetError,
   { status: 404 },
