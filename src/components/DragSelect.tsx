@@ -99,6 +99,12 @@ export function Root({
     )
     const containerRef = useRef<HTMLDivElement>(null)
 
+    useEffect(() => {
+        if (initialItems) {
+            setSelectedItems(initialItems);
+        }
+    }, [initialItems]);
+
     const updateSelectedItems = useCallback(
         function updateSelectedItems(
             dragVector: DOMVector,

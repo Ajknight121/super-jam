@@ -87,23 +87,39 @@ export default function AvailabilityChart({ meetingId, userId }) {
     timeZone: "America/Chicago",
   };
 
-  useEffect(() => {
-    const getCurrentMeeting = async (meetingId) => {
-      try {
-        setError(null);
-        const meetingData = await getMeeting(meetingId);
-        setMeeting(meetingData);
-        // Initialize selected items from fetched availability
-        const initialAvailability =
-          meetingData.availability.userAvailability.find((ua) => ua.userId === userId)
-            ?.availability ?? [];
-        setSelectedItems(initialAvailability.reduce((acc, id) => ({ ...acc, [id]: true }), {}));
-      } catch (err) {
-        setError(err);
-        setMeeting(exampleMeeting);
-      }
-    };
+  const getCurrentMeeting = async (meetingId) => {
+    try {
+      setError(null);
+      const meetingData = await getMeeting(meetingId);
+      setMeeting(meetingData);
+      // Initialize selected items from fetched availability
+      const initialAvailability = meetingData.availability[userId] ?? [];
+      setSelectedItems(
+        initialAvailability.reduce((acc, time) => {
+          // This needs to be more robust to handle different day representations
+          // For now, we assume we can find the day for the given time.
+          const day = "monday"; // Placeholder
+          return { ...acc, [`${day}-${time}`]: true };
+        }, {})
+      );
+    } catch (err) {
+      setError(err);
+      setMeeting(exampleMeeting);
+      // Initialize selected items from fetched availability
+      const initialAvailability = exampleMeeting.availability[userId] ?? [];
+      console.log(userId, exampleMeeting.availability[userId]);
+      setSelectedItems(
+        initialAvailability.reduce((acc, time) => {
+          // This needs to be more robust to handle different day representations
+          // For now, we assume we can find the day for the given time.
+          const day = "monday"; // Placeholder
+          return { ...acc, [`${day}-${time}`]: true };
+        }, {})
+      );
+    }
+  };
 
+  useEffect(() => {
     getCurrentMeeting(meetingId);
   }, [meetingId, userId]);
 
@@ -115,6 +131,7 @@ export default function AvailabilityChart({ meetingId, userId }) {
     });
     console.log(availability);
     await setUserAvailability(meetingId, userId, availability);
+    await getCurrentMeeting(meetingId);
   };
 
   // Don't render until the meeting has been loaded
@@ -206,7 +223,7 @@ export default function AvailabilityChart({ meetingId, userId }) {
         {isEditing ? (
           <DragSelect onSelectionChange={handleSelectionChange} initialItems={selectedItems}>
             <div className="availability-chart-grid">
-              {availableDayConstraints.days.map((day) => (
+              {availableDayConstraints.days.map((day, dayIndex) => (
                 <div key={day} className="availability-chart-grid-day">
                   {timeSlots.map((time) => {
                     let adjustedTime = time;
@@ -216,8 +233,13 @@ export default function AvailabilityChart({ meetingId, userId }) {
                       date.setUTCDate(date.getUTCDate() + offset);
                       adjustedTime = date.toISOString().split(".")[0] + "Z";
                     }
+                    
                     return (
-                      <InputCell key={`${day}-${adjustedTime}`} timeId={`${day}-${adjustedTime}`} />
+                      <InputCell
+                        key={`${day}-${adjustedTime}`}
+                        timeId={`${day}-${adjustedTime}`}
+                        color={""}
+                      />
                     );
                   })}
                 </div>
@@ -226,9 +248,9 @@ export default function AvailabilityChart({ meetingId, userId }) {
           </DragSelect>
         ) : (
           <div className="availability-chart-grid view-only">
-            {availableDayConstraints.days.map((day) => (
+            {availableDayConstraints.days.map((day, dayIndex) => (
               <div key={day} className="availability-chart-grid-day">
-                {timeSlots.map((time) => {
+                {timeSlots.map((time, index) => {
                   let adjustedTime = time;
                   if (availableDayConstraints.type === "daysOfWeek") {
                     const offset = dayOffsets[day.toLowerCase()] ?? 0;
@@ -236,7 +258,7 @@ export default function AvailabilityChart({ meetingId, userId }) {
                     date.setUTCDate(date.getUTCDate() + offset);
                     adjustedTime = date.toISOString().split(".")[0] + "Z";
                   }
-
+                  
                   const offset = dayOffsets[day.toLowerCase()] ?? 0;
                   const date = new Date(time);
                   date.setUTCDate(date.getUTCDate() + offset);
