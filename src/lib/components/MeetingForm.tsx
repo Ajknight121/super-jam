@@ -12,40 +12,29 @@ const _calendarYear = _now.getFullYear();
 
 export default function MeetingForm() {
   const [selectedDays, setSelectedDays] = useState([]);
+  const [isRepeatingWeekly, setIsRepeatingWeekly] = useState(false);
+  const [selectedRepeatDays, setSelectedRepeatDays] = useState([] as string[])
+  const [meetingName, setMeetingName] = useState("");
+  const [meetingNameError, setMeetingNameError] = useState(false);
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [timeError, setTimeError] = useState(false);
+  const [daysError, setDaysError] = useState(false);
+
+  const handleRepeatDay = (day:string) => {
+    if (selectedRepeatDays.includes(day)) {
+      const newArray = selectedRepeatDays.filter((c) => {return c !== day}); 
+      setSelectedRepeatDays(newArray);
+    }
+    else {
+      setSelectedRepeatDays([...selectedRepeatDays, day]);
+    }
+    console.log(day);
+  }
 
   useEffect(() => {
-    var checkbox = document.getElementById("weekly-checkbox");
-    var pills = document.getElementById("day-pills");
-    var calendar = document.getElementById("calendar-area");
-    var dayConstraintsType = "specificDays";
-    if (checkbox != null && pills != null && calendar != null)
-      checkbox.addEventListener("change", () => {
-        if (pills.style.display == "flex") {
-          pills.style.display = "none";
-          calendar!.style.display = "flex";
-          dayConstraintsType = "specificDays";
-        } else {
-          pills!.style.display = "flex";
-          calendar!.style.display = "none";
-          dayConstraintsType = "daysOfWeek";
-        }
-      });
-
-    document.addEventListener("DOMContentLoaded", () => {
-      var btns = document.querySelectorAll(".pill");
-
-      for (var i = 0; i < btns.length; i++) {
-        btns[i].addEventListener("click", function () {
-          this.classList.toggle("selected");
-        });
-      }
-    });
-
     const create_button = document.getElementById("create-button");
-    const meeting_name = document.getElementById("meeting-name") as HTMLInputElement;
     const timezone_name = document.getElementById("timezones") as HTMLInputElement;
-    const start_time_input = document.getElementById("start-time") as HTMLInputElement;
-    const end_time_input = document.getElementById("end-time") as HTMLInputElement;
     const sun_btn = document.getElementById("sun-btn");
     const mon_btn = document.getElementById("mon-btn");
     const tues_btn = document.getElementById("tues-btn");
@@ -54,21 +43,44 @@ export default function MeetingForm() {
     const fri_btn = document.getElementById("fri-btn");
     const sat_btn = document.getElementById("sat-btn");
 
+    const dayButtons = [sun_btn, mon_btn, tues_btn, weds_btn, thrs_btn, fri_btn, sat_btn];
+    const dayNames = ["Sun", "Mon", "Tues", "Weds", "Thrs", "Fri", "Sat"];
+
+    dayButtons.forEach((button, index) => {
+      button?.addEventListener("click", () => {
+        const day = dayNames[index];
+        setSelectedDays((prevSelectedDays) => {
+          if (prevSelectedDays.includes(day)) {
+            return prevSelectedDays.filter((d) => d !== day);
+          } else {
+            return [...prevSelectedDays, day];
+          }
+        });
+      });
+    });
+
     create_button?.addEventListener("click", () => {
-      console.log(meeting_name.value);
-      console.log(timezone_name.value);
-      console.log(start_time_input.value);
-      const start_time = "1970-01-01T" + start_time_input.value + ":00Z";
-      const end_time = "1970-01-01T" + end_time_input.value + ":00Z";
-      console.log(start_time);
-      console.log(end_time);
+      const isMeetingNameMissing = !meetingName.trim();
+      const areTimesMissing = !startTime || !endTime;
+      const areDaysMissing = isRepeatingWeekly ? selectedRepeatDays.length === 0 : selectedDays.length === 0;
+
+      setMeetingNameError(isMeetingNameMissing);
+      setTimeError(areTimesMissing);
+      setDaysError(areDaysMissing);
+
+      if (isMeetingNameMissing || areTimesMissing || areDaysMissing) {
+        return;
+      }
+
+      const start_time = `1970-01-01T${startTime}:00Z`;
+      const end_time = `1970-01-01T${endTime}:00Z`;
       const new_meeting = {
-        name: meeting_name,
+        name: meetingName,
         availability: {},
         availabilityBounds: {
           availableDayConstraints: {
-            type: dayConstraintsType,
-            days: [,],
+            type: isRepeatingWeekly ? "daysOfWeek" : "specificDays",
+            days: isRepeatingWeekly ? [...selectedRepeatDays] : [...selectedDays]
           },
           timeRangeForEachDay: {
             start: start_time,
@@ -77,8 +89,10 @@ export default function MeetingForm() {
         },
         timezone: timezone_name.value,
       };
+
+      console.log(new_meeting)
     });
-  }, []);
+  }, [isRepeatingWeekly, selectedDays, selectedRepeatDays, meetingName, startTime, endTime]);
 
   return (
     <section className="meeting-wrap">
@@ -88,30 +102,50 @@ export default function MeetingForm() {
         <label className="field">
           <div className="label-text">Meeting Name:</div>
           <input
-            className="wide-input"
+            className={`wide-input ${meetingNameError ? "input-error" : ""}`}
             id="meeting-name"
             type="text"
             placeholder="Insert the name of your meeting"
+            value={meetingName}
+            onChange={(e) => {
+              setMeetingName(e.target.value);
+              if (meetingNameError && e.target.value) {
+                setMeetingNameError(false);
+              }
+            }}
           />
         </label>
+        {meetingNameError && <div className="error-text">Meeting name is required.</div>}
 
         <div className="field">
           <div className="label-text">Possible Times:</div>
           <div className="time-row">
-            <div className="time-group">
-              <input className="time-input" id="start-time" type="time" />
+            <div className={`time-group ${timeError ? "input-error" : ""}`}>
+              <input
+                className="time-input"
+                id="start-time"
+                type="time"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+              />
             </div>
 
             <div className="to-text">TO</div>
 
-            <div className="time-group">
-              <input className="time-input" id="end-time" type="time" />
+            <div className={`time-group ${timeError ? "input-error" : ""}`}>
+              <input
+                className="time-input"
+                id="end-time"
+                type="time"
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
+              />
             </div>
           </div>
           <div className="timezone-row">
             <span className="label-text">Time Zone:</span>
 
-            <select id="timezones" name="timezones" className="span5 time-group">
+            <select id="timezones" name="timezones" className="span5 time-group" defaultValue={"America/Chicago"}>
               <option value="Africa/Abidjan">Africa/Abidjan GMT+0:00</option>
               <option value="Africa/Accra">Africa/Accra GMT+0:00</option>
               <option value="Africa/Addis_Ababa">Africa/Addis_Ababa GMT+3:00</option>
@@ -219,7 +253,7 @@ export default function MeetingForm() {
               <option value="America/Catamarca">America/Catamarca GMT-3:00</option>
               <option value="America/Cayenne">America/Cayenne GMT-3:00</option>
               <option value="America/Cayman">America/Cayman GMT-5:00</option>
-              <option value="America/Chicago" selected="selected">
+              <option value="America/Chicago">
                 America/Chicago GMT-6:00
               </option>
               <option value="America/Chihuahua">America/Chihuahua GMT-7:00</option>
@@ -776,36 +810,41 @@ export default function MeetingForm() {
 
         <label className="repeat-row">
           <span>Repeating Weekly</span>
-          <input type="checkbox" id="weekly-checkbox" />
+          <input
+            type="checkbox"
+            id="weekly-checkbox"
+            checked={isRepeatingWeekly}
+            onChange={(e) => setIsRepeatingWeekly(e.target.checked)} />
         </label>
 
         <div className="field">
           <div className="label-text">What days could work?</div>
-          <div id="day-pills" role="group" aria-label="Days of week">
-            <button type="button" className="pill" id="sun-btn">
+          {daysError && <div className="error-text">Please select at least one day.</div>}
+          <div id="day-pills" role="group" aria-label="Days of week" className={isRepeatingWeekly ? "" : "hidden"}>
+            <button type="button" className={`pill ${selectedRepeatDays.includes("sunday") ? "selected" : ""}`} id="sun-btn" onClick={() => handleRepeatDay("sunday")}>
               Sun
             </button>
-            <button type="button" className="pill" id="mon-btn">
+            <button type="button" className={`pill ${selectedRepeatDays.includes("monday") ? "selected" : ""}`} id="mon-btn" onClick={() => handleRepeatDay("monday")}>
               Mon
             </button>
-            <button type="button" className="pill" id="tues-btn">
+            <button type="button" className={`pill ${selectedRepeatDays.includes("tuesday") ? "selected" : ""}`} id="tues-btn" onClick={() => handleRepeatDay("tuesday")}>
               Tues
             </button>
-            <button type="button" className="pill" id="weds-btn">
+            <button type="button" className={`pill ${selectedRepeatDays.includes("wednesday") ? "selected" : ""}`} id="weds-btn" onClick={() => handleRepeatDay("wednesday")}>
               Weds
             </button>
-            <button type="button" className="pill" id="thrs-btn">
+            <button type="button" className={`pill ${selectedRepeatDays.includes("thursday") ? "selected" : ""}`} id="thrs-btn" onClick={() => handleRepeatDay("thursday")}>
               Thrs
             </button>
-            <button type="button" className="pill" id="fri-btn">
+            <button type="button" className={`pill ${selectedRepeatDays.includes("friday") ? "selected" : ""}`} id="fri-btn" onClick={() => handleRepeatDay("friday")}>
               Fri
             </button>
-            <button type="button" className="pill" id="sat-btn">
+            <button type="button" className={`pill ${selectedRepeatDays.includes("saturday") ? "selected" : ""}`} id="sat-btn" onClick={() => handleRepeatDay("saturday")}>
               Sat
             </button>
           </div>
         </div>
-        <div id="calendar-area">
+        <div id="calendar-area" className={isRepeatingWeekly ? "hidden" : ""}>
           <Calendar
             month={_calendarMonth}
             year={_calendarYear}

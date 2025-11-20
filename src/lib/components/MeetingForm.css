@@ -1,3 +1,8 @@
+.hidden {
+  display: none !important;
+}
+
+
 :root{
   --max-width:680px;
   --card-width:560px;
@@ -49,6 +54,17 @@
   padding:8px 12px;
   box-sizing:border-box;
 }
+
+.error-text {
+  color: #c53030;
+  font-size: 14px;
+  margin-top: 4px;
+}
+.field > .error-text {
+  margin-bottom: 8px;
+  margin-top: -4px;
+}
+
 .time-row {
   display:flex;
   align-items:center;
@@ -97,7 +113,6 @@
   font-size:16px;
 }
 #day-pills {
-  display:none;
   gap:10px;
   align-items:center;
   flex-wrap:wrap;
@@ -138,6 +153,12 @@
   padding-right:28px;
   border-radius:28px;
 }
+
+.input-error {
+  border: 1px solid #e53e3e;
+  background-color: #fff5f5;
+}
+
 #calendar-area {
   margin-top:18px;
   display:flex;
