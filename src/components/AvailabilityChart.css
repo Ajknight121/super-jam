@@ -22,11 +22,29 @@
   user-select: none;
 }
 
+.meeting-details {
+  text-align: center;
+  align-content: center;
+  height: 10%;
+  background-color: #aac4f5;
+}
+
+.timezone > div {
+  display: inline-block;
+}
+
 .availability-chart {
-  overflow-x: scroll;
   text-align: center;
   float: right;
   width: 100%;
+}
+
+.display {
+  overflow-x: scroll;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  
 }
 
 .availability-chart-days {
@@ -44,18 +62,17 @@
   text-transform: capitalize;
 }
 
-.availability-chart-grid-container {
-  height: 300px;
-}
-
 .availability-chart-grid {
   display: flex;
   flex-direction: row;
   width: fit-content;
   height: 100%;
   background-color: brown;
-  /* overflow-y: scroll; */
-  /* pointer-events: none; */
+  /* The grid can grow up to 60% of the viewport height, but will not shrink smaller than its content. */
+  /* If content is taller than 60vh, a scrollbar will appear. */
+  max-height: 55vh;
+  overflow-y: auto;
+  border: 1px solid #ccc; /* Add a border to see the container */
 }
 
 .availability-chart-grid-day {
@@ -65,7 +82,7 @@
 }
 
 .cell {
-  height: 15px;
+  height: 17px;
   background-color: white;
   border-bottom: solid black 1px;
 }
