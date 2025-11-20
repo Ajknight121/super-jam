@@ -37,7 +37,7 @@
 }
 
 .availability-chart-day {
-  background-color: #AAC4F5;
+  background-color: #aac4f5;
   box-sizing: border-box;
   width: 120px;
   margin: 5px;
@@ -71,6 +71,29 @@
 }
 
 .cell.selected {
-  background-color:rgb(0,74,187);
+  background-color: rgb(0, 74, 187);
   color: rgb(255, 255, 255);
+}
+
+.scale {
+  text-align: center;
+  margin: 10px;
+}
+
+.scale > .label {
+  display: inline-block;
+}
+
+.scale-container {
+  display: inline-flex;
+  width: 200px;
+  height: 20px;
+  border: 1px solid #ccc;
+  vertical-align: middle;
+  flex-direction: row;
+}
+
+.scale-segment {
+  flex-grow: 1;
+  height: 100%;
 }

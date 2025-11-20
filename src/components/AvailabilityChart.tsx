@@ -18,15 +18,50 @@ function calculateTimeSlots(start: string, end: string): number {
   return diffMillis / (15 * 60 * 1000); // 15 minutes in milliseconds
 }
 
+function getGradientColor(ratio:number) {
+  const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
+  const value = clamp(ratio * 100, 0, 100);
+
+  const start = { r: 237, g: 243, b: 252 };
+  const end = { r: 0, g: 74, b: 187 };
+
+  const r = Math.round(start.r + (end.r - start.r) * (value / 100));
+  const g = Math.round(start.g + (end.g - start.g) * (value / 100));
+  const b = Math.round(start.b + (end.b - start.b) * (value / 100));
+  return `rgb(${r},${g},${b})`;
+}
+
+const maxSegments = 5;
+
 export default function AvailabilityChart({ meetingId, userId }) {
   const [meeting, setMeeting] = useState<Meeting | undefined>(undefined);
   const [error, setError] = useState(null);
   const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>({});
+  const [isEditing, setIsEditing] = useState(false);
+
+  const colors = Array.from({ length: maxSegments }, (_, i) => {
+    const ratio = maxSegments > 1 ? i / (maxSegments - 1) : 0;
+    return getGradientColor(ratio);
+  });
 
   const exampleMeeting: Meeting = {
     name: "Example Meeting (Failed to Load)",
     availability: {
-      userAvailability: [],
+      "user1": [
+        "1970-01-01T09:00:00Z", "", "1970-01-01T09:30:00Z",
+        "1970-01-02T10:00:00Z", "1970-01-02T10:15:00Z",
+      ],
+      "user2": [
+        "1970-01-01T09:15:00Z", "1970-01-01T09:30:00Z", "1970-01-01T09:45:00Z",
+        "1970-01-03T11:00:00Z", "1970-01-03T11:15:00Z",
+      ],
+      "user3": [
+        "1970-01-01T09:00:00Z", "1970-01-01T09:15:00Z",
+        "1970-01-04T14:00:00Z", "1970-01-04T14:15:00Z", "1970-01-04T14:30:00Z",
+      ],
+      "user4": [
+        "1970-01-01T09:15:00Z", "1970-01-01T09:30:00Z", "1970-01-01T10:00:00Z",
+      ],
     },
     availabilityBounds: {
       timeRangeForEachDay: {
@@ -81,6 +116,20 @@ export default function AvailabilityChart({ meetingId, userId }) {
 
   const { timeRangeForEachDay, availableDayConstraints } = availabilityBounds;
 
+  // Calculate availability counts for each time slot
+  const availabilityCounts: Record<string, number> = {};
+  Object.values(availability).forEach((userAvailability) => {
+    userAvailability.forEach((time) => {
+      availabilityCounts[time] = (availabilityCounts[time] || 0) + 1;
+    });
+  });
+
+  const counts = Object.values(availabilityCounts);
+  const maxAvailable = counts.length > 0 ? Math.max(...counts) : 0;
+  const minAvailable = counts.length > 0 ? Math.min(...counts) : 0;
+
+  const totalPeople = Object.keys(availability).length;
+
   const dayOffsets: { [key: string]: number } = {
     monday: 0,
     tuesday: 1,
@@ -101,6 +150,24 @@ export default function AvailabilityChart({ meetingId, userId }) {
 
   return (
     <div className="availability-chart">
+      {name}
+
+      <div className="controls">
+        <button onClick={() => setIsEditing(!isEditing)}>
+          {isEditing ? 'View All Availability' : 'Edit My Availability'}
+        </button>
+      </div>
+      
+      <div className="scale">
+        <div className="label">{minAvailable}/{totalPeople}</div>
+        <div className="scale-container">
+          {colors.map(color => (
+            <div key={color} className="scale-segment" style={{backgroundColor: color}}></div>
+          ))}
+        </div>
+        <div className="label">{maxAvailable > 0 ? maxAvailable : totalPeople}/{totalPeople}</div>
+      </div>
+
       <div className="availability-chart-days">
         {availabilityBounds.availableDayConstraints.type === "daysOfWeek"
           ? availabilityBounds.availableDayConstraints.days.map((day, index) => (
@@ -115,9 +182,35 @@ export default function AvailabilityChart({ meetingId, userId }) {
               </div>
             ))}
       </div>
-      <DragSelect onSelectionChange={handleSelectionChange} initialItems={selectedItems}>
-        <div className="availability-chart-grid">
+      {isEditing ? (
+        <DragSelect onSelectionChange={handleSelectionChange} initialItems={selectedItems}>
+          <div className="availability-chart-grid">
+            {availableDayConstraints.days.map((day) => (
+
+              <div key={day} className="availability-chart-grid-day">
+                {timeSlots.map((time) => {
+                  let adjustedTime = time;
+                  if (availableDayConstraints.type === "daysOfWeek") {
+                    const offset = dayOffsets[day.toLowerCase()] ?? 0;
+                    const date = new Date(time);
+                    date.setUTCDate(date.getUTCDate() + offset);
+                    adjustedTime = date.toISOString().split('.')[0] + "Z";
+                  }
+                  return (
+                  <InputCell
+                    key={`${day}-${adjustedTime}`}
+                    timeId={`${day}-${adjustedTime}`}
+                  />
+                );
+                })}
+              </div>
+            ))}
+          </div>
+        </DragSelect>
+      ) : (
+        <div className="availability-chart-grid view-only">
           {availableDayConstraints.days.map((day) => (
+            
             <div key={day} className="availability-chart-grid-day">
               {timeSlots.map((time) => {
                 let adjustedTime = time;
@@ -127,17 +220,21 @@ export default function AvailabilityChart({ meetingId, userId }) {
                   date.setUTCDate(date.getUTCDate() + offset);
                   adjustedTime = date.toISOString().split('.')[0] + "Z";
                 }
-                return (
-                <InputCell
-                  key={`${day}-${adjustedTime}`}
-                  timeId={`${day}-${adjustedTime}`}
-                />
-              );
+
+                const offset = dayOffsets[day.toLowerCase()] ?? 0;
+                const date = new Date(time);
+                date.setUTCDate(date.getUTCDate() + offset);
+                // const adjustedTime = date.toISOString().split('.')[0] + "Z";
+                const count = availabilityCounts[adjustedTime] || 0;
+                const ratio = maxAvailable > 0 ? count / maxAvailable : 0;
+                const color = getGradientColor(ratio);
+                return <InputCell key={`${day}-${adjustedTime}`} timeId={`${day}-${adjustedTime}`} color={color} />;
+                return <div key={`${day}-${adjustedTime}`} className="availability-cell-display" style={{ backgroundColor: color }} />;
               })}
             </div>
           ))}
         </div>
-      </DragSelect>
+      )}
     </div>
   );
 }
