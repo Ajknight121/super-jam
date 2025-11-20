@@ -3,6 +3,7 @@ export async function handleApiResponse<T>(
   res: Response,
   parseFn?: (json: unknown) => T,
 ): Promise<T | undefined> {
+  // TODO: Samuel Skean here. We should allow passing back at least part of the location header to identify resources created in POST requests. The way I do it, the response body of a POST request never identifies the resource created, it just contains the *contents* of the resource created. In other words, the response is missing the id. But the id is always a component of the Location header of the response, and I believe it's always the last component. I'm busy at the moment or I'd do this.
   if (!res.ok) {
     // Provide a helpful error for 405 vs other errors
     if (res.status === 405) {
