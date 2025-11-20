@@ -115,6 +115,47 @@ export default function AvailabilityChart({ meetingId, userId }) {
     },
     timeZone: "America/Chicago",
   };
+  const exampleMeeting2: Meeting = {
+    name: "Example Meeting (Failed to Load)",
+    availability: {
+      user1: [
+        "1970-01-01T09:00:00Z",
+        "",
+        "1970-01-01T09:30:00Z",
+        "1970-01-01T09:00:00Z",
+        "",
+        "",
+        "1970-01-02T10:00:00Z",
+        "1970-01-02T10:15:00Z",
+      ],
+      user2: [
+        "1970-01-01T09:15:00Z",
+        "1970-01-01T09:30:00Z",
+        "1970-01-01T09:45:00Z",
+        "1970-01-03T11:00:00Z",
+        "1970-01-03T11:15:00Z",
+      ],
+      user3: [
+        "1970-01-01T09:00:00Z",
+        "1970-01-01T09:15:00Z",
+        "1970-01-04T14:00:00Z",
+        "1970-01-04T14:15:00Z",
+        "1970-01-04T14:30:00Z",
+      ],
+      user4: ["1970-01-01T09:15:00Z", "1970-01-01T09:30:00Z", "1970-01-01T10:00:00Z"],
+    },
+    availabilityBounds: {
+      timeRangeForEachDay: {
+        start: "1970-01-01T09:00:00Z",
+        end: "1970-01-01T17:00:00Z",
+      },
+      availableDayConstraints: {
+        type: "specificDays",
+        days: [""],
+      },
+    },
+    timeZone: "America/Chicago",
+  };
 
   const getCurrentMeeting = async (meetingId) => {
     try {
@@ -306,9 +347,13 @@ export default function AvailabilityChart({ meetingId, userId }) {
         )}
       </div>
       <div className="controls">
-        <button type="button" onClick={() => setIsEditing(!isEditing)}>
-          {isEditing ? "View All Availability" : "Edit My Availability"}
-        </button>
+        {userId ? (
+          <button type="button" onClick={() => setIsEditing(!isEditing)}>
+            {isEditing ? "View All Availability" : "Edit My Availability"}
+          </button>
+        ) : (
+          <div>Sign in to add availability</div>
+        )}
       </div>
     </div>
   );
