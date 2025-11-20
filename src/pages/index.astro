@@ -1,6 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import MeetingForm from "../lib/components/MeetingForm.astro";
+import MeetingForm from "../lib/components/MeetingForm";
 ---
 
 <Layout>
@@ -9,5 +9,5 @@ import MeetingForm from "../lib/components/MeetingForm.astro";
         <p>Start by scheduling your first meeting!</p>
     </main>
 
-    <MeetingForm />
+    <MeetingForm client:only />
 </Layout>

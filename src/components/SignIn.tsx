@@ -1,50 +1,24 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import "./SignIn.css";
-import { createUser } from "../lib/api/users";
 
-export default function SignIn({ name, setName }: { name: string; setName: (name: string) => void }) {
-  // biome-ignore lint/style/noNonNullAssertion: Samuel Skean: I don't want these to ever be null.
-  name!;
-
-  const [password, setPassword] = useState("");
-  // biome-ignore lint/style/noNonNullAssertion: Samuel Skean: I don't want these to ever be null.
-  password!;
-
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  // TODONOW(samuel-skean): Remove.
-  console.log(`Name: ${name} Password: ${password}`);
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-
-    const trimmed = (name || "").trim();
-    if (!trimmed) {
-      setError("Please enter a name.");
-      return;
-    }
-
-    try {
-      setBusy(true);
-
-      const result = await createUser(trimmed);
-      if (result?.id) {
-        setName(trimmed);
-      } else {
-        setError("Unexpected error creating user.");
-      }
-    } catch (err: any) {
-      setError(err?.message ?? "Failed to create user.");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  useEffect(() => {
-    console.log(`Name: ${name} Password: ${password}`);
-  }, [name, password]);
+export default function SignIn({
+  name,
+  setName,
+  password,
+  setPassword,
+  busy,
+  error,
+  handleSubmit,
+}: {
+  name: string;
+  setName: (name: string) => void;
+  password;
+  string;
+  setPassword: (password: string) => void;
+  busy: boolean;
+  error: string | null;
+  handleSubmit: (e: React.FormEvent) => Promise<void>;
+}) {
 
   return (
     <form onSubmit={handleSubmit} className="login-form">

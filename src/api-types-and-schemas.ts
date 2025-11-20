@@ -11,7 +11,7 @@ const allUnique = (arr: (number | string)[]) =>
   new Set(arr).size === arr.length;
 
 const isOnJan1st1970 = (date: Date) =>
-  date.getUTCMonth() === 1 &&
+  date.getUTCMonth() === 0 &&
   date.getUTCDate() === 1 &&
   date.getUTCFullYear() === 1970;
 

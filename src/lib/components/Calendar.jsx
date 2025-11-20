@@ -1,14 +1,47 @@
 import React, { useEffect, useState } from "react";
 
+function CalendarDay({ day, isSelected, onClick }) {
+  const dayOfMonth = day ? new Date(day + "T00:00:00Z").getUTCDate() : null;
+  return (<div
+    className={`cm-cell ${day ? "" : "empty"} ${isSelected ? "selected-day" : ""}`}
+  >
+    {day ? (
+      <button
+        type="button"
+        className="date-btn"
+        onClick={() => onClick(day)}
+        aria-pressed={isSelected}
+      >
+        {dayOfMonth}
+      </button>
+    ) : null}
+  </div>)
+}
+
+
+
 export default function Calendar({
   month: initialMonth,
   year: initialYear,
   name = "selectedDate",
+  selectedDays, 
+  setSelectedDays
 }) {
   const now = new Date();
   const [month, setMonth] = useState(initialMonth ?? now.getMonth() + 1); // 1..12
   const [year, setYear] = useState(initialYear ?? now.getFullYear());
-  const [selectedDay, setSelectedDay] = useState(null);
+  
+
+  function handleClick(day) {
+    if (selectedDays.includes(day)) {
+      const newArray = selectedDays.filter((c) => {return c !== day}); 
+      setSelectedDays(newArray);
+    }
+    else {
+      setSelectedDays([...selectedDays, day]);
+    }
+    console.log(day);
+  }
 
   useEffect(() => {
     if (initialMonth) setMonth(initialMonth);
@@ -22,7 +55,10 @@ export default function Calendar({
 
     const cells = [];
     for (let i = 0; i < firstWeekday; i++) cells.push(null);
-    for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+    for (let d = 1; d <= daysInMonth; d++) {
+      const date = new Date(Date.UTC(y, m - 1, d));
+      cells.push(date.toISOString().slice(0, 10)); // YYYY-MM-DD
+    }
     while (cells.length % 7 !== 0) cells.push(null);
 
     const weeks = [];
@@ -70,9 +106,7 @@ export default function Calendar({
   const weeks = buildWeeks(year, month);
 
   // format selected date as YYYY-MM-DD for form submission
-  const formattedSelected = selectedDay
-    ? `${year}-${String(month).padStart(2, "0")}-${String(selectedDay).padStart(2, "0")}`
-    : "";
+  const formattedSelected = selectedDays[0] || "";
 
   return (
     <div
@@ -117,23 +151,9 @@ export default function Calendar({
       <div className="cm-grid" aria-hidden="false">
         {weeks.map((week, wi) =>
           week.map((day, di) => {
-            const isSelected = day && selectedDay === day;
+            const isSelected = day && selectedDays.includes(day);
             return (
-              <div
-                key={`${wi}-${di}`}
-                className={`cm-cell ${day ? "" : "empty"} ${isSelected ? "selected-day" : ""}`}
-              >
-                {day ? (
-                  <button
-                    type="button"
-                    className="date-btn"
-                    onClick={() => setSelectedDay(day)}
-                    aria-pressed={isSelected}
-                  >
-                    {day}
-                  </button>
-                ) : null}
-              </div>
+              <CalendarDay day = {day} isSelected = {isSelected} onClick = {handleClick} key = {wi + "-" + di}/>
             );
           }),
         )}
