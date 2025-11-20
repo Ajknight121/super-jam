@@ -20,6 +20,7 @@ export default function MeetingForm() {
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [timeError, setTimeError] = useState(false);
+  const [timeIncrementError, setTimeIncrementError] = useState(false);
   const [daysError, setDaysError] = useState(false);
   const [timezone, setTimezone] = useState("America/Chicago");
 
@@ -37,13 +38,19 @@ export default function MeetingForm() {
   const handleCreateMeeting = async () => {
     const isMeetingNameMissing = !meetingName.trim();
     const areTimesMissing = !startTime || !endTime;
+
+    const startMinutes = startTime ? parseInt(startTime.split(":")[1], 10) : 0;
+    const endMinutes = endTime ? parseInt(endTime.split(":")[1], 10) : 0;
+    const isTimeIncrementInvalid = (startTime && startMinutes % 15 !== 0) || (endTime && endMinutes % 15 !== 0);
+
     const areDaysMissing = isRepeatingWeekly ? selectedRepeatDays.length === 0 : selectedDays.length === 0;
 
     setMeetingNameError(isMeetingNameMissing);
-    setTimeError(areTimesMissing);
+    setTimeError(areTimesMissing || isTimeIncrementInvalid);
+    setTimeIncrementError(isTimeIncrementInvalid);
     setDaysError(areDaysMissing);
 
-    if (isMeetingNameMissing || areTimesMissing || areDaysMissing) {
+    if (isMeetingNameMissing || areTimesMissing || areDaysMissing || isTimeIncrementInvalid) {
       return;
     }
 
@@ -76,6 +83,25 @@ export default function MeetingForm() {
     } else {
       alert("Error creating meeting")
     }
+  };
+
+  const roundToNearest15Minutes = (time: string) => {
+    if (!time) return "";
+
+    const [hours, minutes] = time.split(":").map(Number);
+    const totalMinutes = hours * 60 + minutes;
+    const roundedTotalMinutes = Math.round(totalMinutes / 15) * 15;
+
+    let newHours = Math.floor(roundedTotalMinutes / 60);
+    const newMinutes = roundedTotalMinutes % 60;
+
+    if (newHours >= 24) {
+      newHours = 23;
+    }
+
+    const format = (num: number) => num.toString().padStart(2, "0");
+
+    return `${format(newHours)}:${format(newMinutes)}`;
   };
 
   return (
@@ -111,7 +137,7 @@ export default function MeetingForm() {
                 type="time"
                 step="900"
                 value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
+                onChange={(e) => setStartTime(roundToNearest15Minutes(e.target.value))}
               />
             </div>
 
@@ -124,11 +150,12 @@ export default function MeetingForm() {
                 type="time"
                 step="900"
                 value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
+                onChange={(e) => setEndTime(roundToNearest15Minutes(e.target.value))}
               />
             </div>
           </div>
           <div className="timezone-row">
+            {timeIncrementError && <div className="error-text">Time must be in 15 minute increments.</div>}
             <span className="label-text">Time Zone:</span>
 
             <select id="timezones" name="timezones" className="span5 time-group" value={timezone} onChange={(e) => setTimezone(e.target.value.split(" ")[0])}>
