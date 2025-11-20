@@ -23,16 +23,18 @@ export default function Calendar({
   month: initialMonth,
   year: initialYear,
   name = "selectedDate",
-  selectedDays, setSelectedDays
+  selectedDays, 
+  setSelectedDays
 }) {
   const now = new Date();
   const [month, setMonth] = useState(initialMonth ?? now.getMonth() + 1); // 1..12
   const [year, setYear] = useState(initialYear ?? now.getFullYear());
   
+  console.log("HELLO")
 
   function handleClick(day) {
     if (selectedDays.includes(day)) {
-      const newArray = selectedDays.filter((c) => {return c != day}); 
+      const newArray = selectedDays.filter((c) => {return c !== day}); 
       setSelectedDays(newArray);
     }
     else {
