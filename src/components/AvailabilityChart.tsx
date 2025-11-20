@@ -18,15 +18,61 @@ function calculateTimeSlots(start: string, end: string): number {
   return diffMillis / (15 * 60 * 1000); // 15 minutes in milliseconds
 }
 
+function getGradientColor(ratio: number) {
+  const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
+  const value = clamp(ratio * 100, 0, 100);
+
+  const start = { r: 237, g: 243, b: 252 };
+  const end = { r: 0, g: 74, b: 187 };
+
+  const r = Math.round(start.r + (end.r - start.r) * (value / 100));
+  const g = Math.round(start.g + (end.g - start.g) * (value / 100));
+  const b = Math.round(start.b + (end.b - start.b) * (value / 100));
+  return `rgb(${r},${g},${b})`;
+}
+
+const maxSegments = 5;
+
 export default function AvailabilityChart({ meetingId, userId }) {
   const [meeting, setMeeting] = useState<Meeting | undefined>(undefined);
   const [error, setError] = useState(null);
   const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>({});
+  const [isEditing, setIsEditing] = useState(false);
+  const clientTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  const colors = Array.from({ length: maxSegments }, (_, i) => {
+    const ratio = maxSegments > 1 ? i / (maxSegments - 1) : 0;
+    return getGradientColor(ratio);
+  });
 
   const exampleMeeting: Meeting = {
     name: "Example Meeting (Failed to Load)",
     availability: {
-      userAvailability: [],
+      user1: [
+        "1970-01-01T09:00:00Z",
+        "",
+        "1970-01-01T09:30:00Z",
+        "1970-01-01T09:00:00Z",
+        "",
+        "",
+        "1970-01-02T10:00:00Z",
+        "1970-01-02T10:15:00Z",
+      ],
+      user2: [
+        "1970-01-01T09:15:00Z",
+        "1970-01-01T09:30:00Z",
+        "1970-01-01T09:45:00Z",
+        "1970-01-03T11:00:00Z",
+        "1970-01-03T11:15:00Z",
+      ],
+      user3: [
+        "1970-01-01T09:00:00Z",
+        "1970-01-01T09:15:00Z",
+        "1970-01-04T14:00:00Z",
+        "1970-01-04T14:15:00Z",
+        "1970-01-04T14:30:00Z",
+      ],
+      user4: ["1970-01-01T09:15:00Z", "1970-01-01T09:30:00Z", "1970-01-01T10:00:00Z"],
     },
     availabilityBounds: {
       timeRangeForEachDay: {
@@ -38,37 +84,54 @@ export default function AvailabilityChart({ meetingId, userId }) {
         days: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
       },
     },
-    timeZone: "CST",
+    timeZone: "America/Chicago",
+  };
+
+  const getCurrentMeeting = async (meetingId) => {
+    try {
+      setError(null);
+      const meetingData = await getMeeting(meetingId);
+      setMeeting(meetingData);
+      // Initialize selected items from fetched availability
+      const initialAvailability = meetingData.availability[userId] ?? [];
+      setSelectedItems(
+        initialAvailability.reduce((acc, time) => {
+          // This needs to be more robust to handle different day representations
+          // For now, we assume we can find the day for the given time.
+          const day = "monday"; // Placeholder
+          return { ...acc, [`${day}-${time}`]: true };
+        }, {})
+      );
+    } catch (err) {
+      setError(err);
+      setMeeting(exampleMeeting);
+      // Initialize selected items from fetched availability
+      const initialAvailability = exampleMeeting.availability[userId] ?? [];
+      console.log(userId, exampleMeeting.availability[userId]);
+      setSelectedItems(
+        initialAvailability.reduce((acc, time) => {
+          // This needs to be more robust to handle different day representations
+          // For now, we assume we can find the day for the given time.
+          const day = "monday"; // Placeholder
+          return { ...acc, [`${day}-${time}`]: true };
+        }, {})
+      );
+    }
   };
 
   useEffect(() => {
-    const getCurrentMeeting = async (meetingId) => {
-      try {
-        setError(null);
-        const meetingData = await getMeeting(meetingId);
-        setMeeting(meetingData);
-        // Initialize selected items from fetched availability
-        const initialAvailability =
-          meetingData.availability.userAvailability.find((ua) => ua.userId === userId)
-            ?.availability ?? [];
-        setSelectedItems(initialAvailability.reduce((acc, id) => ({ ...acc, [id]: true }), {}));
-      } catch (err) {
-        setError(err);
-        setMeeting(exampleMeeting);
-      }
-    };
-
     getCurrentMeeting(meetingId);
   }, [meetingId, userId]);
 
   const handleSelectionChange = async (items: Record<string, boolean>) => {
     setSelectedItems(items);
-    const availability = Object.keys(items).map(key => {
-      const parts = key.split('-');
-      return parts.slice(1).join('-');
+    const availability = Object.keys(items).map((key) => {
+      const parts = key.split("-");
+      return parts.slice(1).join("-");
     });
-    console.log(availability)
+    console.log(availability);
     await setUserAvailability(meetingId, userId, availability);
+    await getCurrentMeeting(meetingId);
   };
 
   // Don't render until the meeting has been loaded
@@ -77,9 +140,23 @@ export default function AvailabilityChart({ meetingId, userId }) {
   }
 
   // Now it's safe to destructure
-  const { name, availability, availabilityBounds } = meeting;
+  const { name, availability, availabilityBounds, timeZone } = meeting;
 
   const { timeRangeForEachDay, availableDayConstraints } = availabilityBounds;
+
+  // Calculate availability counts for each time slot
+  const availabilityCounts: Record<string, number> = {};
+  Object.values(availability).forEach((userAvailability) => {
+    userAvailability.forEach((time) => {
+      availabilityCounts[time] = (availabilityCounts[time] || 0) + 1;
+    });
+  });
+
+  const counts = Object.values(availabilityCounts);
+  const maxAvailable = counts.length > 0 ? Math.max(...counts) : 0;
+  const minAvailable = counts.length > 0 ? Math.min(...counts) : 0;
+
+  const totalPeople = Object.keys(availability).length;
 
   const dayOffsets: { [key: string]: number } = {
     monday: 0,
@@ -96,48 +173,117 @@ export default function AvailabilityChart({ meetingId, userId }) {
   const startTime = new Date(timeRangeForEachDay.start);
   const timeSlots = Array.from({ length: numberOfSlots }, (_, i) => {
     const slotTime = new Date(startTime.getTime() + i * 15 * 60 * 1000);
-    return slotTime.toISOString().split('.')[0] + "Z";
+    return slotTime.toISOString().split(".")[0] + "Z";
   });
 
   return (
     <div className="availability-chart">
-      <div className="availability-chart-days">
-        {availabilityBounds.availableDayConstraints.type === "daysOfWeek"
-          ? availabilityBounds.availableDayConstraints.days.map((day, index) => (
-              <div key={day} className="availability-chart-day">
-                <div className="day-name">{day}</div>
-              </div>
-            ))
-          : availabilityBounds.availableDayConstraints.days.map((day, index) => (
-              <div key={day} className="availability-chart-day">
-                <div className="day-name">{day}</div>
-                {/* <div className="date-short">{day}/{month}</div> */}
-              </div>
-            ))}
+      <div className="meeting-details">
+        <div className="meeting-title">{name}</div>
+        <div className="timezone">
+          <div>Timezone: {timeZone}</div>
+          {timeZone !== clientTimeZone && (
+            <>
+              <div>&gt;</div>
+              <div>{clientTimeZone}</div>
+            </>
+          )}
+        </div>
       </div>
-      <DragSelect onSelectionChange={handleSelectionChange} initialItems={selectedItems}>
-        <div className="availability-chart-grid">
-          {availableDayConstraints.days.map((day) => (
-            <div key={day} className="availability-chart-grid-day">
-              {timeSlots.map((time) => {
-                let adjustedTime = time;
-                if (availableDayConstraints.type === "daysOfWeek") {
+
+      <div className="scale">
+        <div className="label">
+          {minAvailable}/{totalPeople}
+        </div>
+        <div className="scale-container">
+          {colors.map((color) => (
+            <div key={color} className="scale-segment" style={{ backgroundColor: color }}></div>
+          ))}
+        </div>
+        <div className="label">
+          {maxAvailable > 0 ? maxAvailable : totalPeople}/{totalPeople}
+        </div>
+      </div>
+
+      <div className="display">
+        <div className="availability-chart-days">
+          {availabilityBounds.availableDayConstraints.type === "daysOfWeek"
+            ? availabilityBounds.availableDayConstraints.days.map((day, index) => (
+                <div key={day} className="availability-chart-day">
+                  <div className="day-name">{day}</div>
+                </div>
+              ))
+            : availabilityBounds.availableDayConstraints.days.map((day, index) => (
+                <div key={day} className="availability-chart-day">
+                  <div className="day-name">{day}</div>
+                  {/* <div className="date-short">{day}/{month}</div> */}
+                </div>
+              ))}
+        </div>
+        {isEditing ? (
+          <DragSelect onSelectionChange={handleSelectionChange} initialItems={selectedItems}>
+            <div className="availability-chart-grid">
+              {availableDayConstraints.days.map((day, dayIndex) => (
+                <div key={day} className="availability-chart-grid-day">
+                  {timeSlots.map((time) => {
+                    let adjustedTime = time;
+                    if (availableDayConstraints.type === "daysOfWeek") {
+                      const offset = dayOffsets[day.toLowerCase()] ?? 0;
+                      const date = new Date(time);
+                      date.setUTCDate(date.getUTCDate() + offset);
+                      adjustedTime = date.toISOString().split(".")[0] + "Z";
+                    }
+                    
+                    return (
+                      <InputCell
+                        key={`${day}-${adjustedTime}`}
+                        timeId={`${day}-${adjustedTime}`}
+                        color={""}
+                      />
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
+          </DragSelect>
+        ) : (
+          <div className="availability-chart-grid view-only">
+            {availableDayConstraints.days.map((day, dayIndex) => (
+              <div key={day} className="availability-chart-grid-day">
+                {timeSlots.map((time, index) => {
+                  let adjustedTime = time;
+                  if (availableDayConstraints.type === "daysOfWeek") {
+                    const offset = dayOffsets[day.toLowerCase()] ?? 0;
+                    const date = new Date(time);
+                    date.setUTCDate(date.getUTCDate() + offset);
+                    adjustedTime = date.toISOString().split(".")[0] + "Z";
+                  }
+                  
                   const offset = dayOffsets[day.toLowerCase()] ?? 0;
                   const date = new Date(time);
                   date.setUTCDate(date.getUTCDate() + offset);
-                  adjustedTime = date.toISOString().split('.')[0] + "Z";
-                }
-                return (
-                <InputCell
-                  key={`${day}-${adjustedTime}`}
-                  timeId={`${day}-${adjustedTime}`}
-                />
-              );
-              })}
-            </div>
-          ))}
-        </div>
-      </DragSelect>
+                  // const adjustedTime = date.toISOString().split('.')[0] + "Z";
+                  const count = availabilityCounts[adjustedTime] || 0;
+                  const ratio = maxAvailable > 0 ? count / maxAvailable : 0;
+                  const color = getGradientColor(ratio);
+                  return (
+                    <InputCell
+                      key={`${day}-${adjustedTime}`}
+                      timeId={`${day}-${adjustedTime}`}
+                      color={color}
+                    />
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+      <div className="controls">
+        <button onClick={() => setIsEditing(!isEditing)}>
+          {isEditing ? "View All Availability" : "Edit My Availability"}
+        </button>
+      </div>
     </div>
   );
 }

@@ -99,6 +99,12 @@ export function Root({
     )
     const containerRef = useRef<HTMLDivElement>(null)
 
+    useEffect(() => {
+        if (initialItems) {
+            setSelectedItems(initialItems);
+        }
+    }, [initialItems]);
+
     const updateSelectedItems = useCallback(
         function updateSelectedItems(
             dragVector: DOMVector,
@@ -394,7 +400,7 @@ export function Item({ children, id }: { id: string; children: ReactNode }) {
     )
 }
 
-export function InputCell({timeId}) {
+export function InputCell({timeId, color}) {
   const selectedItems = useContext(SelectedItemContext)
 
   const timeString = (() => {
@@ -406,6 +412,6 @@ export function InputCell({timeId}) {
   })()
 
   return (
-    <div data-item={timeId} className={`cell pointer-events-none select-none ${selectedItems[timeId] ? "selected": ""}`}>{timeString}</div>
+    <div data-item={timeId} className={`cell pointer-events-none select-none ${selectedItems[timeId] ? "selected": ""}`} style={{backgroundColor: color ? color : ""}}>{timeString}</div>
   )
 }

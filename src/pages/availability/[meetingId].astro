@@ -4,7 +4,7 @@ import Layout from "../../layouts/Layout.astro"
 import AvailabilityChart from "../../components/AvailabilityChart";
 
 const { meetingId } = Astro.params;
-const userId = "1"; // Placeholder for the current user
+const userId = "user1"; // Placeholder for the current user
 
 const isSignedIn = false;
 const isEditing = false;
@@ -38,25 +38,9 @@ const primary_bg = "#8CA9FF"
 
 <Layout>
   <div class="availability-page">
-    <div class="meeting-details">
-      <div class="meeting-title">Meeting Name</div>
-      <div class="timezone">
-        <div>Original Timezone (CST)</div>
-        <div>></div>
-        <div>Current Timezone (CST)</div>
-      </div>
-    </div>
+    
 
     <div class="availabilities">
-      <div class="scale">
-        <div class="label">0/{totalPeople}</div>
-        <div class="scale-container">
-          {colors.map(color => (
-            <div class="scale-segment" style={`background-color: ${color}`}></div>
-          ))}
-        </div>
-        <div class="label">{maxAvailable}/{totalPeople}</div>
-      </div>
       <AvailabilityChart client:load meetingId={meetingId} userId={userId} />
     </div>
 
@@ -97,39 +81,9 @@ const primary_bg = "#8CA9FF"
     background-color: #FFF8DE;
   }
 
-  .meeting-details {
-    text-align: center;
-    align-content: center;
-    height: 10%;
-    background-color: #AAC4F5;
-  }
+  
 
-  .timezone > div {
-    display: inline-block;
-  }
-
-  .scale {
-    text-align: center;
-    margin: 10px;
-  }
-
-  .scale > .label {
-    display: inline-block;
-  }
-
-  .scale-container {
-    display: inline-flex;
-    width: 200px;
-    height: 20px;
-    border: 1px solid #ccc;
-    vertical-align: middle;
-    flex-direction: row;
-  }
-
-  .scale-segment {
-    flex-grow: 1;
-    height: 100%;
-  }
+  
 
   .availabilities {
     height: 80%;
