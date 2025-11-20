@@ -23,6 +23,10 @@ const colors = Array.from({ length: maxSegments }, (_, i) => {
   return getGradientColor(ratio);
 });
 
+function submitSignIn() {
+  /* TODO! */
+}
+
 export default function AvailabilityPage({ meetingId }) {
   const isSignedIn = false;
   const isEditing = false;
@@ -31,6 +35,9 @@ export default function AvailabilityPage({ meetingId }) {
   const maxAvailable = 10;
 
   const [userId, setUserId] = useState();
+
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
 
   return (
     <div className="availability-page">
@@ -74,7 +81,7 @@ export default function AvailabilityPage({ meetingId }) {
         ) : isSignedIn ? (
           <div>Add your availability above</div>
         ) : (
-          <SignIn />
+          <SignIn name={name} setName={submitSignIn} />
         )}
       </div>
     </div>

@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import "./SignIn.css";
-export default function SignIn() {
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
-
+export default function SignIn({ name, setName }) {
   // biome-ignore lint/style/noNonNullAssertion: Samuel Skean: I don't want these to ever be null.
   name!;
+
+  const [password, setPassword] = useState("");
   // biome-ignore lint/style/noNonNullAssertion: Samuel Skean: I don't want these to ever be null.
   password!;
 
@@ -13,7 +12,7 @@ export default function SignIn() {
   console.log(`Name: ${name} Password: ${password}`);
 
   return (
-    <form onSubmit={submitSignInForm} className="login-form">
+    <form onSubmit={setName} className="login-form">
       <div className="login-inputs">
         <input
           type="text"
@@ -32,5 +31,3 @@ export default function SignIn() {
     </form>
   );
 }
-
-function submitSignInForm() {}
