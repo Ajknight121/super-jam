@@ -33,6 +33,35 @@ function getGradientColor(ratio: number) {
 
 const maxSegments = 5;
 
+export interface UtcObject {
+  year: number;
+  month: number;
+  day: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+}
+
+export function utcObj(utc: string): UtcObject {
+  const date = new Date(utc);
+  return {
+    year: date.getUTCFullYear(),
+    month: date.getUTCMonth() + 1, // getUTCMonth() is 0-indexed
+    day: date.getUTCDate(),
+    hours: date.getUTCHours(),
+    minutes: date.getUTCMinutes(),
+    seconds: date.getUTCSeconds(),
+  };
+}
+
+export function objToUtc(obj: UtcObject): string {
+  const date = new Date(
+    Date.UTC(obj.year, obj.month - 1, obj.day, obj.hours, obj.minutes, obj.seconds)
+  );
+  // Ensure the format is YYYY-MM-DDTHH:mm:ssZ without milliseconds
+  return date.toISOString().split(".")[0] + "Z";
+}
+
 export default function AvailabilityChart({ meetingId, userId }) {
   const [meeting, setMeeting] = useState<Meeting | undefined>(undefined);
   const [error, setError] = useState(null);
@@ -93,13 +122,12 @@ export default function AvailabilityChart({ meetingId, userId }) {
       const meetingData = await getMeeting(meetingId);
       setMeeting(meetingData);
       // Initialize selected items from fetched availability
-      const initialAvailability = meetingData.availability[userId] ?? [];
+      const initialAvailability: string[] = meetingData.availability[userId] ?? [];
       setSelectedItems(
         initialAvailability.reduce((acc, time) => {
           // This needs to be more robust to handle different day representations
           // For now, we assume we can find the day for the given time.
-          const day = "monday"; // Placeholder
-          return { ...acc, [`${day}-${time}`]: true };
+          return { ...acc, [time]: true };
         }, {})
       );
     } catch (err) {
@@ -110,10 +138,11 @@ export default function AvailabilityChart({ meetingId, userId }) {
       console.log(userId, exampleMeeting.availability[userId]);
       setSelectedItems(
         initialAvailability.reduce((acc, time) => {
+          
+          if (!time) return acc;
           // This needs to be more robust to handle different day representations
           // For now, we assume we can find the day for the given time.
-          const day = "monday"; // Placeholder
-          return { ...acc, [`${day}-${time}`]: true };
+          return { ...acc, [time]: true };
         }, {})
       );
     }
@@ -125,10 +154,7 @@ export default function AvailabilityChart({ meetingId, userId }) {
 
   const handleSelectionChange = async (items: Record<string, boolean>) => {
     setSelectedItems(items);
-    const availability = Object.keys(items).map((key) => {
-      const parts = key.split("-");
-      return parts.slice(1).join("-");
-    });
+    const availability = Object.keys(items);
     console.log(availability);
     await setUserAvailability(meetingId, userId, availability);
     await getCurrentMeeting(meetingId);
@@ -173,7 +199,7 @@ export default function AvailabilityChart({ meetingId, userId }) {
   const startTime = new Date(timeRangeForEachDay.start);
   const timeSlots = Array.from({ length: numberOfSlots }, (_, i) => {
     const slotTime = new Date(startTime.getTime() + i * 15 * 60 * 1000);
-    return slotTime.toISOString().split(".")[0] + "Z";
+    return `${slotTime.toISOString().split(".")[0]}Z`;
   });
 
   return (
@@ -236,8 +262,8 @@ export default function AvailabilityChart({ meetingId, userId }) {
                     
                     return (
                       <InputCell
-                        key={`${day}-${adjustedTime}`}
-                        timeId={`${day}-${adjustedTime}`}
+                        key={adjustedTime}
+                        timeId={adjustedTime}
                         color={""}
                       />
                     );
@@ -268,8 +294,8 @@ export default function AvailabilityChart({ meetingId, userId }) {
                   const color = getGradientColor(ratio);
                   return (
                     <InputCell
-                      key={`${day}-${adjustedTime}`}
-                      timeId={`${day}-${adjustedTime}`}
+                      key={adjustedTime}
+                      timeId={adjustedTime}
                       color={color}
                     />
                   );
@@ -280,7 +306,7 @@ export default function AvailabilityChart({ meetingId, userId }) {
         )}
       </div>
       <div className="controls">
-        <button onClick={() => setIsEditing(!isEditing)}>
+        <button type="button" onClick={() => setIsEditing(!isEditing)}>
           {isEditing ? "View All Availability" : "Edit My Availability"}
         </button>
       </div>

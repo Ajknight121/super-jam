@@ -404,8 +404,7 @@ export function InputCell({timeId, color}) {
   const selectedItems = useContext(SelectedItemContext)
 
   const timeString = (() => {
-    const isoString = timeId.split('-').slice(1).join('-')
-    const date = new Date(isoString)
+    const date = new Date(timeId)
     const hours = date.getUTCHours().toString().padStart(2, '0')
     const minutes = date.getUTCMinutes().toString().padStart(2, '0')
     return `${hours}:${minutes}`
