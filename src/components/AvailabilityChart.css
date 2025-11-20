@@ -39,6 +39,10 @@
   width: 100%;
 }
 
+.availability-chart.loading {
+  height: 60vh;
+}
+
 .display {
   overflow-x: scroll;
   display: flex;
