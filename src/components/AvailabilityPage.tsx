@@ -1,6 +1,7 @@
 import { useState } from "react";
 import AvailabilityChart from "./AvailabilityChart";
 import "./AvailabilityPage.css";
+import { createUser } from "../lib/api/users";
 import SignIn from "./SignIn";
 
 const maxSegments = 5;
@@ -23,10 +24,6 @@ const colors = Array.from({ length: maxSegments }, (_, i) => {
   return getGradientColor(ratio);
 });
 
-function submitSignIn() {
-  /* TODO! */
-}
-
 export default function AvailabilityPage({ meetingId }) {
   const isSignedIn = false;
   const isEditing = false;
@@ -34,10 +31,38 @@ export default function AvailabilityPage({ meetingId }) {
   const totalPeople = 12;
   const maxAvailable = 10;
 
-  const [userId, setUserId] = useState();
+  const [userId, setUserId] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+
+    const trimmed = (name || "").trim();
+    if (!trimmed) {
+      setError("Please enter a name.");
+      return;
+    }
+
+    try {
+      setBusy(true);
+
+      const result = await createUser(trimmed);
+      if (result?.id) {
+        setUserId(result.id);
+      } else {
+        setError("Unexpected error creating user.");
+      }
+    } catch (err: any) {
+      setError(err?.message ?? "Failed to create user.");
+    } finally {
+      setBusy(false);
+    }
+  }
 
   return (
     <div className="availability-page">
@@ -57,7 +82,15 @@ export default function AvailabilityPage({ meetingId }) {
         ) : isSignedIn ? (
           <div>Add your availability above</div>
         ) : (
-          <SignIn name={name} setName={submitSignIn} />
+          <SignIn
+            name={name}
+            setName={setName}
+            password={password}
+            setPassword={setPassword}
+            busy={busy}
+            error={error}
+            handleSubmit={handleSubmit}
+          />
         )}
       </div>
     </div>
