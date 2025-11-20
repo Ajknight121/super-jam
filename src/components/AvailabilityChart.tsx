@@ -30,8 +30,8 @@ export default function AvailabilityChart({ meetingId, userId }) {
     },
     availabilityBounds: {
       timeRangeForEachDay: {
-        start: "2025-11-03T09:00:00Z",
-        end: "2025-11-03T17:00:00Z",
+        start: "1970-01-01T09:00:00Z",
+        end: "1970-01-01T17:00:00Z",
       },
       availableDayConstraints: {
         type: "daysOfWeek",
@@ -81,12 +81,22 @@ export default function AvailabilityChart({ meetingId, userId }) {
 
   const { timeRangeForEachDay, availableDayConstraints } = availabilityBounds;
 
+  const dayOffsets: { [key: string]: number } = {
+    monday: 0,
+    tuesday: 1,
+    wednesday: 2,
+    thursday: 3,
+    friday: 4,
+    saturday: 5,
+    sunday: 6,
+  };
+
   // Generate an array representing the 15-minute time slots for a day
   const numberOfSlots = calculateTimeSlots(timeRangeForEachDay.start, timeRangeForEachDay.end);
   const startTime = new Date(timeRangeForEachDay.start);
   const timeSlots = Array.from({ length: numberOfSlots }, (_, i) => {
     const slotTime = new Date(startTime.getTime() + i * 15 * 60 * 1000);
-    return slotTime.toISOString();
+    return slotTime.toISOString().split('.')[0] + "Z";
   });
 
   return (
@@ -109,12 +119,21 @@ export default function AvailabilityChart({ meetingId, userId }) {
         <div className="availability-chart-grid">
           {availableDayConstraints.days.map((day) => (
             <div key={day} className="availability-chart-grid-day">
-              {timeSlots.map((time) => (
+              {timeSlots.map((time) => {
+                let adjustedTime = time;
+                if (availableDayConstraints.type === "daysOfWeek") {
+                  const offset = dayOffsets[day.toLowerCase()] ?? 0;
+                  const date = new Date(time);
+                  date.setUTCDate(date.getUTCDate() + offset);
+                  adjustedTime = date.toISOString().split('.')[0] + "Z";
+                }
+                return (
                 <InputCell
-                  key={`${day}-${time}`}
-                  timeId={`${day}-${time}`}
+                  key={`${day}-${adjustedTime}`}
+                  timeId={`${day}-${adjustedTime}`}
                 />
-              ))}
+              );
+              })}
             </div>
           ))}
         </div>
