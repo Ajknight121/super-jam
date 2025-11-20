@@ -46,10 +46,14 @@ export type UserAvailability = zod.infer<typeof UserAvailabilitySchema>;
 // That's a "map" (JSON object) from user ids to their availabilities. The availabilities are arrays of timestamps, each one representing a 15-minute chunk for which that person is available.
 //
 // The order of the timestamps in the array is not significant, but we should endeavor to produce arrays with ascending timestamps. (an instance of the [Robustness Principle](https://en.wikipedia.org/wiki/Robustness_principle))
-export const MeetingAvailabilitySchema = zod.record(
-  zod.nanoid(),
-  UserAvailabilitySchema,
-);
+export const MeetingAvailabilitySchema = zod
+  .record(zod.nanoid(), UserAvailabilitySchema)
+  .check(
+    zod.overwrite((obj: object) =>
+      Object.fromEntries(Object.entries(obj).sort()),
+    ),
+  );
+
 export type MeetingAvailability = zod.infer<typeof MeetingAvailabilitySchema>;
 
 const DayOfTheWeek = zod.enum([
