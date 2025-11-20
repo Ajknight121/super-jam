@@ -22,11 +22,15 @@ export const GET = () => {
 };
 
 // TODO: For MVP.
-export const PUT = async ({ params, locals, request }: APIContext) => {
+export const PUT = async ({
+  params,
+  locals,
+  request,
+}: APIContext): Promise<Response> => {
   // TODO(samuel-skean): Remove the user's id as a key if the user's availability is set to empty.
 
   if (params.meetingId === undefined || params.userId === undefined) {
-    return undefinedInRequiredURLParamResponse;
+    return undefinedInRequiredURLParamResponse();
   }
 
   const newAvailabilityResult = UserAvailabilitySchema.safeParse(
@@ -50,7 +54,7 @@ export const PUT = async ({ params, locals, request }: APIContext) => {
   // NOTE: It's kinda weird that we report the non-existence of the user if both the user and the meeting do not exist. It makes the hypothetical change to using fewer queries (mentioned in a below comment) easier, but otherwise it just seems slightly wrong?
 
   if (userExistsDbResult.length === 0) {
-    return noSuchUserResponse;
+    return noSuchUserResponse();
   }
 
   // STRETCH(samuel-skean): Do the following in one query, with sqlite's json_set. I decided against this because it involves constructing part of the template string with user data, at least according to the end of [this ChatGPT chat](https://chatgpt.com/share/691bcbe4-3ddc-8006-bd57-5ad200690ea9). That's one of the classic blunders!
@@ -63,7 +67,7 @@ export const PUT = async ({ params, locals, request }: APIContext) => {
   assert(initialMeetingDbResult.length <= 1);
 
   if (initialMeetingDbResult.length === 0) {
-    return noSuchMeetingResponse;
+    return noSuchMeetingResponse();
   }
 
   const initialMeeting = MeetingSchema.parse(

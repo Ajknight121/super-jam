@@ -13,9 +13,12 @@ import { users } from "#/src/db/schema";
 export const prerender = false;
 
 // TODO: For MVP.
-export const GET = async ({ locals, params }: APIContext) => {
+export const GET = async ({
+  locals,
+  params,
+}: APIContext): Promise<Response> => {
   if (params.userId === undefined) {
-    return undefinedInRequiredURLParamResponse;
+    return undefinedInRequiredURLParamResponse();
   }
 
   const db = drizzle(locals.runtime.env.DB);
@@ -28,7 +31,7 @@ export const GET = async ({ locals, params }: APIContext) => {
   assert(dbResult.length <= 1);
 
   if (dbResult.length === 0) {
-    return noSuchUserResponse;
+    return noSuchUserResponse();
   }
 
   return Response.json({ defaultName: dbResult[0].defaultName } satisfies User);

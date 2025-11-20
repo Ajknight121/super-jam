@@ -14,9 +14,12 @@ import { meetings } from "#/src/db/schema";
 
 export const prerender = false;
 
-export const GET = async ({ params, locals }: APIContext) => {
+export const GET = async ({
+  params,
+  locals,
+}: APIContext): Promise<Response> => {
   if (params.meetingId === undefined) {
-    return undefinedInRequiredURLParamResponse;
+    return undefinedInRequiredURLParamResponse();
   }
 
   const db = drizzle(locals.runtime.env.DB);
@@ -28,7 +31,7 @@ export const GET = async ({ params, locals }: APIContext) => {
   assert(dbResult.length <= 1);
 
   if (dbResult.length === 0) {
-    return noSuchMeetingResponse;
+    return noSuchMeetingResponse();
   }
 
   return Response.json(MeetingSchema.parse(JSON.parse(dbResult[0].jsonData)));

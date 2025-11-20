@@ -147,31 +147,36 @@ const MakemeetErrorSchema = zod.looseObject({
 
 export type MakemeetError = zod.infer<typeof MakemeetErrorSchema>;
 
-export const noSuchUserResponse = Response.json(
-  {
-    customMakemeetErrorMessage: "No such user.",
-  } satisfies MakemeetError,
-  { status: 404 },
-);
+// These are all functions so all handlers return their own response objects. This is necessary for Cloudflare workers to work properly.
 
-export const noSuchMeetingResponse = Response.json(
-  {
-    customMakemeetErrorMessage: "No such meeting.",
-  } satisfies MakemeetError,
-  { status: 404 },
-);
+export const noSuchUserResponse = (): Response =>
+  Response.json(
+    {
+      customMakemeetErrorMessage: "No such user.",
+    } satisfies MakemeetError,
+    { status: 404 },
+  );
 
-export const undefinedInRequiredURLParamResponse = Response.json(
-  {
-    customMakemeetErrorMessage:
-      "One of the `params` in the APIContext was undefined. This is unexpected! Please let the devs know. If you are a dev, this contradicts https://chatgpt.com/share/691e4f15-4c7c-8006-a55b-c58efcb9a073 (though ChatGPT couldn't give me a satisfactory source there.",
-  } satisfies MakemeetError,
-  {
-    status: 500,
-  },
-);
+export const noSuchMeetingResponse = (): Response =>
+  Response.json(
+    {
+      customMakemeetErrorMessage: "No such meeting.",
+    } satisfies MakemeetError,
+    { status: 404 },
+  );
 
-export const zodErrorResponse = (zodError: zod.core.$ZodError) => {
+export const undefinedInRequiredURLParamResponse = (): Response =>
+  Response.json(
+    {
+      customMakemeetErrorMessage:
+        "One of the `params` in the APIContext was undefined. This is unexpected! Please let the devs know. If you are a dev, this contradicts https://chatgpt.com/share/691e4f15-4c7c-8006-a55b-c58efcb9a073 (though ChatGPT couldn't give me a satisfactory source there.",
+    } satisfies MakemeetError,
+    {
+      status: 500,
+    },
+  );
+
+export const zodErrorResponse = (zodError: zod.core.$ZodError): Response => {
   return Response.json(
     {
       customMakemeetErrorMessage:

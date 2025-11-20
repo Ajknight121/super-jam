@@ -14,7 +14,10 @@ export const prerender = false;
 
 // TODO: MVP.
 // TODO: Create user.
-export const POST = async ({ locals, request }: APIContext) => {
+export const POST = async ({
+  locals,
+  request,
+}: APIContext): Promise<Response> => {
   const newUserResult = UserSchema.safeParse(await request.json());
 
   if (newUserResult.error) {

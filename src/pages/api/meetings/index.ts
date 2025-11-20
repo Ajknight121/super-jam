@@ -8,7 +8,10 @@ import { meetings } from "#/src/db/schema";
 // TODO: For MVP.
 export const prerender = false;
 
-export const POST = async ({ locals, request }: APIContext) => {
+export const POST = async ({
+  locals,
+  request,
+}: APIContext): Promise<Response> => {
   const db = drizzle(locals.runtime.env.DB);
 
   const meetingResult = MeetingSchema.safeParse(await request.json());
