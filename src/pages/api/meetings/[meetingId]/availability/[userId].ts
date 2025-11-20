@@ -3,6 +3,7 @@ import type { APIContext } from "astro";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import {
+  type Meeting,
   MeetingSchema,
   noSuchMeetingResponse,
   noSuchUserResponse,
@@ -71,14 +72,14 @@ export const PUT = async ({ params, locals, request }: APIContext) => {
   );
   const { availability: initialMeetingAvailability } = initialMeeting;
 
-  // TODO(samuel-skean): Ensure the user IDs are always sorted based on themselves! As it stands, we leak info about what order availability was uploaded in.
-  const newMeeting = {
+  // The `parse` here is necessary to sort the user ids and hide the order of insertion, but also allows additional transformations and dynamic checks on the meeting to be added to `api-types-and-schemas` with a minimum of fuss.
+  const newMeeting = MeetingSchema.parse({
     ...initialMeeting,
     availability: {
       ...initialMeetingAvailability,
       [params.userId]: newAvailability,
     },
-  };
+  } satisfies Meeting);
 
   // Just in case the database contains a user that doesn't have a nanoid, this'll catch that. It may catch other things too... best to find them in dev!
   MeetingSchema.parse(newMeeting);

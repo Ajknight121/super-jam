@@ -2,7 +2,11 @@ import assert from "node:assert";
 import type { APIContext } from "astro";
 import { drizzle } from "drizzle-orm/d1";
 import { nanoid } from "nanoid";
-import { MeetingSchema, zodErrorResponse } from "#/src/api-types-and-schemas";
+import {
+  type MakemeetError,
+  MeetingSchema,
+  zodErrorResponse,
+} from "#/src/api-types-and-schemas";
 import { meetings } from "#/src/db/schema";
 
 // TODO: For MVP.
@@ -12,12 +16,23 @@ export const POST = async ({ locals, request }: APIContext) => {
   const db = drizzle(locals.runtime.env.DB);
 
   const meetingResult = MeetingSchema.safeParse(await request.json());
-  // TODO(samuel-skean): Ensure no availability is listed here. Too much of an authentication nightmare.
 
   if (meetingResult.error) {
     return zodErrorResponse(meetingResult.error);
   }
   const meeting = meetingResult.data;
+
+  if (Object.keys(meeting.availability).length !== 0) {
+    return Response.json(
+      {
+        customMakemeetErrorMessage:
+          "Cannot specify availability when creating meeting. Also, this error message will change.",
+      } satisfies MakemeetError,
+      {
+        status: 400,
+      },
+    );
+  }
 
   const dbResult = await db
     .insert(meetings)
