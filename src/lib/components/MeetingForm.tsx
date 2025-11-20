@@ -4,6 +4,7 @@
 */
 import Calendar from "./Calendar.jsx";
 import "./MeetingForm.css";
+import { createMeeting } from "../api/meetings";
 import { useState, useEffect } from "react";
 
 const _now = new Date();
@@ -20,6 +21,7 @@ export default function MeetingForm() {
   const [endTime, setEndTime] = useState("");
   const [timeError, setTimeError] = useState(false);
   const [daysError, setDaysError] = useState(false);
+  const [timezone, setTimezone] = useState("America/Chicago");
 
   const handleRepeatDay = (day:string) => {
     if (selectedRepeatDays.includes(day)) {
@@ -32,67 +34,49 @@ export default function MeetingForm() {
     console.log(day);
   }
 
-  useEffect(() => {
-    const create_button = document.getElementById("create-button");
-    const timezone_name = document.getElementById("timezones") as HTMLInputElement;
-    const sun_btn = document.getElementById("sun-btn");
-    const mon_btn = document.getElementById("mon-btn");
-    const tues_btn = document.getElementById("tues-btn");
-    const weds_btn = document.getElementById("weds-btn");
-    const thrs_btn = document.getElementById("thrs-btn");
-    const fri_btn = document.getElementById("fri-btn");
-    const sat_btn = document.getElementById("sat-btn");
+  const handleCreateMeeting = async () => {
+    const isMeetingNameMissing = !meetingName.trim();
+    const areTimesMissing = !startTime || !endTime;
+    const areDaysMissing = isRepeatingWeekly ? selectedRepeatDays.length === 0 : selectedDays.length === 0;
 
-    const dayButtons = [sun_btn, mon_btn, tues_btn, weds_btn, thrs_btn, fri_btn, sat_btn];
-    const dayNames = ["Sun", "Mon", "Tues", "Weds", "Thrs", "Fri", "Sat"];
+    setMeetingNameError(isMeetingNameMissing);
+    setTimeError(areTimesMissing);
+    setDaysError(areDaysMissing);
 
-    dayButtons.forEach((button, index) => {
-      button?.addEventListener("click", () => {
-        const day = dayNames[index];
-        setSelectedDays((prevSelectedDays) => {
-          if (prevSelectedDays.includes(day)) {
-            return prevSelectedDays.filter((d) => d !== day);
-          } else {
-            return [...prevSelectedDays, day];
-          }
-        });
-      });
+    if (isMeetingNameMissing || areTimesMissing || areDaysMissing) {
+      return;
+    }
+
+    const formattedDays = selectedDays.map(day => {
+      return `${day}T00:00:00Z`;
     });
 
-    create_button?.addEventListener("click", () => {
-      const isMeetingNameMissing = !meetingName.trim();
-      const areTimesMissing = !startTime || !endTime;
-      const areDaysMissing = isRepeatingWeekly ? selectedRepeatDays.length === 0 : selectedDays.length === 0;
-
-      setMeetingNameError(isMeetingNameMissing);
-      setTimeError(areTimesMissing);
-      setDaysError(areDaysMissing);
-
-      if (isMeetingNameMissing || areTimesMissing || areDaysMissing) {
-        return;
-      }
-
-      const start_time = `1970-01-01T${startTime}:00Z`;
-      const end_time = `1970-01-01T${endTime}:00Z`;
-      const new_meeting = {
-        name: meetingName,
-        availability: {},
-        availabilityBounds: {
-          availableDayConstraints: {
-            type: isRepeatingWeekly ? "daysOfWeek" : "specificDays",
-            days: isRepeatingWeekly ? [...selectedRepeatDays] : [...selectedDays]
-          },
-          timeRangeForEachDay: {
-            start: start_time,
-            end: end_time,
-          },
+    const new_meeting = {
+      name: meetingName,
+      availability: {},
+      availabilityBounds: {
+        availableDayConstraints: {
+          type: isRepeatingWeekly ? "daysOfWeek" : "specificDays",
+          days: isRepeatingWeekly ? [...selectedRepeatDays] : formattedDays
         },
-        timezone: timezone_name.value,
-      };
+        timeRangeForEachDay: {
+          start: `1970-01-01T${startTime}:00Z`,
+          end: `1970-01-01T${endTime}:00Z`,
+        },
+      },
+      timeZone: timezone.split(" ")[0],
+    };
 
-      console.log(new_meeting)
-    });
-  }, [isRepeatingWeekly, selectedDays, selectedRepeatDays, meetingName, startTime, endTime]);
+    console.log("Creating meeting:", new_meeting);
+    const meetingResult = await createMeeting(new_meeting);
+
+    if (meetingResult && meetingResult.id) {
+      console.log("Successfully created meeting with ID:", meetingResult.id);
+      window.location.href = `/availability/${meetingResult.id}`;
+    } else {
+      alert("Error creating meeting")
+    }
+  };
 
   return (
     <section className="meeting-wrap">
@@ -125,6 +109,7 @@ export default function MeetingForm() {
                 className="time-input"
                 id="start-time"
                 type="time"
+                step="900"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
               />
@@ -137,6 +122,7 @@ export default function MeetingForm() {
                 className="time-input"
                 id="end-time"
                 type="time"
+                step="900"
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
               />
@@ -145,7 +131,7 @@ export default function MeetingForm() {
           <div className="timezone-row">
             <span className="label-text">Time Zone:</span>
 
-            <select id="timezones" name="timezones" className="span5 time-group" defaultValue={"America/Chicago"}>
+            <select id="timezones" name="timezones" className="span5 time-group" value={timezone} onChange={(e) => setTimezone(e.target.value.split(" ")[0])}>
               <option value="Africa/Abidjan">Africa/Abidjan GMT+0:00</option>
               <option value="Africa/Accra">Africa/Accra GMT+0:00</option>
               <option value="Africa/Addis_Ababa">Africa/Addis_Ababa GMT+3:00</option>
@@ -853,7 +839,7 @@ export default function MeetingForm() {
           />
         </div>
         <div className="create-button-row">
-          <button type="button" id="create-button">
+          <button type="button" id="create-button" onClick={handleCreateMeeting}>
             Create
           </button>
         </div>
