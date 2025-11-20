@@ -19,12 +19,6 @@ export default function SignIn({
   error: string | null;
   handleSubmit: (e: React.FormEvent) => Promise<void>;
 }) {
-  // TODONOW(samuel-skean): Remove.
-  console.log(`Name: ${name} Password: ${password}`);
-
-  useEffect(() => {
-    console.log(`Name: ${name} Password: ${password}`);
-  }, [name, password]);
 
   return (
     <form onSubmit={handleSubmit} className="login-form">
