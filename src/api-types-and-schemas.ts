@@ -1,6 +1,7 @@
 // Types and Zod schemas for things shared frontend and backend.
 // Not all of the validation logic is here! Some is too complicated to be easily expressed in Zod (it would be voodoo IMO, though I do understand it). See https://chatgpt.com/s/t_690646e3ec608191bc1114d90d95e02a, especially paragraph 1, for how to do it. (I only read paragraph 1.)
 
+import assert from "node:assert";
 import * as zod from "zod/mini";
 
 // Number of seconds of granularity for any times.
@@ -174,6 +175,18 @@ export const undefinedInRequiredURLParamResponse = Response.json(
     status: 500,
   },
 );
+
+export const jsonParseErrorResponse = (e: unknown) => {
+  assert(e instanceof TypeError || e instanceof SyntaxError);
+  return Response.json(
+    {
+      customMakemeetErrorMessage:
+        "`request.json()` failed. Most likely the request payload wasn't valid json or the requests had invalid headers. See https://developer.mozilla.org/en-US/docs/Web/API/Request/json for more info.",
+      // TODO(samuel-skean): Return the error https://chatgpt.com/c/691e88d2-1368-8333-996e-60035e993e55 https://chatgpt.com/share/691e89cf-4730-8006-af88-4e326a1d151c.
+    } satisfies MakemeetError,
+    { status: 400 },
+  );
+};
 
 export const zodErrorResponse = (zodError: zod.core.$ZodError) => {
   return Response.json(

@@ -3,6 +3,7 @@ import type { APIContext } from "astro";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import {
+  jsonParseErrorResponse,
   type Meeting,
   MeetingSchema,
   noSuchMeetingResponse,
@@ -30,8 +31,15 @@ export const PUT = async ({ params, locals, request }: APIContext) => {
     return undefinedInRequiredURLParamResponse;
   }
 
+  let unvalidatedNewAvailability: unknown;
+  try {
+    unvalidatedNewAvailability = await request.json();
+  } catch (e) {
+    return jsonParseErrorResponse(e);
+  }
+
   const newAvailabilityResult = UserAvailabilitySchema.safeParse(
-    await request.json(),
+    unvalidatedNewAvailability,
   );
 
   if (newAvailabilityResult.error) {
