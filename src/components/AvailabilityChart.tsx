@@ -119,39 +119,44 @@ export default function AvailabilityChart({ meetingId, userId }) {
     name: "Example Meeting (Failed to Load)",
     availability: {
       user1: [
-        "1970-01-01T09:00:00Z",
+        "2025-01-01T09:00:00Z",
+        "2025-01-01T09:00:00Z",
+        "2025-01-01T09:30:00Z",
+        "2025-01-02T10:00:00Z",
+        "2025-01-02T10:15:00Z",
         "",
-        "1970-01-01T09:30:00Z",
-        "1970-01-01T09:00:00Z",
         "",
         "",
-        "1970-01-02T10:00:00Z",
-        "1970-01-02T10:15:00Z",
       ],
       user2: [
-        "1970-01-01T09:15:00Z",
-        "1970-01-01T09:30:00Z",
-        "1970-01-01T09:45:00Z",
-        "1970-01-03T11:00:00Z",
-        "1970-01-03T11:15:00Z",
+        "2025-01-01T09:15:00Z",
+        "2025-01-01T09:30:00Z",
+        "2025-01-01T09:45:00Z",
+        "2025-01-03T11:00:00Z",
+        "2025-01-03T11:15:00Z",
       ],
       user3: [
-        "1970-01-01T09:00:00Z",
-        "1970-01-01T09:15:00Z",
-        "1970-01-04T14:00:00Z",
-        "1970-01-04T14:15:00Z",
-        "1970-01-04T14:30:00Z",
+        "2025-01-01T09:00:00Z",
+        "2025-01-01T09:15:00Z",
+        "2025-01-04T14:00:00Z",
+        "2025-01-04T14:15:00Z",
+        "2025-01-04T14:30:00Z",
       ],
-      user4: ["1970-01-01T09:15:00Z", "1970-01-01T09:30:00Z", "1970-01-01T10:00:00Z"],
+      user4: ["2025-01-01T09:15:00Z", "2025-01-01T09:30:00Z", "2025-01-01T10:00:00Z"],
     },
     availabilityBounds: {
       timeRangeForEachDay: {
-        start: "1970-01-01T09:00:00Z",
-        end: "1970-01-01T17:00:00Z",
+        start: "2025-01-01T09:00:00Z",
+        end: "2025-01-01T17:00:00Z",
       },
       availableDayConstraints: {
         type: "specificDays",
-        days: [""],
+        days: [
+          "2025-01-01T00:00:00Z",
+          "2025-01-02T00:00:00Z",
+          "2025-01-03T00:00:00Z",
+          "2025-01-04T00:00:00Z",
+        ],
       },
     },
     timeZone: "America/Chicago",
@@ -173,10 +178,10 @@ export default function AvailabilityChart({ meetingId, userId }) {
       );
     } catch (err) {
       setError(err);
-      setMeeting(exampleMeeting);
+      setMeeting(exampleMeeting2);
       // Initialize selected items from fetched availability
-      const initialAvailability = exampleMeeting.availability[userId] ?? [];
-      console.log(userId, exampleMeeting.availability[userId]);
+      const initialAvailability = exampleMeeting2.availability[userId] ?? [];
+      console.log(userId, exampleMeeting2.availability[userId]);
       setSelectedItems(
         initialAvailability.reduce((acc, time) => {
           
@@ -280,12 +285,20 @@ export default function AvailabilityChart({ meetingId, userId }) {
                   <div className="day-name">{day}</div>
                 </div>
               ))
-            : availabilityBounds.availableDayConstraints.days.map((day, index) => (
-                <div key={day} className="availability-chart-day">
-                  <div className="day-name">{day}</div>
-                  {/* <div className="date-short">{day}/{month}</div> */}
-                </div>
-              ))}
+            : availabilityBounds.availableDayConstraints.days.map((day) => {
+                const date = new Date(day);
+                const formattedDate = date.toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                  timeZone: "UTC",
+                });
+                return (
+                  <div key={day} className="availability-chart-day">
+                    <div className="day-name">{formattedDate}</div>
+                  </div>
+                );
+              })}
         </div>
         {isEditing ? (
           <DragSelect onSelectionChange={handleSelectionChange} initialItems={selectedItems}>
@@ -299,6 +312,11 @@ export default function AvailabilityChart({ meetingId, userId }) {
                       const date = new Date(time);
                       date.setUTCDate(date.getUTCDate() + offset);
                       adjustedTime = date.toISOString().split(".")[0] + "Z";
+                    } else if (availableDayConstraints.type === "specificDays") {
+                      const slotDate = new Date(time);
+                      const dayDate = new Date(day);
+                      dayDate.setUTCHours(slotDate.getUTCHours(), slotDate.getUTCMinutes(), slotDate.getUTCSeconds());
+                      adjustedTime = dayDate.toISOString().split(".")[0] + "Z";
                     }
                     
                     return (
@@ -324,12 +342,12 @@ export default function AvailabilityChart({ meetingId, userId }) {
                     const date = new Date(time);
                     date.setUTCDate(date.getUTCDate() + offset);
                     adjustedTime = date.toISOString().split(".")[0] + "Z";
+                  } else if (availableDayConstraints.type === "specificDays") {
+                    const slotDate = new Date(time);
+                    const dayDate = new Date(day);
+                    dayDate.setUTCHours(slotDate.getUTCHours(), slotDate.getUTCMinutes(), slotDate.getUTCSeconds());
+                    adjustedTime = dayDate.toISOString().split(".")[0] + "Z";
                   }
-                  
-                  const offset = dayOffsets[day.toLowerCase()] ?? 0;
-                  const date = new Date(time);
-                  date.setUTCDate(date.getUTCDate() + offset);
-                  // const adjustedTime = date.toISOString().split('.')[0] + "Z";
                   const count = availabilityCounts[adjustedTime] || 0;
                   const ratio = maxAvailable > 0 ? count / maxAvailable : 0;
                   const color = getGradientColor(ratio);
