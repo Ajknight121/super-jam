@@ -1,0 +1,14 @@
+---
+export const prerender = false;
+
+import SignIn from "#/src/components/SignIn";
+import AvailabilityChart from "../../components/AvailabilityChart";
+import AvailabilityPage from "../../components/AvailabilityPage";
+import Layout from "../../layouts/Layout.astro";
+
+const { meetingId } = Astro.params;
+---
+
+<Layout>
+    <AvailabilityPage client:load meetingId={meetingId} />
+</Layout>

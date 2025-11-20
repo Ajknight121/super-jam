@@ -4,10 +4,13 @@ import MeetingForm from "../lib/components/MeetingForm.astro";
 ---
 
 <Layout>
-    <main>
-        <h1>Welcome to MakeMeet</h1>
-        <p>Start by scheduling your first meeting!</p>
-    </main>
-
+  <main>
     <MeetingForm />
+  </main>
 </Layout>
+
+<style>
+main {
+  min-height: 100vh;
+}
+</style>

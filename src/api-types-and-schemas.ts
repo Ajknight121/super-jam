@@ -1,5 +1,6 @@
 // Types and Zod schemas for things shared frontend and backend.
 // Not all of the validation logic is here! Some is too complicated to be easily expressed in Zod (it would be voodoo IMO, though I do understand it). See https://chatgpt.com/s/t_690646e3ec608191bc1114d90d95e02a, especially paragraph 1, for how to do it. (I only read paragraph 1.)
+
 import * as zod from "zod/mini";
 
 // Number of seconds of granularity for any times.
@@ -8,6 +9,11 @@ export const GRANULARITY = 15 /*minutes */ * 60; /* seconds per minute */
 // A helper for confirming that all the elements of an array of numbers or strings are unique.
 const allUnique = (arr: (number | string)[]) =>
   new Set(arr).size === arr.length;
+
+const isOnJan1st1970 = (date: Date) =>
+  date.getUTCMonth() === 1 &&
+  date.getUTCDate() === 1 &&
+  date.getUTCFullYear() === 1970;
 
 // All timestamps in the API are ISO-8601 timestamps with second precision, ending with "Z" (meaning they are UTC time).
 const TimeSchema = zod.string().check(
@@ -74,7 +80,6 @@ export type AvailableDayConstraints = zod.infer<
 
 const TimeRangeSchema = zod
   .object({
-    // TODO: Must both be on Jan 1st, 1970.
     start: TimeSchema,
     end: TimeSchema,
   })
@@ -82,6 +87,12 @@ const TimeRangeSchema = zod
     // The start of the time range must be before (*actually* before) the end of the time range.
     zod.refine(
       (timeRange) => +new Date(timeRange.start) < +new Date(timeRange.end),
+    ),
+    // Must both be on Jan 1st, 1970.
+    zod.refine(
+      (timeRange) =>
+        isOnJan1st1970(new Date(timeRange.start)) &&
+        isOnJan1st1970(new Date(timeRange.end)),
     ),
   );
 export type TimeRange = zod.infer<typeof TimeRangeSchema>;
@@ -127,9 +138,53 @@ export const UserSchema = zod.object({
 });
 export type User = zod.infer<typeof UserSchema>;
 
-const MakemeetErrorSchema = zod.object({
+// Errors:
+
+const MakemeetErrorSchema = zod.looseObject({
   // We could validate better, but as it stands, this Schema doesn't actually get used to do anything but infer the type, so that would be lost and lazy.
-  customMakemeetError: zod.string(),
+  customMakemeetErrorMessage: zod.string(),
 });
 
 export type MakemeetError = zod.infer<typeof MakemeetErrorSchema>;
+
+// These are all functions so all handlers return their own response objects. This is necessary for Cloudflare workers to work properly.
+
+export const noSuchUserResponse = (): Response =>
+  Response.json(
+    {
+      customMakemeetErrorMessage: "No such user.",
+    } satisfies MakemeetError,
+    { status: 404 },
+  );
+
+export const noSuchMeetingResponse = (): Response =>
+  Response.json(
+    {
+      customMakemeetErrorMessage: "No such meeting.",
+    } satisfies MakemeetError,
+    { status: 404 },
+  );
+
+export const undefinedInRequiredURLParamResponse = (): Response =>
+  Response.json(
+    {
+      customMakemeetErrorMessage:
+        "One of the `params` in the APIContext was undefined. This is unexpected! Please let the devs know. If you are a dev, this contradicts https://chatgpt.com/share/691e4f15-4c7c-8006-a55b-c58efcb9a073 (though ChatGPT couldn't give me a satisfactory source there.",
+    } satisfies MakemeetError,
+    {
+      status: 500,
+    },
+  );
+
+export const zodErrorResponse = (zodError: zod.core.$ZodError): Response => {
+  return Response.json(
+    {
+      customMakemeetErrorMessage:
+        "Validation error (produced by zod) in field `validationError`.",
+      validationError: JSON.parse(zodError.message),
+    } satisfies MakemeetError,
+    {
+      status: 400,
+    },
+  );
+};
