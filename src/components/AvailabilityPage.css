@@ -1,0 +1,73 @@
+.availability-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: #fff8de;
+}
+
+.meeting-details {
+  text-align: center;
+  align-content: center;
+  height: 10%;
+  background-color: #aac4f5;
+}
+
+.timezone > div {
+  display: inline-block;
+}
+
+.scale {
+  text-align: center;
+  margin: 10px;
+}
+
+.scale > .label {
+  display: inline-block;
+}
+
+.scale-container {
+  display: inline-flex;
+  width: 200px;
+  height: 20px;
+  border: 1px solid #ccc;
+  vertical-align: middle;
+  flex-direction: row;
+}
+
+.scale-segment {
+  flex-grow: 1;
+  height: 100%;
+}
+
+.availabilities {
+  height: 80%;
+}
+
+.circle-button {
+  position: relative;
+  border: solid black 1px;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px auto; /* Center the button horizontally */
+  cursor: pointer;
+}
+
+.circle-button-text {
+  position: absolute;
+  text-wrap: nowrap;
+  font-size: 24px; /* Increased font size */
+  font-weight: bold;
+  cursor: pointer;
+  background-color: #cac3c3;
+  padding: 2px;
+}
+
+.login {
+  height: 20%;
+  background-color: #8ca9ff;
+  text-align: center;
+}

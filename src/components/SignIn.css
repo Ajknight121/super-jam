@@ -1,0 +1,13 @@
+.login-inputs {
+  display: flex;
+  flex-direction: row;
+}
+
+.login-inputs > input {
+  margin: 5px;
+  width: 100%;
+}
+
+input {
+  height: 30px;
+}
