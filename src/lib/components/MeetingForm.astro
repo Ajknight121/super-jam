@@ -11,11 +11,11 @@ const _calendarYear = _now.getFullYear();
 ---
 <section class="meeting-wrap">
   <div class="card">
-    <h1 class="title">Meeting Name</h1>
+    <h1 class="title">Create Meeting</h1>
 
     <label class="field">
-      <div class="label-text">Time Zone:</div>
-      <input class="wide-input" type="text" placeholder="Select time zone" />
+      <div class="label-text">Meeting Name:</div>
+      <input class="wide-input" type="text" placeholder="Insert the name of your meeting" />
     </label>
 
     <div class="field">
@@ -33,32 +33,109 @@ const _calendarYear = _now.getFullYear();
           <span class="ampm">PM</span>
         </div>
       </div>
+      <div class = "timezone-row">
+        <span class="label-text">Time Zone:</span>
+
+        <select name="timezones" id="timezones" class="span5 time-group">
+          <option value="-12:00">(GMT -12:00) Eniwetok, Kwajalein</option>
+          <option value="-11:00">(GMT -11:00) Midway Island, Samoa</option>
+          <option value="-10:00">(GMT -10:00) Hawaii</option>
+          <option value="-09:50">(GMT -9:30) Taiohae</option>
+          <option value="-09:00">(GMT -9:00) Alaska</option>
+          <option value="-08:00">(GMT -8:00) Pacific Time (US &amp; Canada)</option>
+          <option value="-07:00">(GMT -7:00) Mountain Time (US &amp; Canada)</option>
+          <option value="-06:00" selected="selected">(GMT -6:00) Central Time (US &amp; Canada), Mexico City</option>
+          <option value="-05:00">(GMT -5:00) Eastern Time (US &amp; Canada), Bogota, Lima</option>
+          <option value="-04:50">(GMT -4:30) Caracas</option>
+          <option value="-04:00">(GMT -4:00) Atlantic Time (Canada), Caracas, La Paz</option>
+          <option value="-03:50">(GMT -3:30) Newfoundland</option>
+          <option value="-03:00">(GMT -3:00) Brazil, Buenos Aires, Georgetown</option>
+          <option value="-02:00">(GMT -2:00) Mid-Atlantic</option>
+          <option value="-01:00">(GMT -1:00) Azores, Cape Verde Islands</option>
+          <option value="+00:00">(GMT) Western Europe Time, London, Lisbon, Casablanca</option>
+          <option value="+01:00">(GMT +1:00) Brussels, Copenhagen, Madrid, Paris</option>
+          <option value="+02:00">(GMT +2:00) Kaliningrad, South Africa</option>
+          <option value="+03:00">(GMT +3:00) Baghdad, Riyadh, Moscow, St. Petersburg</option>
+          <option value="+03:50">(GMT +3:30) Tehran</option>
+          <option value="+04:00">(GMT +4:00) Abu Dhabi, Muscat, Baku, Tbilisi</option>
+          <option value="+04:50">(GMT +4:30) Kabul</option>
+          <option value="+05:00">(GMT +5:00) Ekaterinburg, Islamabad, Karachi, Tashkent</option>
+          <option value="+05:50">(GMT +5:30) Bombay, Calcutta, Madras, New Delhi</option>
+          <option value="+05:75">(GMT +5:45) Kathmandu, Pokhara</option>
+          <option value="+06:00">(GMT +6:00) Almaty, Dhaka, Colombo</option>
+          <option value="+06:50">(GMT +6:30) Yangon, Mandalay</option>
+          <option value="+07:00">(GMT +7:00) Bangkok, Hanoi, Jakarta</option>
+          <option value="+08:00">(GMT +8:00) Beijing, Perth, Singapore, Hong Kong</option>
+          <option value="+08:75">(GMT +8:45) Eucla</option>
+          <option value="+09:00">(GMT +9:00) Tokyo, Seoul, Osaka, Sapporo, Yakutsk</option>
+          <option value="+09:50">(GMT +9:30) Adelaide, Darwin</option>
+          <option value="+10:00">(GMT +10:00) Eastern Australia, Guam, Vladivostok</option>
+          <option value="+10:50">(GMT +10:30) Lord Howe Island</option>
+          <option value="+11:00">(GMT +11:00) Magadan, Solomon Islands, New Caledonia</option>
+          <option value="+11:50">(GMT +11:30) Norfolk Island</option>
+          <option value="+12:00">(GMT +12:00) Auckland, Wellington, Fiji, Kamchatka</option>
+          <option value="+12:75">(GMT +12:45) Chatham Islands</option>
+          <option value="+13:00">(GMT +13:00) Apia, Nukualofa</option>
+          <option value="+14:00">(GMT +14:00) Line Islands, Tokelau</option>
+        </select>
+      </div>
+        
     </div>
 
     <label class="repeat-row">
       <span>Repeating Weekly</span>
-      <input type="checkbox" />
+      <input type="checkbox" id="weekly-checkbox"/>
     </label>
 
     <div class="field">
       <div class="label-text">What days could work?</div>
-
-      <div class="day-pills" role="group" aria-label="Days of week">
-        <button class="pill selected">Sun</button>
+      <div id="day-pills" role="group" aria-label="Days of week">
+        <button class="pill">Sun</button>
         <button class="pill">Mon</button>
-        <button class="pill pill-group">Tues</button>
-        <button class="pill pill-group">Weds</button>
-        <button class="pill pill-group">Thrs</button>
+        <button class="pill">Tues</button>
+        <button class="pill">Weds</button>
+        <button class="pill">Thrs</button>
         <button class="pill">Fri</button>
         <button class="pill">Sat</button>
       </div>
-    </div>
+    
 
-    <div class="calendar-area">
+    <div id="calendar-area">
       <Calendar client:load month={_calendarMonth} year={_calendarYear} />
     </div>
   </div>
+  <div class="create-button-row">
+    <button type="button" class="create-button">Create</button>
+  </div>
 </section>
+
+<script>
+  var checkbox = document.getElementById("weekly-checkbox");
+  var pills = document.getElementById("day-pills");
+  var calendar = document.getElementById("calendar-area");
+  if(checkbox!=null && pills != null && calendar != null)
+  checkbox.addEventListener('change', function() {
+    if(pills!.style.display == "flex") {
+      pills!.style.display = "none";
+      calendar!.style.display = "flex";
+    }
+    else {
+      pills!.style.display = "flex";
+      calendar!.style.display = "none";
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', function() {
+  var btns = document.querySelectorAll('.pill');
+
+  for(var i = 0; i < btns.length; i++) {
+  btns[i].addEventListener('click', function() {
+    this.classList.toggle('selected'); // Toggles 'active-class' on and off
+  });
+}  
+});
+</script>
+
 
 <style>
 :root{
@@ -124,6 +201,15 @@ const _calendarYear = _now.getFullYear();
   background:var(--muted);
   padding:6px 10px;
   border-radius:6px;
+  border: 0;
+}
+
+.timezone-row {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:14px 0px 0px;
+  border-radius:6px;
 }
 .time-input {
   border:0;
@@ -131,6 +217,8 @@ const _calendarYear = _now.getFullYear();
   font-size:14px;
   padding:0;
 }
+
+
 .ampm {
   margin-left:6px;
   color:#222;
@@ -145,15 +233,16 @@ const _calendarYear = _now.getFullYear();
   display:flex;
   align-items:center;
   gap:12px;
-  margin:10px 0 18px;
+  margin:0px 0px 10px;
   font-size:16px;
 }
-.day-pills {
-  display:flex;
+#day-pills {
+  display:none;
   gap:10px;
   align-items:center;
   flex-wrap:wrap;
-  margin-top:6px;
+  margin-top:40px;
+  margin-bottom: 40px;
 }
 .pill {
   background:transparent;
@@ -164,18 +253,32 @@ const _calendarYear = _now.getFullYear();
   font-size:15px;
   color:#111;
 }
+
+.pill:hover {
+  background: #fafafa;
+  color:#111;
+  box-shadow: inset 0 0 0 2px rgba(0,0,0,0.02);
+}
+
 .pill.selected {
   background:var(--pill-bg);
   color:#111;
   box-shadow: inset 0 0 0 2px rgba(0,0,0,0.02);
 }
+
+.pill.selected:hover {
+  background: #d1d1d1;
+  color:#111;
+  box-shadow: inset 0 0 0 2px rgba(0,0,0,0.02);
+}
+
 .pill-group {
   /* make some pills appear as a group/longer (matches screenshot feel) */
   padding-left:28px;
   padding-right:28px;
   border-radius:28px;
 }
-.calendar-area {
+#calendar-area {
   margin-top:18px;
   display:flex;
   justify-content:flex-start;
@@ -186,4 +289,27 @@ const _calendarYear = _now.getFullYear();
   }
   .title { font-size:18px; }
 }
+
+.create-button-row {
+  display: flex;
+  justify-content: center;
+}
+
+.create-button {
+  border-radius: 6px;
+  background: #7ebdfc;
+  border: 0px;
+  color: white;
+  font-family: bold;
+  font-weight: bold;
+  font-size: 20px;
+  padding: 20px 42px;
+  margin: 10px;
+  transition: background 0.2s;
+}
+
+.create-button:hover {
+  background: #6590e0;
+}
+
 </style>
