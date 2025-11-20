@@ -1,5 +1,24 @@
 import React, { useEffect, useState } from "react";
 
+function CalendarDay({ day, isSelected, onClick }) {
+  return (<div
+    className={`cm-cell ${day ? "" : "empty"} ${isSelected ? "selected-day" : ""}`}
+  >
+    {day ? (
+      <button
+        type="button"
+        className="date-btn"
+        onClick={() => onClick(day)}
+        aria-pressed={isSelected}
+      >
+        {day}
+      </button>
+    ) : null}
+  </div>)
+}
+
+
+
 export default function Calendar({
   month: initialMonth,
   year: initialYear,
@@ -8,7 +27,18 @@ export default function Calendar({
   const now = new Date();
   const [month, setMonth] = useState(initialMonth ?? now.getMonth() + 1); // 1..12
   const [year, setYear] = useState(initialYear ?? now.getFullYear());
-  const [selectedDay, setSelectedDay] = useState(null);
+  const [selectedDays, setSelectedDays] = useState([]);
+
+  function handleClick(day) {
+    if (selectedDays.includes(day)) {
+      const newArray = selectedDays.filter((c) => {return c != day}); 
+      setSelectedDays(newArray);
+    }
+    else {
+      setSelectedDays([...selectedDays, day]);
+    }
+    console.log(day);
+  }
 
   useEffect(() => {
     if (initialMonth) setMonth(initialMonth);
@@ -70,8 +100,8 @@ export default function Calendar({
   const weeks = buildWeeks(year, month);
 
   // format selected date as YYYY-MM-DD for form submission
-  const formattedSelected = selectedDay
-    ? `${year}-${String(month).padStart(2, "0")}-${String(selectedDay).padStart(2, "0")}`
+  const formattedSelected = selectedDays[0]
+    ? `${year}-${String(month).padStart(2, "0")}-${String(selectedDays[0]).padStart(2, "0")}`
     : "";
 
   return (
@@ -117,23 +147,9 @@ export default function Calendar({
       <div className="cm-grid" aria-hidden="false">
         {weeks.map((week, wi) =>
           week.map((day, di) => {
-            const isSelected = day && selectedDay === day;
+            const isSelected = day && selectedDays.includes(day);
             return (
-              <div
-                key={`${wi}-${di}`}
-                className={`cm-cell ${day ? "" : "empty"} ${isSelected ? "selected-day" : ""}`}
-              >
-                {day ? (
-                  <button
-                    type="button"
-                    className="date-btn"
-                    onClick={() => setSelectedDay(day)}
-                    aria-pressed={isSelected}
-                  >
-                    {day}
-                  </button>
-                ) : null}
-              </div>
+              <CalendarDay day = {day} isSelected = {isSelected} onClick = {handleClick} key = {wi + "-" + di}/>
             );
           }),
         )}
