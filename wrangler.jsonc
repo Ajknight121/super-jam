@@ -55,7 +55,7 @@
   // "services": [{ "binding": "MY_SERVICE", "service": "my-service" }]
   "env": {
     // This is for a deployment of the main branch. samuel-skean manages this deployment under his cloudflare account.
-    "main_samuel_skean": {
+    "main-samuel-skean": {
       "d1_databases": [
         {
           "binding": "DB",
@@ -66,7 +66,7 @@
       ]
     },
     // This is for a deployment of the `dev` branch. samuel-skean manages this deployment under his cloudflare account.
-    "dev_samuel_skean": {
+    "dev-samuel-skean": {
       "d1_databases": [
         {
           "binding": "DB",
