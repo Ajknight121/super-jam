@@ -202,7 +202,6 @@ export default function AvailabilityChart({ meetingId, userId }) {
   const handleSelectionChange = async (items: Record<string, boolean>) => {
     setSelectedItems(items);
     const availability = Object.keys(items);
-    console.log(availability);
     await setUserAvailability(meetingId, userId, availability);
     await getCurrentMeeting(meetingId);
   };
