@@ -6,6 +6,10 @@
   position: absolute;
 }
 
+.overflow-auto {
+  overflow: auto;
+}
+
 .flex {
   display: flex;
 }
@@ -13,6 +17,14 @@
 .flex-row {
   flex-direction: row;
 }
+.z-0 {
+  z-index: 0;
+}
+
+.z-10 {
+  z-index: 10;
+}
+
 
 .border-black {
   border: 1px solid black;
@@ -121,5 +133,34 @@
 }
 
 .controls {
-  height: 30px;
+  height: fit-content;
+}
+
+.notice {
+  display: block;
+  margin: 15px auto;
+  padding: 10px;
+  background-color: rgb(255, 255, 255);
+  border: 3px solid rgb(255, 193, 99);
+  width: fit-content;
+  
+}
+
+.notice.flash {
+  animation: flash-animation 0.5s 2;
+}
+
+@keyframes flash-animation {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }

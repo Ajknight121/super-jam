@@ -67,6 +67,7 @@ export default function AvailabilityChart({ meetingId, userId }) {
   const [error, setError] = useState(null);
   const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>({});
   const [isEditing, setIsEditing] = useState(false);
+  const [flashNotice, setFlashNotice] = useState(false);
   const clientTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   const colors = Array.from({ length: maxSegments }, (_, i) => {
@@ -248,6 +249,15 @@ export default function AvailabilityChart({ meetingId, userId }) {
     return `${slotTime.toISOString().split(".")[0]}Z`;
   });
 
+  const highlightLogin = () => {
+    if (!userId) {
+      setFlashNotice(true);
+      setTimeout(() => {
+        setFlashNotice(false);
+      }, 1000); // Duration of the animation
+    }
+  };
+
   return (
     <div className="availability-chart">
       <div className="meeting-details">
@@ -332,7 +342,7 @@ export default function AvailabilityChart({ meetingId, userId }) {
             </div>
           </DragSelect>
         ) : (
-          <div className="availability-chart-grid view-only">
+          <div className="availability-chart-grid view-only" onClick={highlightLogin}>
             {availableDayConstraints.days.map((day, dayIndex) => (
               <div key={day} className="availability-chart-grid-day">
                 {timeSlots.map((time, index) => {
@@ -370,7 +380,7 @@ export default function AvailabilityChart({ meetingId, userId }) {
             {isEditing ? "View All Availability" : "Edit My Availability"}
           </button>
         ) : (
-          <div>Sign in to add availability</div>
+          <div className={`notice ${flashNotice ? "flash" : ""}`}>Sign in below to add availability</div>
         )}
       </div>
     </div>
