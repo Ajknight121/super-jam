@@ -19,7 +19,6 @@ export default function SignIn({
   error: string | null;
   handleSubmit: (e: React.FormEvent) => Promise<void>;
 }) {
-
   return (
     <form onSubmit={handleSubmit} className="login-form">
       <div className="login-inputs">
@@ -39,7 +38,11 @@ export default function SignIn({
         />
       </div>
 
-      {error ? <div role="alert" style={{ color: "crimson", marginTop: 8 }}>{error}</div>: null}
+      {error ? (
+        <div role="alert" style={{ color: "crimson", marginTop: 8 }}>
+          {error}
+        </div>
+      ) : null}
 
       <button type="submit" disabled={busy} style={{ marginTop: 10 }}>
         {busy ? "Creating User..." : "Submit"}

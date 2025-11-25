@@ -66,7 +66,6 @@ export default function AvailabilityPage({ meetingId }) {
 
   return (
     <div className="availability-page">
-
       <div className="availabilities">
         <AvailabilityChart meetingId={meetingId} userId={userId} />
       </div>
