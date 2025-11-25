@@ -1,10 +1,12 @@
 ---
+/** biome-ignore-all lint/correctness/noUnusedImports: We barely use Astro. When biome supports Astro stably, we'll remove this. But for now it's just not worth it. */
 export const prerender = false;
 
 import AvailabilityChart from "../../components/AvailabilityChart";
 import AvailabilityPage from "../../components/AvailabilityPage";
 import Layout from "../../layouts/Layout.astro";
 
+// biome-ignore lint/correctness/noUnusedVariables: We barely use Astro. When biome supports Astro stably, we'll remove this. But for now it's just not worth it to configure.
 const { meetingId } = Astro.params;
 ---
 
