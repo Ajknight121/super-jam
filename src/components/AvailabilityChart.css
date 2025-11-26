@@ -85,7 +85,6 @@
   /* The grid can grow up to 60% of the viewport height, but will not shrink smaller than its content. */
   /* If content is taller than 60vh, a scrollbar will appear. */
   max-height: 55vh;
-  overflow-y: auto;
   border: 1px solid #ccc; /* Add a border to see the container */
 }
 

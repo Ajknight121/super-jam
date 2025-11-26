@@ -241,6 +241,31 @@ export default function AvailabilityChart({ meetingId, userId }) {
     }
   };
 
+  const chartHeader = (
+    <div className="availability-chart-days">
+      {availabilityBounds.availableDayConstraints.type === "daysOfWeek"
+        ? availabilityBounds.availableDayConstraints.days.map((day) => (
+            <div key={day} className="availability-chart-day">
+              <div className="day-name">{day}</div>
+            </div>
+          ))
+        : availabilityBounds.availableDayConstraints.days.map((day) => {
+            const date = new Date(day);
+            const formattedDate = date.toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+              timeZone: "UTC",
+            });
+            return (
+              <div key={day} className="availability-chart-day">
+                <div className="day-name">{formattedDate}</div>
+              </div>
+            );
+          })}
+    </div>
+  );
+
   return (
     <div className="availability-chart">
       <div className="meeting-details">
@@ -275,35 +300,12 @@ export default function AvailabilityChart({ meetingId, userId }) {
       </div>
 
       <div className="display">
-        <div className="availability-chart-days">
-          {availabilityBounds.availableDayConstraints.type === "daysOfWeek"
-            ? availabilityBounds.availableDayConstraints.days.map(
-                (day, index) => (
-                  <div key={day} className="availability-chart-day">
-                    <div className="day-name">{day}</div>
-                  </div>
-                ),
-              )
-            : availabilityBounds.availableDayConstraints.days.map((day) => {
-                const date = new Date(day);
-                const formattedDate = date.toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                  timeZone: "UTC",
-                });
-                return (
-                  <div key={day} className="availability-chart-day">
-                    <div className="day-name">{formattedDate}</div>
-                  </div>
-                );
-              })}
-        </div>
         {isEditing ? (
           <DragSelect
             onSelectionChange={handleSelectionChange}
             initialItems={selectedItems}
           >
+            {chartHeader}
             <div className="availability-chart-grid">
               {availableDayConstraints.days.map((day, dayIndex) => (
                 <div key={day} className="availability-chart-grid-day">
@@ -340,6 +342,9 @@ export default function AvailabilityChart({ meetingId, userId }) {
             </div>
           </DragSelect>
         ) : (
+          <>
+          
+          {chartHeader}
           <div
             className="availability-chart-grid view-only"
             onClick={highlightLogin}
@@ -377,6 +382,7 @@ export default function AvailabilityChart({ meetingId, userId }) {
               </div>
             ))}
           </div>
+          </>
         )}
       </div>
       <div className="controls">

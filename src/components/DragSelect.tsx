@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/a11y/noStaticElementInteractions: <explanation> */
 "use client";
 
 import clsx from "clsx";
@@ -241,10 +242,8 @@ export function Root({
           updateSelectedItems(dragVector, nextScrollVector);
         }}
         onPointerDown={(e) => {
-          console.log("d");
 
           if (e.button !== 0) return;
-          console.log("down");
 
           const target = e.target as HTMLElement;
           const itemElement = target.closest<HTMLElement>("[data-item]");
@@ -337,6 +336,7 @@ export function Root({
           setDragVector(null);
           setScrollVector(null);
         }}
+        style={{ touchAction: "none" }}
         tabIndex={-1}
         onKeyDown={(e) => {
           if (e.key === "Escape") {
