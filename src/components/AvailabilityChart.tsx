@@ -117,7 +117,7 @@ export function objToUtc(obj: UtcObject): string {
     ),
   );
   // Ensure the format is YYYY-MM-DDTHH:mm:ssZ without milliseconds
-  return date.toISOString().split(".")[0] + "Z";
+  return `${date.toISOString().split(".")[0]}Z`;
 }
 
 export default function AvailabilityChart({ meetingId, userId }) {
@@ -307,7 +307,7 @@ export default function AvailabilityChart({ meetingId, userId }) {
                       const offset = dayOffsets[day.toLowerCase()] ?? 0;
                       const date = new Date(time);
                       date.setUTCDate(date.getUTCDate() + offset);
-                      adjustedTime = date.toISOString().split(".")[0] + "Z";
+                      adjustedTime = `${date.toISOString().split(".")[0]}Z`;
                     } else if (
                       availableDayConstraints.type === "specificDays"
                     ) {
@@ -318,7 +318,7 @@ export default function AvailabilityChart({ meetingId, userId }) {
                         slotDate.getUTCMinutes(),
                         slotDate.getUTCSeconds(),
                       );
-                      adjustedTime = dayDate.toISOString().split(".")[0] + "Z";
+                      adjustedTime = `${dayDate.toISOString().split(".")[0]}Z`;
                     }
 
                     return (
@@ -346,7 +346,7 @@ export default function AvailabilityChart({ meetingId, userId }) {
                     const offset = dayOffsets[day.toLowerCase()] ?? 0;
                     const date = new Date(time);
                     date.setUTCDate(date.getUTCDate() + offset);
-                    adjustedTime = date.toISOString().split(".")[0] + "Z";
+                    adjustedTime = `${date.toISOString().split(".")[0]}Z`;
                   } else if (availableDayConstraints.type === "specificDays") {
                     const slotDate = new Date(time);
                     const dayDate = new Date(day);
@@ -355,7 +355,7 @@ export default function AvailabilityChart({ meetingId, userId }) {
                       slotDate.getUTCMinutes(),
                       slotDate.getUTCSeconds(),
                     );
-                    adjustedTime = dayDate.toISOString().split(".")[0] + "Z";
+                    adjustedTime = `${dayDate.toISOString().split(".")[0]}Z`;
                   }
                   const count = availabilityCounts[adjustedTime] || 0;
                   const ratio = maxAvailable > 0 ? count / maxAvailable : 0;

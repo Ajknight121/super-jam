@@ -4,7 +4,7 @@
 */
 import Calendar from "./Calendar.jsx";
 import "./MeetingForm.css";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { createMeeting } from "../api/meetings";
 
 const _now = new Date();
@@ -87,7 +87,7 @@ export default function MeetingForm() {
     console.log("Creating meeting:", new_meeting);
     const meetingResult = await createMeeting(new_meeting);
 
-    if (meetingResult && meetingResult.id) {
+    if (meetingResult?.id) {
       console.log("Successfully created meeting with ID:", meetingResult.id);
       window.location.href = `/availability/${meetingResult.id}`;
     } else {
@@ -1254,9 +1254,8 @@ export default function MeetingForm() {
           {daysError && (
             <div className="error-text">Please select at least one day.</div>
           )}
-          <div
+          <fieldset
             id="day-pills"
-            role="group"
             aria-label="Days of week"
             className={isRepeatingWeekly ? "" : "hidden"}
           >
@@ -1316,7 +1315,7 @@ export default function MeetingForm() {
             >
               Sat
             </button>
-          </div>
+          </fieldset>
         </div>
         <div id="calendar-area" className={isRepeatingWeekly ? "hidden" : ""}>
           <Calendar

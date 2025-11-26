@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 function CalendarDay({ day, isSelected, onClick }) {
-  const dayOfMonth = day ? new Date(day + "T00:00:00Z").getUTCDate() : null;
+  const dayOfMonth = day ? new Date(`${day}T00:00:00Z`).getUTCDate() : null;
   return (
     <div
       className={`cm-cell ${day ? "" : "empty"} ${isSelected ? "selected-day" : ""}`}
