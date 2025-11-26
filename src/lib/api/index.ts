@@ -1,5 +1,3 @@
-import assert from "node:assert";
-
 // TODO(samuel-skean): This is a false-sense-of-security type-safety bomb waiting to go off. Basically, if you put any response into it, it will give you back whatever response you want it to return. I'm not sure of a better way to do this, but it's just a shame. I think it would honestly be better for it to return `Promise<unknown | undefined>` to force all users to cast, but I'm not willing to make that call just yet.
 // TODO(samuel-skean): The bomb went off. I defused it in this commit.
 export async function handleApiResponse<T>(

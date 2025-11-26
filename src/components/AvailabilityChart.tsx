@@ -1,13 +1,60 @@
-import { useEffect, useState } from "react";
-import type {
-  Meeting,
-  MeetingAvailability,
-  UserAvailability,
-} from "#/src/api-types-and-schemas";
+import { useCallback, useEffect, useState } from "react";
+import type { Meeting } from "#/src/api-types-and-schemas";
 import { getMeeting, setUserAvailability } from "../lib/api/meetings";
 
 import "./AvailabilityChart.css";
 import { Root as DragSelect, InputCell } from "./DragSelect";
+
+const exampleMeeting2: Meeting = {
+  name: "Example Meeting (Failed to Load)",
+  availability: {
+    user1: [
+      "2025-01-01T09:00:00Z",
+      "2025-01-01T09:00:00Z",
+      "2025-01-01T09:30:00Z",
+      "2025-01-02T10:00:00Z",
+      "2025-01-02T10:15:00Z",
+      "",
+      "",
+      "",
+    ],
+    user2: [
+      "2025-01-01T09:15:00Z",
+      "2025-01-01T09:30:00Z",
+      "2025-01-01T09:45:00Z",
+      "2025-01-03T11:00:00Z",
+      "2025-01-03T11:15:00Z",
+    ],
+    user3: [
+      "2025-01-01T09:00:00Z",
+      "2025-01-01T09:15:00Z",
+      "2025-01-04T14:00:00Z",
+      "2025-01-04T14:15:00Z",
+      "2025-01-04T14:30:00Z",
+    ],
+    user4: [
+      "2025-01-01T09:15:00Z",
+      "2025-01-01T09:30:00Z",
+      "2025-01-01T10:00:00Z",
+    ],
+  },
+  availabilityBounds: {
+    timeRangeForEachDay: {
+      start: "2025-01-01T09:00:00Z",
+      end: "2025-01-01T17:00:00Z",
+    },
+    availableDayConstraints: {
+      type: "specificDays",
+      days: [
+        "2025-01-01T00:00:00Z",
+        "2025-01-02T00:00:00Z",
+        "2025-01-03T00:00:00Z",
+        "2025-01-04T00:00:00Z",
+      ],
+    },
+  },
+  timeZone: "America/Chicago",
+};
 
 /**
  * Calculates the number of 15-minute slots between a start and end time.
@@ -88,145 +135,44 @@ export default function AvailabilityChart({ meetingId, userId }) {
     return getGradientColor(ratio);
   });
 
-  const exampleMeeting: Meeting = {
-    name: "Example Meeting (Failed to Load)",
-    availability: {
-      user1: [
-        "1970-01-01T09:00:00Z",
-        "",
-        "1970-01-01T09:30:00Z",
-        "1970-01-01T09:00:00Z",
-        "",
-        "",
-        "1970-01-02T10:00:00Z",
-        "1970-01-02T10:15:00Z",
-      ],
-      user2: [
-        "1970-01-01T09:15:00Z",
-        "1970-01-01T09:30:00Z",
-        "1970-01-01T09:45:00Z",
-        "1970-01-03T11:00:00Z",
-        "1970-01-03T11:15:00Z",
-      ],
-      user3: [
-        "1970-01-01T09:00:00Z",
-        "1970-01-01T09:15:00Z",
-        "1970-01-04T14:00:00Z",
-        "1970-01-04T14:15:00Z",
-        "1970-01-04T14:30:00Z",
-      ],
-      user4: [
-        "1970-01-01T09:15:00Z",
-        "1970-01-01T09:30:00Z",
-        "1970-01-01T10:00:00Z",
-      ],
+  const getCurrentMeeting = useCallback(
+    async (meetingId) => {
+      try {
+        setError(null);
+        const meetingData = await getMeeting(meetingId);
+        setMeeting(meetingData);
+        // Initialize selected items from fetched availability
+        const initialAvailability: string[] =
+          meetingData.availability[userId] ?? [];
+        setSelectedItems(
+          initialAvailability.reduce((acc, time) => {
+            // This needs to be more robust to handle different day representations
+            // For now, we assume we can find the day for the given time.
+            return { ...acc, [time]: true };
+          }, {}),
+        );
+      } catch (err) {
+        setError(err);
+        setMeeting(exampleMeeting2);
+        // Initialize selected items from fetched availability
+        const initialAvailability = exampleMeeting2.availability[userId] ?? [];
+        console.log(userId, exampleMeeting2.availability[userId]);
+        setSelectedItems(
+          initialAvailability.reduce((acc, time) => {
+            if (!time) return acc;
+            // This needs to be more robust to handle different day representations
+            // For now, we assume we can find the day for the given time.
+            return { ...acc, [time]: true };
+          }, {}),
+        );
+      }
     },
-    availabilityBounds: {
-      timeRangeForEachDay: {
-        start: "1970-01-01T09:00:00Z",
-        end: "1970-01-01T17:00:00Z",
-      },
-      availableDayConstraints: {
-        type: "daysOfWeek",
-        days: [
-          "monday",
-          "tuesday",
-          "wednesday",
-          "thursday",
-          "friday",
-          "saturday",
-          "sunday",
-        ],
-      },
-    },
-    timeZone: "America/Chicago",
-  };
-  const exampleMeeting2: Meeting = {
-    name: "Example Meeting (Failed to Load)",
-    availability: {
-      user1: [
-        "2025-01-01T09:00:00Z",
-        "2025-01-01T09:00:00Z",
-        "2025-01-01T09:30:00Z",
-        "2025-01-02T10:00:00Z",
-        "2025-01-02T10:15:00Z",
-        "",
-        "",
-        "",
-      ],
-      user2: [
-        "2025-01-01T09:15:00Z",
-        "2025-01-01T09:30:00Z",
-        "2025-01-01T09:45:00Z",
-        "2025-01-03T11:00:00Z",
-        "2025-01-03T11:15:00Z",
-      ],
-      user3: [
-        "2025-01-01T09:00:00Z",
-        "2025-01-01T09:15:00Z",
-        "2025-01-04T14:00:00Z",
-        "2025-01-04T14:15:00Z",
-        "2025-01-04T14:30:00Z",
-      ],
-      user4: [
-        "2025-01-01T09:15:00Z",
-        "2025-01-01T09:30:00Z",
-        "2025-01-01T10:00:00Z",
-      ],
-    },
-    availabilityBounds: {
-      timeRangeForEachDay: {
-        start: "2025-01-01T09:00:00Z",
-        end: "2025-01-01T17:00:00Z",
-      },
-      availableDayConstraints: {
-        type: "specificDays",
-        days: [
-          "2025-01-01T00:00:00Z",
-          "2025-01-02T00:00:00Z",
-          "2025-01-03T00:00:00Z",
-          "2025-01-04T00:00:00Z",
-        ],
-      },
-    },
-    timeZone: "America/Chicago",
-  };
-
-  const getCurrentMeeting = async (meetingId) => {
-    try {
-      setError(null);
-      const meetingData = await getMeeting(meetingId);
-      setMeeting(meetingData);
-      // Initialize selected items from fetched availability
-      const initialAvailability: string[] =
-        meetingData.availability[userId] ?? [];
-      setSelectedItems(
-        initialAvailability.reduce((acc, time) => {
-          // This needs to be more robust to handle different day representations
-          // For now, we assume we can find the day for the given time.
-          return { ...acc, [time]: true };
-        }, {}),
-      );
-    } catch (err) {
-      setError(err);
-      setMeeting(exampleMeeting2);
-      // Initialize selected items from fetched availability
-      const initialAvailability = exampleMeeting2.availability[userId] ?? [];
-      console.log(userId, exampleMeeting2.availability[userId]);
-      setSelectedItems(
-        initialAvailability.reduce((acc, time) => {
-          if (!time) return acc;
-          // This needs to be more robust to handle different day representations
-          // For now, we assume we can find the day for the given time.
-          return { ...acc, [time]: true };
-        }, {}),
-      );
-    }
-  };
+    [userId],
+  );
 
   useEffect(() => {
     getCurrentMeeting(meetingId);
-  }, [meetingId, userId]);
+  }, [meetingId, getCurrentMeeting]);
 
   const handleSelectionChange = async (items: Record<string, boolean>) => {
     setSelectedItems(items);

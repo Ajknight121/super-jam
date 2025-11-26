@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 function CalendarDay({ day, isSelected, onClick }) {
   const dayOfMonth = day ? new Date(day + "T00:00:00Z").getUTCDate() : null;
@@ -109,9 +109,8 @@ export default function Calendar({
   const formattedSelected = selectedDays[0] || "";
 
   return (
-    <div
+    <section
       className="cm-calendar"
-      role="region"
       aria-label={`Calendar ${monthNames[month - 1]} ${year}`}
       data-month={month}
       data-year={year}
@@ -240,6 +239,6 @@ export default function Calendar({
           box-shadow: inset 0 0 0 2px rgba(0,0,0,0.02);
         }
       `}</style>
-    </div>
+    </section>
   );
 }

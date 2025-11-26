@@ -193,7 +193,7 @@ export function Root({
 
       handle = requestAnimationFrame(scrollTheLad);
     }
-  }, [isDragging, dragVector, updateSelectedItems]);
+  }, [isDragging, dragVector]);
 
   const selectionRect =
     dragVector && scrollVector && containerRef.current
@@ -222,7 +222,6 @@ export function Root({
                     </div>
                 )} */}
       </div>
-      {/** biome-ignore lint/a11y/noStaticElementInteractions: <explanation> */}
       <div
         className="availability-chart-grid-container relative z-0 border-black grid grid-cols-[repeat(20,min-content)] gap-4 p-4 max-h-96 overflow-auto focus:outline-none focus:border-dashed -translate-y-0.5"
         ref={containerRef}

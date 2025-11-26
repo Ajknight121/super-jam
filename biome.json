@@ -20,6 +20,10 @@
   "linter": {
     "enabled": true,
     "rules": {
+      "a11y": {
+        "noStaticElementInteractions": "warn",
+        "useKeyWithClickEvents": "warn"
+      },
       "recommended": true
     }
   },
