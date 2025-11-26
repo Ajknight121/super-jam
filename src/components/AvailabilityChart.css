@@ -55,6 +55,7 @@
 }
 
 .display {
+  position: relative;
   overflow-x: scroll;
   display: flex;
   flex-direction: column;
@@ -62,10 +63,13 @@
 }
 
 .availability-chart-days {
+  position: sticky;
+  top: 0;
   display: flex;
   flex-direction: row;
   width: fit-content;
   background-color: aliceblue;
+  z-index: 1;
 }
 
 .availability-chart-day {
