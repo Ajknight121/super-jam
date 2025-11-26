@@ -60,6 +60,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  padding-bottom: 10px;
 }
 
 .availability-chart-days {
@@ -85,11 +86,7 @@
   flex-direction: row;
   width: fit-content;
   height: 100%;
-  background-color: brown;
-  /* The grid can grow up to 60% of the viewport height, but will not shrink smaller than its content. */
-  /* If content is taller than 60vh, a scrollbar will appear. */
   max-height: 55vh;
-  border: 1px solid #ccc; /* Add a border to see the container */
 }
 
 .availability-chart-grid-day {
@@ -162,5 +159,30 @@
   100% {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+@media (max-width: 768px) {
+  .display {
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .display::-webkit-scrollbar {
+    height: 10px;
+  }
+
+  .display::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 5px;
+  }
+
+  .availability-chart-grid-container::-webkit-scrollbar {
+    height: 20px;
+  }
+
+  .availability-chart-grid-container::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 5px;
   }
 }
