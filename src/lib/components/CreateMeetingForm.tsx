@@ -3,9 +3,9 @@
   This is primarily styling + markup; small interactivity via HTML/CSS.
 */
 import Calendar from "./Calendar.jsx";
-import "./MeetingForm.css";
+import "./CreateMeetingForm.css";
 import { useState } from "react";
-import { createMeeting } from "../api/meetings";
+import { createMeeting } from "../api/meetings.js";
 
 const _now = new Date();
 const _calendarMonth = _now.getMonth() + 1;
