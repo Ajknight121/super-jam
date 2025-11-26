@@ -200,10 +200,6 @@ export default function AvailabilityChart({ meetingId, userId }) {
     });
   });
 
-  const counts = Object.values(availabilityCounts);
-  const maxAvailable = counts.length > 0 ? Math.max(...counts) : 0;
-  const minAvailable = counts.length > 0 ? Math.min(...counts) : 0;
-
   const totalPeople = Object.keys(availability).length;
 
   const dayOffsets: { [key: string]: number } = {
@@ -226,6 +222,15 @@ export default function AvailabilityChart({ meetingId, userId }) {
     const slotTime = new Date(startTime.getTime() + i * 15 * 60 * 1000);
     return `${slotTime.toISOString().split(".")[0]}Z`;
   });
+
+  const counts = Object.values(availabilityCounts);
+  const maxAvailable = counts.length > 0 ? Math.max(...counts) : 0;
+  const minAvailable =
+    counts.length > 0 &&
+    Object.keys(availabilityCounts).length ===
+      availableDayConstraints.days.length * numberOfSlots
+      ? Math.min(...counts)
+      : 0;
 
   const highlightLogin = () => {
     if (!userId) {

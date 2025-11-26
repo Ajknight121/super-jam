@@ -5,8 +5,6 @@ import { createUser } from "../lib/api/users";
 import SignIn from "./SignIn";
 
 export default function AvailabilityPage({ meetingId }) {
-  const isSignedIn = false;
-  const isEditing = false;
 
   const [userId, setUserId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -48,14 +46,7 @@ export default function AvailabilityPage({ meetingId }) {
       </div>
 
       <div className="login">
-        {isEditing ? (
-          <div className="edit-button">
-            {/* {isSignedIn ? "Edit Availability" : (<div>Sign In </b> & </b> Add Availability</div>)} */}
-            <div className="circle-button">
-              <div className="circle-button-text">Edit Availability</div>
-            </div>
-          </div>
-        ) : isSignedIn ? (
+        { userId ? (
           <div>Add your availability above</div>
         ) : (
           <SignIn
