@@ -70,7 +70,8 @@ function calculateTimeSlots(start: string, end: string): number {
 }
 
 function getGradientColor(ratio: number) {
-  const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
+  const clamp = (num: number, min: number, max: number) =>
+    Math.min(Math.max(num, min), max);
   const value = clamp(ratio * 100, 0, 100);
 
   const start = { r: 237, g: 243, b: 252 };
@@ -136,7 +137,7 @@ export default function AvailabilityChart({ meetingId, userId }) {
   });
 
   const getCurrentMeeting = useCallback(
-    async (meetingId) => {
+    async (meetingId: string) => {
       try {
         setError(null);
         const meetingData = await getMeeting(meetingId);

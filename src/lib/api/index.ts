@@ -3,7 +3,7 @@
 export async function handleApiResponse<T>(
   res: Response,
   parseFn?: (json: unknown) => T,
-): Promise<T | (T & { id: string }) | undefined> {
+): Promise<T | (T & { id: string })> {
   if (!res.ok) {
     // Provide a helpful error for 405 vs other errors
     if (res.status === 405) {
@@ -16,7 +16,7 @@ export async function handleApiResponse<T>(
 
   // 204 No Content - nothing to parse
   if (res.status === 204) {
-    return undefined;
+    throw new Error("We got a 204, but no part of our API throws a 204.");
   }
 
   let responseBody: unknown;

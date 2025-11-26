@@ -3,7 +3,7 @@ import { handleApiResponse } from "./index";
 
 export async function createUser(
   defaultName: string,
-): Promise<{ id: string; defaultName: string } | undefined> {
+): Promise<{ id: string; defaultName: string }> {
   const res = await fetch(`/api/users`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -13,7 +13,7 @@ export async function createUser(
   return await handleApiResponse(res);
 }
 
-export async function getUser(userId: string): Promise<User | undefined> {
+export async function getUser(userId: string): Promise<User> {
   const res = await fetch(`/api/users/${encodeURIComponent(userId)}`);
   return handleApiResponse(res);
 }

@@ -11,8 +11,7 @@ export default function SignIn({
 }: {
   name: string;
   setName: (name: string) => void;
-  password;
-  string;
+  password: string;
   setPassword: (password: string) => void;
   busy: boolean;
   error: string | null;

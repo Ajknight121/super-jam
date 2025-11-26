@@ -11,9 +11,7 @@ import {
 import { handleApiResponse } from "./index";
 
 // Get a meeting by id
-export async function getMeeting(
-  meetingId: string,
-): Promise<Meeting | undefined> {
+export async function getMeeting(meetingId: string): Promise<Meeting> {
   const res = await fetch(`/api/meetings/${encodeURIComponent(meetingId)}`);
   return handleApiResponse(res, (json) => MeetingSchema.parse(json));
 }
@@ -21,7 +19,7 @@ export async function getMeeting(
 // Create a meeting - stub
 export async function createMeeting(
   meeting: Partial<Meeting>,
-): Promise<{ id: string } | undefined> {
+): Promise<{ id: string }> {
   const res = await fetch(`/api/meetings`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -34,7 +32,7 @@ export async function createMeeting(
 // Get availability for a meeting (all users)
 export async function getMeetingAvailability(
   meetingId: string,
-): Promise<MeetingAvailability | undefined> {
+): Promise<MeetingAvailability> {
   const res = await fetch(
     `/api/meetings/${encodeURIComponent(meetingId)}/availability`,
   );
@@ -47,7 +45,7 @@ export async function getMeetingAvailability(
 export async function getUserAvailability(
   meetingId: string,
   userId: string,
-): Promise<UserAvailability | undefined> {
+): Promise<UserAvailability> {
   const res = await fetch(
     `/api/meetings/${encodeURIComponent(meetingId)}/availability/${encodeURIComponent(userId)}`,
   );
@@ -73,9 +71,7 @@ export async function setUserAvailability(
 
 // Get or set a meeting name
 // name endpoint currently unimplemented - adjust when implemented
-export async function getMeetingName(
-  meetingId: string,
-): Promise<string | undefined> {
+export async function getMeetingName(meetingId: string): Promise<string> {
   const res = await fetch(
     `/api/meetings/${encodeURIComponent(meetingId)}/name`,
   );
