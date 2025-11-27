@@ -1,3 +1,5 @@
+/** biome-ignore-all lint/a11y/noStaticElementInteractions: <explanation> */
+/** biome-ignore-all lint/a11y/useKeyWithClickEvents: <explanation> */
 import { useCallback, useEffect, useState } from "react";
 import type { Meeting } from "#/src/api-types-and-schemas";
 import { getMeeting, setUserAvailability } from "../lib/api/meetings";
@@ -121,6 +123,37 @@ export function objToUtc(obj: UtcObject): string {
   return `${date.toISOString().split(".")[0]}Z`;
 }
 
+async function uploadCss(meetingId: string, file: File) {
+  const body = await file.text();
+  await fetch(`/api/meetings/${meetingId}/css`, {
+    method: "PUT",
+    headers: { "Content-Type": "text/css" },
+    body,
+  });
+}
+
+function useDynamicStylesheet(url: string, enabled: boolean) {
+  useEffect(() => {
+    if (enabled) {
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = url;
+      link.id = "dynamic-stylesheet"; // Add an ID for easy removal
+      document.head.appendChild(link);
+      document.body.classList.add("custom-css-enabled"); // Signal to make sure css update is rerendered
+    }
+
+    // Cleanup function to remove the stylesheet and class
+    return () => {
+      const link = document.getElementById("dynamic-stylesheet");
+      if (link) {
+        document.head.removeChild(link);
+      }
+      document.body.classList.remove("custom-css-enabled");
+    };
+  }, [url, enabled]);
+}
+
 export default function AvailabilityChart({ meetingId, userId }) {
   const [meeting, setMeeting] = useState<Meeting | undefined>(undefined);
   const [error, setError] = useState(null);
@@ -129,6 +162,9 @@ export default function AvailabilityChart({ meetingId, userId }) {
   );
   const [isEditing, setIsEditing] = useState(false);
   const [flashNotice, setFlashNotice] = useState(false);
+  const [useCustomCss, setUseCustomCss] = useState(true);
+  const [cssFile, setCssFile] = useState<File | null>(null);
+  const [cssCacheTime, setCssCacheTime] = useState(Date.now());
   const clientTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   const colors = Array.from({ length: maxSegments }, (_, i) => {
@@ -171,6 +207,10 @@ export default function AvailabilityChart({ meetingId, userId }) {
     [userId],
   );
 
+  useDynamicStylesheet(
+    `/api/meetings/${meetingId}/css?t=${cssCacheTime}`,
+    useCustomCss,
+  );
   useEffect(() => {
     getCurrentMeeting(meetingId);
   }, [meetingId, getCurrentMeeting]);
@@ -180,6 +220,14 @@ export default function AvailabilityChart({ meetingId, userId }) {
     const availability = Object.keys(items);
     await setUserAvailability(meetingId, userId, availability);
     await getCurrentMeeting(meetingId);
+  };
+
+  const handleUpload = async () => {
+    if (cssFile) {
+      await uploadCss(meetingId, cssFile);
+      alert("Stylesheet uploaded!");
+      setCssCacheTime(Date.now()); // Triggers rerender for new css link
+    }
   };
 
   // Don't render until the meeting has been loaded
@@ -307,7 +355,7 @@ export default function AvailabilityChart({ meetingId, userId }) {
           >
             {chartHeader}
             <div className="availability-chart-grid">
-              {availableDayConstraints.days.map((day, dayIndex) => (
+              {availableDayConstraints.days.map((day) => (
                 <div key={day} className="availability-chart-grid-day">
                   {timeSlots.map((time) => {
                     let adjustedTime = time;
@@ -349,9 +397,9 @@ export default function AvailabilityChart({ meetingId, userId }) {
             className="availability-chart-grid view-only"
             onClick={highlightLogin}
           >
-            {availableDayConstraints.days.map((day, dayIndex) => (
+            {availableDayConstraints.days.map((day) => (
               <div key={day} className="availability-chart-grid-day">
-                {timeSlots.map((time, index) => {
+                {timeSlots.map((time) => {
                   let adjustedTime = time;
                   if (availableDayConstraints.type === "daysOfWeek") {
                     const offset = dayOffsets[day.toLowerCase()] ?? 0;
@@ -387,14 +435,34 @@ export default function AvailabilityChart({ meetingId, userId }) {
       </div>
       <div className="controls">
         {userId ? (
-          <button type="button" onClick={() => setIsEditing(!isEditing)}>
-            {isEditing ? "View All Availability" : "Edit My Availability"}
-          </button>
+          <>
+            <button type="button" onClick={() => setIsEditing(!isEditing)}>
+              {isEditing ? "View All Availability" : "Edit My Availability"}
+            </button>
+
+            <div className="css-upload-container">
+              <input
+                type="file"
+                accept=".css"
+                onChange={(e) => e.target.files && setCssFile(e.target.files[0])}
+              />
+              <button type="button" onClick={handleUpload} disabled={!cssFile}>
+                Upload CSS
+              </button>
+            </div>
+          </>
+
         ) : (
           <div className={`notice ${flashNotice ? "flash" : ""}`}>
             Sign in below to add availability
           </div>
         )}
+        <button
+                type="button"
+                onClick={() => setUseCustomCss((prev) => !prev)}
+              >
+                {useCustomCss ? "Disable" : "Enable"} Custom CSS
+              </button>
       </div>
     </div>
   );

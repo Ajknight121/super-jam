@@ -34,6 +34,12 @@
       "migrations_dir": "./drizzle/"
     }
   ],
+  "r2_buckets": [
+    {
+      "binding": "css-bucket",
+      "bucket_name": "makemeet-css-store"
+    }
+  ],
   /**
    * Environment Variables
    * https://developers.cloudflare.com/workers/wrangler/configuration/#environment-variables

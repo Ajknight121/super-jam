@@ -134,6 +134,12 @@
   height: fit-content;
 }
 
+.css-upload-container {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #f0f0f0;
+}
+
 .notice {
   display: block;
   margin: 15px auto;
