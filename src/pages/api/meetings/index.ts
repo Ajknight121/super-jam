@@ -3,6 +3,7 @@ import type { APIContext } from "astro";
 import { drizzle } from "drizzle-orm/d1";
 import { nanoid } from "nanoid";
 import {
+  jsonParseErrorResponse,
   type MakemeetError,
   MeetingSchema,
   zodErrorResponse,
@@ -18,7 +19,14 @@ export const POST = async ({
 }: APIContext): Promise<Response> => {
   const db = drizzle(locals.runtime.env.DB);
 
-  const meetingResult = MeetingSchema.safeParse(await request.json());
+  let unvalidatedMeeting: unknown;
+  try {
+    unvalidatedMeeting = await request.json();
+  } catch (e) {
+    return jsonParseErrorResponse(e);
+  }
+
+  const meetingResult = MeetingSchema.safeParse(unvalidatedMeeting);
 
   if (meetingResult.error) {
     return zodErrorResponse(meetingResult.error);

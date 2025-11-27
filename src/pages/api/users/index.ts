@@ -3,6 +3,7 @@ import type { APIContext } from "astro";
 import { drizzle } from "drizzle-orm/d1";
 import { nanoid } from "nanoid";
 import {
+  jsonParseErrorResponse,
   type User,
   UserSchema,
   zodErrorResponse,
@@ -14,11 +15,16 @@ export const prerender = false;
 
 // TODO: MVP.
 // TODO: Create user.
-export const POST = async ({
-  locals,
-  request,
-}: APIContext): Promise<Response> => {
-  const newUserResult = UserSchema.safeParse(await request.json());
+export const POST = async ({ locals, request }: APIContext) => {
+  let unvalidatedNewUser: unknown;
+
+  try {
+    unvalidatedNewUser = await request.json();
+  } catch (e) {
+    return jsonParseErrorResponse(e);
+  }
+
+  const newUserResult = UserSchema.safeParse(unvalidatedNewUser);
 
   if (newUserResult.error) {
     return zodErrorResponse(newUserResult.error);
