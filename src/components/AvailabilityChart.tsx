@@ -388,45 +388,46 @@ export default function AvailabilityChart({ meetingId, userId }) {
           </DragSelect>
         ) : (
           <>
-          
-          {chartHeader}
-          <div
-            className="availability-chart-grid view-only"
-            onClick={highlightLogin}
-          >
-            {availableDayConstraints.days.map((day) => (
-              <div key={day} className="availability-chart-grid-day">
-                {timeSlots.map((time) => {
-                  let adjustedTime = time;
-                  if (availableDayConstraints.type === "daysOfWeek") {
-                    const offset = dayOffsets[day.toLowerCase()] ?? 0;
-                    const date = new Date(time);
-                    date.setUTCDate(date.getUTCDate() + offset);
-                    adjustedTime = `${date.toISOString().split(".")[0]}Z`;
-                  } else if (availableDayConstraints.type === "specificDays") {
-                    const slotDate = new Date(time);
-                    const dayDate = new Date(day);
-                    dayDate.setUTCHours(
-                      slotDate.getUTCHours(),
-                      slotDate.getUTCMinutes(),
-                      slotDate.getUTCSeconds(),
+            {chartHeader}
+            <div
+              className="availability-chart-grid view-only"
+              onClick={highlightLogin}
+            >
+              {availableDayConstraints.days.map((day) => (
+                <div key={day} className="availability-chart-grid-day">
+                  {timeSlots.map((time) => {
+                    let adjustedTime = time;
+                    if (availableDayConstraints.type === "daysOfWeek") {
+                      const offset = dayOffsets[day.toLowerCase()] ?? 0;
+                      const date = new Date(time);
+                      date.setUTCDate(date.getUTCDate() + offset);
+                      adjustedTime = `${date.toISOString().split(".")[0]}Z`;
+                    } else if (
+                      availableDayConstraints.type === "specificDays"
+                    ) {
+                      const slotDate = new Date(time);
+                      const dayDate = new Date(day);
+                      dayDate.setUTCHours(
+                        slotDate.getUTCHours(),
+                        slotDate.getUTCMinutes(),
+                        slotDate.getUTCSeconds(),
+                      );
+                      adjustedTime = `${dayDate.toISOString().split(".")[0]}Z`;
+                    }
+                    const count = availabilityCounts[adjustedTime] || 0;
+                    const ratio = maxAvailable > 0 ? count / maxAvailable : 0;
+                    const color = getGradientColor(ratio);
+                    return (
+                      <InputCell
+                        key={adjustedTime}
+                        timeId={adjustedTime}
+                        color={color}
+                      />
                     );
-                    adjustedTime = `${dayDate.toISOString().split(".")[0]}Z`;
-                  }
-                  const count = availabilityCounts[adjustedTime] || 0;
-                  const ratio = maxAvailable > 0 ? count / maxAvailable : 0;
-                  const color = getGradientColor(ratio);
-                  return (
-                    <InputCell
-                      key={adjustedTime}
-                      timeId={adjustedTime}
-                      color={color}
-                    />
-                  );
-                })}
-              </div>
-            ))}
-          </div>
+                  })}
+                </div>
+              ))}
+            </div>
           </>
         )}
       </div>
@@ -441,25 +442,23 @@ export default function AvailabilityChart({ meetingId, userId }) {
               <input
                 type="file"
                 accept=".css"
-                onChange={(e) => e.target.files && setCssFile(e.target.files[0])}
+                onChange={(e) =>
+                  e.target.files && setCssFile(e.target.files[0])
+                }
               />
               <button type="button" onClick={handleUpload} disabled={!cssFile}>
                 Upload CSS
               </button>
             </div>
           </>
-
         ) : (
           <div className={`notice ${flashNotice ? "flash" : ""}`}>
             Sign in below to add availability
           </div>
         )}
-        <button
-                type="button"
-                onClick={() => setUseCustomCss((prev) => !prev)}
-              >
-                {useCustomCss ? "Disable" : "Enable"} Custom CSS
-              </button>
+        <button type="button" onClick={() => setUseCustomCss((prev) => !prev)}>
+          {useCustomCss ? "Disable" : "Enable"} Custom CSS
+        </button>
       </div>
     </div>
   );

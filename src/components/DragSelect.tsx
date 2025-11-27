@@ -242,7 +242,6 @@ export function Root({
           updateSelectedItems(dragVector, nextScrollVector);
         }}
         onPointerDown={(e) => {
-
           if (e.button !== 0) return;
 
           const target = e.target as HTMLElement;

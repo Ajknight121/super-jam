@@ -5,7 +5,6 @@ import { createUser } from "../lib/api/users";
 import SignIn from "./SignIn";
 
 export default function AvailabilityPage({ meetingId }) {
-
   const [userId, setUserId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -46,7 +45,7 @@ export default function AvailabilityPage({ meetingId }) {
       </div>
 
       <div className="login">
-        { userId ? (
+        {userId ? (
           <div>Add your availability above</div>
         ) : (
           <SignIn
