@@ -3,9 +3,9 @@ import type { APIContext } from "astro";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import {
+  type APIMeeting,
   jsonParseErrorResponse,
-  type Meeting,
-  MeetingSchema,
+  MeetingAPISchema,
   noSuchMeetingResponse,
   noSuchUserResponse,
   UserAvailabilitySchema,
@@ -79,22 +79,22 @@ export const PUT = async ({
     return noSuchMeetingResponse();
   }
 
-  const initialMeeting = MeetingSchema.parse(
+  const initialMeeting = MeetingAPISchema.parse(
     JSON.parse(initialMeetingDbResult[0].jsonData),
   );
   const { availability: initialMeetingAvailability } = initialMeeting;
 
   // The `parse` here is necessary to sort the user ids and hide the order of insertion, but also allows additional transformations and dynamic checks on the meeting to be added to `api-types-and-schemas` with a minimum of fuss.
-  const newMeeting = MeetingSchema.parse({
+  const newMeeting = MeetingAPISchema.parse({
     ...initialMeeting,
     availability: {
       ...initialMeetingAvailability,
       [params.userId]: newAvailability,
     },
-  } satisfies Meeting);
+  } satisfies APIMeeting);
 
   // Just in case the database contains a user that doesn't have a nanoid, this'll catch that. It may catch other things too... best to find them in dev!
-  MeetingSchema.parse(newMeeting);
+  MeetingAPISchema.parse(newMeeting);
 
   const newMeetingUpdateDbResult = await db
     .update(meetings)
@@ -120,7 +120,7 @@ export const PUT = async ({
   }
 
   return Response.json(
-    MeetingSchema.parse(JSON.parse(newMeetingUpdateDbResult[0].jsonData))
+    MeetingAPISchema.parse(JSON.parse(newMeetingUpdateDbResult[0].jsonData))
       .availability[params.userId],
     responseInit,
   );

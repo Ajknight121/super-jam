@@ -1,13 +1,13 @@
 /** biome-ignore-all lint/a11y/noStaticElementInteractions: <explanation> */
 /** biome-ignore-all lint/a11y/useKeyWithClickEvents: <explanation> */
 import { useCallback, useEffect, useState } from "react";
-import type { Meeting } from "#/src/api-types-and-schemas";
+import type { APIMeeting } from "#/src/api-types-and-schemas";
 import { getMeeting, setUserAvailability } from "../lib/api/meetings";
 
 import "./AvailabilityChart.css";
 import { Root as DragSelect, InputCell } from "./DragSelect";
 
-const exampleMeeting2: Meeting = {
+const exampleMeeting2: APIMeeting = {
   name: "Example Meeting (Failed to Load)",
   availability: {
     user1: [
@@ -53,6 +53,25 @@ const exampleMeeting2: Meeting = {
     },
   },
   timeZone: "America/Chicago",
+  members: [
+    {
+      memberId: "user1",
+      name: "Adrian Knight",
+    },
+    {
+      memberId: "user2",
+      name: "Mac Payton",
+    },
+    {
+      memberId: "user3",
+      name: "Samuel Skean",
+    },
+
+    {
+      memberId: "user4",
+      name: "Aaron Willming",
+    },
+  ],
 };
 
 /**
@@ -152,7 +171,7 @@ function useDynamicStylesheet(url: string, enabled: boolean) {
 }
 
 export default function AvailabilityChart({ meetingId, userId }) {
-  const [meeting, setMeeting] = useState<Meeting | undefined>(undefined);
+  const [meeting, setMeeting] = useState<APIMeeting | undefined>(undefined);
   const [error, setError] = useState(null);
   const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>(
     {},

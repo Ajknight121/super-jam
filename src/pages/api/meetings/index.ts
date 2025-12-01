@@ -5,7 +5,7 @@ import { nanoid } from "nanoid";
 import {
   jsonParseErrorResponse,
   type MakemeetError,
-  MeetingSchema,
+  MeetingAPISchema,
   zodErrorResponse,
 } from "#/src/api-types-and-schemas";
 import { meetings } from "#/src/db/schema";
@@ -26,7 +26,7 @@ export const POST = async ({
     return jsonParseErrorResponse(e);
   }
 
-  const meetingResult = MeetingSchema.safeParse(unvalidatedMeeting);
+  const meetingResult = MeetingAPISchema.safeParse(unvalidatedMeeting);
 
   if (meetingResult.error) {
     return zodErrorResponse(meetingResult.error);

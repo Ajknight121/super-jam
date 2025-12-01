@@ -6,7 +6,7 @@ import type { APIContext } from "astro";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import {
-  MeetingSchema,
+  MeetingAPISchema,
   noSuchMeetingResponse,
   undefinedInRequiredURLParamResponse,
 } from "#/src/api-types-and-schemas";
@@ -34,5 +34,7 @@ export const GET = async ({
     return noSuchMeetingResponse();
   }
 
-  return Response.json(MeetingSchema.parse(JSON.parse(dbResult[0].jsonData)));
+  return Response.json(
+    MeetingAPISchema.parse(JSON.parse(dbResult[0].jsonData)),
+  );
 };
