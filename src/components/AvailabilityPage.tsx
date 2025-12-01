@@ -46,7 +46,7 @@ export default function AvailabilityPage({ meetingId }) {
 
       <div className="login">
         {userId ? (
-          <div>Add your availability above</div>
+          <div>You are logged in. Add your availability above.</div>
         ) : (
           <SignIn
             name={name}
