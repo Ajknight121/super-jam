@@ -71,6 +71,7 @@ export default function MeetingForm() {
     const new_meeting = {
       name: meetingName,
       availability: {},
+      members: [],
       availabilityBounds: {
         availableDayConstraints: {
           type: isRepeatingWeekly ? "daysOfWeek" : "specificDays",

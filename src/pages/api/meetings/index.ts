@@ -3,9 +3,9 @@ import type { APIContext } from "astro";
 import { drizzle } from "drizzle-orm/d1";
 import { nanoid } from "nanoid";
 import {
+  APIMeetingSchema,
   jsonParseErrorResponse,
   type MakemeetError,
-  MeetingAPISchema,
   zodErrorResponse,
 } from "#/src/api-types-and-schemas";
 import { meetings } from "#/src/db/schema";
@@ -26,18 +26,21 @@ export const POST = async ({
     return jsonParseErrorResponse(e);
   }
 
-  const meetingResult = MeetingAPISchema.safeParse(unvalidatedMeeting);
+  const meetingResult = APIMeetingSchema.safeParse(unvalidatedMeeting);
 
   if (meetingResult.error) {
     return zodErrorResponse(meetingResult.error);
   }
   const meeting = meetingResult.data;
 
-  if (Object.keys(meeting.availability).length !== 0) {
+  if (
+    Object.keys(meeting.availability).length !== 0 ||
+    meeting.members.length !== 0
+  ) {
     return Response.json(
       {
         customMakemeetErrorMessage:
-          "Cannot specify availability when creating meeting. Also, this error message will change.",
+          "Cannot specify availability or members when creating meeting. Also, this error message will change.",
       } satisfies MakemeetError,
       {
         status: 400,

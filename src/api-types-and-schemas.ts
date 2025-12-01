@@ -139,21 +139,21 @@ const DatabaseMemberSchema = zod.object({
   authId: zod.nanoid(),
 });
 
-export const MeetingAPISchema = zod.object({
+export const APIMeetingSchema = zod.object({
   // Meeting names must be at least one character long.
   name: zod.string().check(zod.minLength(1)),
   availability: MeetingAvailabilitySchema,
-  availabilityBounds: AvailabilityContraintsSchema,
   members: zod.array(APIMemberSchema),
+  availabilityBounds: AvailabilityContraintsSchema,
   timeZone: IanaTimezoneSchema,
 });
 
-export const MeetingDatabaseSchema = zod.object({
-  ...MeetingAPISchema.shape,
+export const DatabaseMeetingSchema = zod.object({
+  ...APIMeetingSchema.shape,
   members: zod.array(zod.object(DatabaseMemberSchema)),
 });
 
-export type APIMeeting = zod.infer<typeof MeetingAPISchema>;
+export type APIMeeting = zod.infer<typeof APIMeetingSchema>;
 
 export const UserSchema = zod.object({
   defaultName: zod.string().check(zod.minLength(1)),

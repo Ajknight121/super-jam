@@ -4,7 +4,7 @@ import type {
   UserAvailability,
 } from "#/src/api-types-and-schemas";
 import {
-  MeetingAPISchema,
+  APIMeetingSchema,
   MeetingAvailabilitySchema,
   UserAvailabilitySchema,
 } from "#/src/api-types-and-schemas";
@@ -13,7 +13,7 @@ import { handleApiResponse } from "./index";
 // Get a meeting by id
 export async function getMeeting(meetingId: string): Promise<APIMeeting> {
   const res = await fetch(`/api/meetings/${encodeURIComponent(meetingId)}`);
-  return handleApiResponse(res, (json) => MeetingAPISchema.parse(json));
+  return handleApiResponse(res, (json) => APIMeetingSchema.parse(json));
 }
 
 // Create a meeting - stub
