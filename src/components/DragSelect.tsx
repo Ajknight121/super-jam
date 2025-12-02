@@ -1,16 +1,16 @@
 "use client";
 
+import clsx from "clsx";
 // Box bound drag select from: https://www.joshuawootonn.com/react-drag-to-select#intersection-state
 import {
-    useRef,
-    useState,
-    createContext,
-    useContext,
-    useEffect,
-    useCallback,
-    type ReactNode,
+  createContext,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
 } from "react";
-import clsx from "clsx";
 
 class DOMVector {
   constructor(
@@ -26,9 +26,7 @@ class DOMVector {
   }
 
   getDiagonalLength(): number {
-    return Math.sqrt(
-      Math.pow(this.magnitudeX, 2) + Math.pow(this.magnitudeY, 2),
-    );
+    return Math.sqrt(this.magnitudeX ** 2 + this.magnitudeY ** 2);
   }
 
   toDOMRect(): DOMRect {
@@ -94,7 +92,9 @@ export function Root({
 
   const [dragVector, setDragVector] = useState<DOMVector | null>(null);
   const [scrollVector, setScrollVector] = useState<DOMVector | null>(null);
-  const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>(initialItems ?? {},);
+  const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>(
+    initialItems ?? {},
+  );
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -223,7 +223,7 @@ export function Root({
                 )} */}
       </div>
       {/** biome-ignore lint/a11y/noStaticElementInteractions: <explanation> */}
-<div
+      <div
         className="availability-chart-grid-container relative z-0 border-black grid grid-cols-[repeat(20,min-content)] gap-4 p-4 max-h-96 overflow-auto focus:outline-none focus:border-dashed -translate-y-0.5"
         ref={containerRef}
         onScroll={(e) => {
@@ -242,10 +242,10 @@ export function Root({
           updateSelectedItems(dragVector, nextScrollVector);
         }}
         onPointerDown={(e) => {
-            console.log("d")
-        
-            if (e.button !== 0) return;
-            console.log("down")
+          console.log("d");
+
+          if (e.button !== 0) return;
+          console.log("down");
 
           const target = e.target as HTMLElement;
           const itemElement = target.closest<HTMLElement>("[data-item]");

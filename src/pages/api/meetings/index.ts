@@ -29,10 +29,13 @@ export const POST = async ({
 
   assert(dbResult.length === 1);
 
-  return Response.json({ id: dbResult[0].id }, {
-    status: 201,
-    headers: {
-      Location: `/api/meetings/${encodeURIComponent(dbResult[0].id)}`,
+  return Response.json(
+    { id: dbResult[0].id },
+    {
+      status: 201,
+      headers: {
+        Location: `/api/meetings/${encodeURIComponent(dbResult[0].id)}`,
+      },
     },
-  });
+  );
 };

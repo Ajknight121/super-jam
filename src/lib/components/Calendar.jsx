@@ -2,42 +2,42 @@ import React, { useEffect, useState } from "react";
 
 function CalendarDay({ day, isSelected, onClick }) {
   const dayOfMonth = day ? new Date(day + "T00:00:00Z").getUTCDate() : null;
-  return (<div
-    className={`cm-cell ${day ? "" : "empty"} ${isSelected ? "selected-day" : ""}`}
-  >
-    {day ? (
-      <button
-        type="button"
-        className="date-btn"
-        onClick={() => onClick(day)}
-        aria-pressed={isSelected}
-      >
-        {dayOfMonth}
-      </button>
-    ) : null}
-  </div>)
+  return (
+    <div
+      className={`cm-cell ${day ? "" : "empty"} ${isSelected ? "selected-day" : ""}`}
+    >
+      {day ? (
+        <button
+          type="button"
+          className="date-btn"
+          onClick={() => onClick(day)}
+          aria-pressed={isSelected}
+        >
+          {dayOfMonth}
+        </button>
+      ) : null}
+    </div>
+  );
 }
-
-
 
 export default function Calendar({
   month: initialMonth,
   year: initialYear,
   name = "selectedDate",
-  selectedDays, 
-  setSelectedDays
+  selectedDays,
+  setSelectedDays,
 }) {
   const now = new Date();
   const [month, setMonth] = useState(initialMonth ?? now.getMonth() + 1); // 1..12
   const [year, setYear] = useState(initialYear ?? now.getFullYear());
-  
 
   function handleClick(day) {
     if (selectedDays.includes(day)) {
-      const newArray = selectedDays.filter((c) => {return c !== day}); 
+      const newArray = selectedDays.filter((c) => {
+        return c !== day;
+      });
       setSelectedDays(newArray);
-    }
-    else {
+    } else {
       setSelectedDays([...selectedDays, day]);
     }
     console.log(day);
@@ -153,7 +153,12 @@ export default function Calendar({
           week.map((day, di) => {
             const isSelected = day && selectedDays.includes(day);
             return (
-              <CalendarDay day = {day} isSelected = {isSelected} onClick = {handleClick} key = {wi + "-" + di}/>
+              <CalendarDay
+                day={day}
+                isSelected={isSelected}
+                onClick={handleClick}
+                key={wi + "-" + di}
+              />
             );
           }),
         )}

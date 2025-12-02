@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
+import type {
+  Meeting,
+  MeetingAvailability,
+  UserAvailability,
+} from "#/src/api-types-and-schemas";
 import { getMeeting, setUserAvailability } from "../lib/api/meetings";
-import type { Meeting, MeetingAvailability, UserAvailability } from "#/src/api-types-and-schemas";
 
 import "./AvailabilityChart.css";
 import { Root as DragSelect, InputCell } from "./DragSelect";
@@ -56,7 +60,14 @@ export function utcObj(utc: string): UtcObject {
 
 export function objToUtc(obj: UtcObject): string {
   const date = new Date(
-    Date.UTC(obj.year, obj.month - 1, obj.day, obj.hours, obj.minutes, obj.seconds)
+    Date.UTC(
+      obj.year,
+      obj.month - 1,
+      obj.day,
+      obj.hours,
+      obj.minutes,
+      obj.seconds,
+    ),
   );
   // Ensure the format is YYYY-MM-DDTHH:mm:ssZ without milliseconds
   return date.toISOString().split(".")[0] + "Z";
@@ -65,7 +76,9 @@ export function objToUtc(obj: UtcObject): string {
 export default function AvailabilityChart({ meetingId, userId }) {
   const [meeting, setMeeting] = useState<Meeting | undefined>(undefined);
   const [error, setError] = useState(null);
-  const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>({});
+  const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>(
+    {},
+  );
   const [isEditing, setIsEditing] = useState(false);
   const [flashNotice, setFlashNotice] = useState(false);
   const clientTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -102,7 +115,11 @@ export default function AvailabilityChart({ meetingId, userId }) {
         "1970-01-04T14:15:00Z",
         "1970-01-04T14:30:00Z",
       ],
-      user4: ["1970-01-01T09:15:00Z", "1970-01-01T09:30:00Z", "1970-01-01T10:00:00Z"],
+      user4: [
+        "1970-01-01T09:15:00Z",
+        "1970-01-01T09:30:00Z",
+        "1970-01-01T10:00:00Z",
+      ],
     },
     availabilityBounds: {
       timeRangeForEachDay: {
@@ -111,7 +128,15 @@ export default function AvailabilityChart({ meetingId, userId }) {
       },
       availableDayConstraints: {
         type: "daysOfWeek",
-        days: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
+        days: [
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday",
+          "saturday",
+          "sunday",
+        ],
       },
     },
     timeZone: "America/Chicago",
@@ -143,7 +168,11 @@ export default function AvailabilityChart({ meetingId, userId }) {
         "2025-01-04T14:15:00Z",
         "2025-01-04T14:30:00Z",
       ],
-      user4: ["2025-01-01T09:15:00Z", "2025-01-01T09:30:00Z", "2025-01-01T10:00:00Z"],
+      user4: [
+        "2025-01-01T09:15:00Z",
+        "2025-01-01T09:30:00Z",
+        "2025-01-01T10:00:00Z",
+      ],
     },
     availabilityBounds: {
       timeRangeForEachDay: {
@@ -169,13 +198,14 @@ export default function AvailabilityChart({ meetingId, userId }) {
       const meetingData = await getMeeting(meetingId);
       setMeeting(meetingData);
       // Initialize selected items from fetched availability
-      const initialAvailability: string[] = meetingData.availability[userId] ?? [];
+      const initialAvailability: string[] =
+        meetingData.availability[userId] ?? [];
       setSelectedItems(
         initialAvailability.reduce((acc, time) => {
           // This needs to be more robust to handle different day representations
           // For now, we assume we can find the day for the given time.
           return { ...acc, [time]: true };
-        }, {})
+        }, {}),
       );
     } catch (err) {
       setError(err);
@@ -185,12 +215,11 @@ export default function AvailabilityChart({ meetingId, userId }) {
       console.log(userId, exampleMeeting2.availability[userId]);
       setSelectedItems(
         initialAvailability.reduce((acc, time) => {
-          
           if (!time) return acc;
           // This needs to be more robust to handle different day representations
           // For now, we assume we can find the day for the given time.
           return { ...acc, [time]: true };
-        }, {})
+        }, {}),
       );
     }
   };
@@ -241,7 +270,10 @@ export default function AvailabilityChart({ meetingId, userId }) {
   };
 
   // Generate an array representing the 15-minute time slots for a day
-  const numberOfSlots = calculateTimeSlots(timeRangeForEachDay.start, timeRangeForEachDay.end);
+  const numberOfSlots = calculateTimeSlots(
+    timeRangeForEachDay.start,
+    timeRangeForEachDay.end,
+  );
   const startTime = new Date(timeRangeForEachDay.start);
   const timeSlots = Array.from({ length: numberOfSlots }, (_, i) => {
     const slotTime = new Date(startTime.getTime() + i * 15 * 60 * 1000);
@@ -278,7 +310,11 @@ export default function AvailabilityChart({ meetingId, userId }) {
         </div>
         <div className="scale-container">
           {colors.map((color) => (
-            <div key={color} className="scale-segment" style={{ backgroundColor: color }}></div>
+            <div
+              key={color}
+              className="scale-segment"
+              style={{ backgroundColor: color }}
+            ></div>
           ))}
         </div>
         <div className="label">
@@ -289,11 +325,13 @@ export default function AvailabilityChart({ meetingId, userId }) {
       <div className="display">
         <div className="availability-chart-days">
           {availabilityBounds.availableDayConstraints.type === "daysOfWeek"
-            ? availabilityBounds.availableDayConstraints.days.map((day, index) => (
-                <div key={day} className="availability-chart-day">
-                  <div className="day-name">{day}</div>
-                </div>
-              ))
+            ? availabilityBounds.availableDayConstraints.days.map(
+                (day, index) => (
+                  <div key={day} className="availability-chart-day">
+                    <div className="day-name">{day}</div>
+                  </div>
+                ),
+              )
             : availabilityBounds.availableDayConstraints.days.map((day) => {
                 const date = new Date(day);
                 const formattedDate = date.toLocaleDateString("en-US", {
@@ -310,7 +348,10 @@ export default function AvailabilityChart({ meetingId, userId }) {
               })}
         </div>
         {isEditing ? (
-          <DragSelect onSelectionChange={handleSelectionChange} initialItems={selectedItems}>
+          <DragSelect
+            onSelectionChange={handleSelectionChange}
+            initialItems={selectedItems}
+          >
             <div className="availability-chart-grid">
               {availableDayConstraints.days.map((day, dayIndex) => (
                 <div key={day} className="availability-chart-grid-day">
@@ -321,13 +362,19 @@ export default function AvailabilityChart({ meetingId, userId }) {
                       const date = new Date(time);
                       date.setUTCDate(date.getUTCDate() + offset);
                       adjustedTime = date.toISOString().split(".")[0] + "Z";
-                    } else if (availableDayConstraints.type === "specificDays") {
+                    } else if (
+                      availableDayConstraints.type === "specificDays"
+                    ) {
                       const slotDate = new Date(time);
                       const dayDate = new Date(day);
-                      dayDate.setUTCHours(slotDate.getUTCHours(), slotDate.getUTCMinutes(), slotDate.getUTCSeconds());
+                      dayDate.setUTCHours(
+                        slotDate.getUTCHours(),
+                        slotDate.getUTCMinutes(),
+                        slotDate.getUTCSeconds(),
+                      );
                       adjustedTime = dayDate.toISOString().split(".")[0] + "Z";
                     }
-                    
+
                     return (
                       <InputCell
                         key={adjustedTime}
@@ -341,7 +388,10 @@ export default function AvailabilityChart({ meetingId, userId }) {
             </div>
           </DragSelect>
         ) : (
-          <div className="availability-chart-grid view-only" onClick={highlightLogin}>
+          <div
+            className="availability-chart-grid view-only"
+            onClick={highlightLogin}
+          >
             {availableDayConstraints.days.map((day, dayIndex) => (
               <div key={day} className="availability-chart-grid-day">
                 {timeSlots.map((time, index) => {
@@ -354,7 +404,11 @@ export default function AvailabilityChart({ meetingId, userId }) {
                   } else if (availableDayConstraints.type === "specificDays") {
                     const slotDate = new Date(time);
                     const dayDate = new Date(day);
-                    dayDate.setUTCHours(slotDate.getUTCHours(), slotDate.getUTCMinutes(), slotDate.getUTCSeconds());
+                    dayDate.setUTCHours(
+                      slotDate.getUTCHours(),
+                      slotDate.getUTCMinutes(),
+                      slotDate.getUTCSeconds(),
+                    );
                     adjustedTime = dayDate.toISOString().split(".")[0] + "Z";
                   }
                   const count = availabilityCounts[adjustedTime] || 0;
@@ -379,7 +433,9 @@ export default function AvailabilityChart({ meetingId, userId }) {
             {isEditing ? "View All Availability" : "Edit My Availability"}
           </button>
         ) : (
-          <div className={`notice ${flashNotice ? "flash" : ""}`}>Sign in below to add availability</div>
+          <div className={`notice ${flashNotice ? "flash" : ""}`}>
+            Sign in below to add availability
+          </div>
         )}
       </div>
     </div>
