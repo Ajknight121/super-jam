@@ -12,6 +12,7 @@ NOTES(samuel-skean): I'm using the authId as the cookie. Everyone will have exac
 - [ ] Use zod branded types to distinguish between memberIds, authIds, and meetingIds.
   - This seems to have small usefulness, and involve a great deal of shenanigans.
 - [ ] Ensure we always parse before persisting and returning everything. Use an LLM at *least*.
+- [ ] What exactly is the point of the zod-based types? Do we use them in many places? Also, would the code read better if they were placed somewhere else?
 
 # Stretch Goals:
 - [ ] Consider making the granularity of scheduling (here, 15 minutes) a parameter of the API on a per-meeting basis.
