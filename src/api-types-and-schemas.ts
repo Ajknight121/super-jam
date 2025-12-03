@@ -140,13 +140,13 @@ export const IanaTimezoneSchema = zod.string().check(
 );
 
 // TODO(samuel-skean): When reusing the shape, does that also reuse the validation? That is, is DatabaseMemberSchema correctly validated to have a memberId that is a nanoid?
-const APIMembersSchema = zod.object({
+const APIMemberSchema = zod.object({
   memberId: MemberIdSchema,
   name: zod.string().check(zod.minLength(1)),
 });
 
 const DatabaseMemberSchema = zod.object({
-  ...APIMembersSchema.def.shape,
+  ...APIMemberSchema.def.shape,
   authId: AuthIdSchema,
 });
 
@@ -154,7 +154,7 @@ export const APIMeetingSchema = zod.object({
   // Meeting names must be at least one character long.
   name: zod.string().check(zod.minLength(1)),
   availability: MeetingAvailabilitySchema,
-  members: zod.array(APIMembersSchema),
+  members: zod.array(APIMemberSchema),
   availabilityBounds: AvailabilityContraintsSchema,
   timeZone: IanaTimezoneSchema,
 });
