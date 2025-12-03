@@ -235,8 +235,12 @@ export default function Calendar({
         }
         .date-btn:hover { background:#f3f3f3; }
         .cm-cell.selected-day .date-btn {
-          background: #e6e6e6;
+          background: #7ebdfc;
+          color: white;
           box-shadow: inset 0 0 0 2px rgba(0,0,0,0.02);
+        }
+        .cm-cell.selected-day .date-btn:hover {
+          background: #6590e0;
         }
       `}</style>
     </section>
