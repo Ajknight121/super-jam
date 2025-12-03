@@ -16,6 +16,17 @@ const isOnJan1st1970 = (date: Date) =>
   date.getUTCDate() === 1 &&
   date.getUTCFullYear() === 1970;
 
+// The id for a member of a meeting (a user with some relationship to the meeting).
+export const MemberIdSchema = zod.nanoid();
+export type MemberId = zod.infer<typeof MemberIdSchema>;
+
+// The global id that each member has. This is a global identifier for a user. If a user is a member of multiple meetings, then they have multiple memberId's but one authId, and all of their memberId's are associated with the same memberId in each of the meetings.
+export const AuthIdSchema = zod.nanoid();
+export type AuthIdSchema = zod.infer<typeof MemberIdSchema>;
+
+export const MeetingIdSchema = zod.nanoid();
+export type MeetingId = zod.infer<typeof MeetingIdSchema>;
+
 // All timestamps in the API are ISO-8601 timestamps with second precision, ending with "Z" (meaning they are UTC time).
 const TimeSchema = zod.string().check(
   zod.iso.datetime({ offset: false, local: false, precision: 0 }),
@@ -48,7 +59,7 @@ export type UserAvailability = zod.infer<typeof UserAvailabilitySchema>;
 //
 // The order of the timestamps in the array is not significant, but we should endeavor to produce arrays with ascending timestamps. (an instance of the [Robustness Principle](https://en.wikipedia.org/wiki/Robustness_principle))
 export const MeetingAvailabilitySchema = zod
-  .record(zod.nanoid(), UserAvailabilitySchema)
+  .record(MemberIdSchema, UserAvailabilitySchema)
   .check(
     zod.overwrite((obj: object) =>
       Object.fromEntries(Object.entries(obj).sort()),
@@ -130,13 +141,13 @@ export const IanaTimezoneSchema = zod.string().check(
 
 // TODO(samuel-skean): When reusing the shape, does that also reuse the validation? That is, is DatabaseMemberSchema correctly validated to have a memberId that is a nanoid?
 const APIMemberSchema = zod.object({
-  memberId: zod.nanoid(),
+  memberId: MemberIdSchema,
   name: zod.string().check(zod.minLength(1)),
 });
 
 const DatabaseMemberSchema = zod.object({
-  ...APIMemberSchema.shape,
-  authId: zod.nanoid(),
+  ...APIMemberSchema.def.shape,
+  authId: AuthIdSchema,
 });
 
 export const APIMeetingSchema = zod.object({
@@ -149,10 +160,11 @@ export const APIMeetingSchema = zod.object({
 });
 
 export const DatabaseMeetingSchema = zod.object({
-  ...APIMeetingSchema.shape,
+  ...APIMeetingSchema.def.shape,
   members: zod.array(zod.object(DatabaseMemberSchema)),
 });
 
+// TODONOW(samuel-skean): .def vs .shape.def in zod mini. https://zod.dev/api?id=shape
 export type APIMeeting = zod.infer<typeof APIMeetingSchema>;
 
 export const UserSchema = zod.object({

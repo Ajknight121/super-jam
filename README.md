@@ -5,6 +5,8 @@ Figma: https://www.figma.com/file/4oVfPhHyw6Ly7gCcOtonXx?node-id=0:1&t=rNSL0lxVJ
 
 Adrian's cloudflare deployment, automatic from main branch: https://makemeet.cloudcs484-0.workers.dev/
 
+Samuel's cloudflare deployment, automatic from dev branch: https://makemeet-dev-samuel-skean.samuel-skean.workers.dev/
+
 # Astro Starter Kit: Basics
 
 ```sh

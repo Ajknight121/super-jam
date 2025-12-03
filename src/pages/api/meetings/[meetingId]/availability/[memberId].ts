@@ -31,7 +31,7 @@ export const PUT = async ({
 }: APIContext): Promise<Response> => {
   // TODO(samuel-skean): Remove the user's id as a key if the user's availability is set to empty.
 
-  if (params.meetingId === undefined || params.userId === undefined) {
+  if (params.meetingId === undefined || params.memberId === undefined) {
     return undefinedInRequiredURLParamResponse();
   }
 
@@ -56,7 +56,7 @@ export const PUT = async ({
   const userExistsDbResult = await db
     .select()
     .from(users)
-    .where(eq(users.id, params.userId));
+    .where(eq(users.id, params.memberId));
 
   assert(userExistsDbResult.length <= 1);
 
@@ -89,7 +89,7 @@ export const PUT = async ({
     ...initialMeeting,
     availability: {
       ...initialMeetingAvailability,
-      [params.userId]: newAvailability,
+      [params.memberId]: newAvailability,
     },
   } satisfies APIMeeting);
 
@@ -106,7 +106,7 @@ export const PUT = async ({
   assert(newMeetingUpdateDbResult.length === 1);
 
   let responseInit: ResponseInit;
-  if (params.userId in initialMeeting.availability) {
+  if (params.memberId in initialMeeting.availability) {
     responseInit = {
       status: 200,
     };
@@ -121,7 +121,7 @@ export const PUT = async ({
 
   return Response.json(
     APIMeetingSchema.parse(JSON.parse(newMeetingUpdateDbResult[0].jsonData))
-      .availability[params.userId],
+      .availability[params.memberId],
     responseInit,
   );
 };

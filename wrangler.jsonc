@@ -60,17 +60,6 @@
    */
   // "services": [{ "binding": "MY_SERVICE", "service": "my-service" }]
   "env": {
-    // This is for a deployment of the main branch. samuel-skean manages this deployment under his cloudflare account.
-    "main-samuel-skean": {
-      "d1_databases": [
-        {
-          "binding": "DB",
-          "database_name": "makemeet-main-db",
-          "database_id": "d567d18f-b135-482a-82e8-9b48b3b1de69",
-          "migrations_dir": "./drizzle/"
-        }
-      ]
-    },
     // This is for a deployment of the `dev` branch. samuel-skean manages this deployment under his cloudflare account.
     "dev-samuel-skean": {
       "d1_databases": [
@@ -80,7 +69,13 @@
           "database_id": "13b9fd3f-5d2b-4a22-99fd-e102572b066d",
           "migrations_dir": "./drizzle/"
         }
-      ]
+      ],
+      "r2_buckets": [
+        {
+          "binding": "css-bucket",
+          "bucket_name": "makemeet-dev-css-store"
+        }
+      ],
     }
   }
 }
