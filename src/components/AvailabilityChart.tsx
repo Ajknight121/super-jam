@@ -170,7 +170,7 @@ function useDynamicStylesheet(url: string, enabled: boolean) {
   }, [url, enabled]);
 }
 
-export default function AvailabilityChart({ meetingId, userId }) {
+export default function AvailabilityChart({ meetingId, userId, authId}) {
   const [meeting, setMeeting] = useState<APIMeeting | undefined>(undefined);
   const [error, setError] = useState(null);
   const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>(
