@@ -161,7 +161,7 @@ export const APIMeetingSchema = zod.object({
 
 export const DatabaseMeetingSchema = zod.object({
   ...APIMeetingSchema.def.shape,
-  members: zod.array(zod.object(DatabaseMemberSchema)),
+  members: zod.array(DatabaseMemberSchema),
 });
 
 // TODONOW(samuel-skean): .def vs .shape.def in zod mini. https://zod.dev/api?id=shape
