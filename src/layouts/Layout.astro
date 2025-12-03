@@ -1,5 +1,9 @@
 ---
 import "@fontsource/oswald";
+
+// See https://chatgpt.com/c/6930699a-7bf4-8325-b534-bf835c025dcc. I haven't seen the end of this chat, it could really help!
+const faviconPath = Astro.locals.runtime.env.DEPLOYMENT_ENV;
+const faviconPath = import.meta.env.PROD ? "/favicon-prod.svg" : "/favicon-dev.svg";
 ---
 
 <!doctype html>
@@ -7,7 +11,7 @@ import "@fontsource/oswald";
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href={faviconPath} />
     <meta name="generator" content={Astro.generator} />
     <title>MakeMeet</title>
   </head>
