@@ -69,7 +69,13 @@
           "database_id": "13b9fd3f-5d2b-4a22-99fd-e102572b066d",
           "migrations_dir": "./drizzle/"
         }
-      ]
+      ],
+      "r2_buckets": [
+        {
+          "binding": "css-bucket",
+          "bucket_name": "makemeet-dev-css-store"
+        }
+      ],
     }
   }
 }
