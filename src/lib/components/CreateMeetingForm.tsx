@@ -22,6 +22,8 @@ export default function MeetingForm() {
   const [endTime, setEndTime] = useState("");
   const [timeError, setTimeError] = useState(false);
   const [timeIncrementError, setTimeIncrementError] = useState(false);
+  const [noTimeError, setNoTimeError] = useState(false);
+  const [equalTimesError, setEqualTimesError] = useState(false);
   const [daysError, setDaysError] = useState(false);
   const [timezone, setTimezone] = useState("America/Chicago");
 
@@ -64,8 +66,10 @@ export default function MeetingForm() {
       : selectedDays.length === 0;
 
     setMeetingNameError(isMeetingNameMissing);
-    setTimeError(areTimesMissing || isTimeIncrementInvalid);
+    setTimeError(areTimesMissing || isTimeIncrementInvalid || areTimesEqual);
     setTimeIncrementError(isTimeIncrementInvalid);
+    setNoTimeError(areTimesMissing);
+    setEqualTimesError(areTimesEqual);
     setDaysError(areDaysMissing);
 
     if (
@@ -79,6 +83,13 @@ export default function MeetingForm() {
       areTimesMissing ||
       areDaysMissing ||
       isTimeIncrementInvalid
+    ) {
+    if (
+      isMeetingNameMissing ||
+      areTimesMissing ||
+      areDaysMissing ||
+      isTimeIncrementInvalid ||
+      areTimesEqual
     ) {
       return;
     }
