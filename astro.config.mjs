@@ -21,7 +21,7 @@ export default defineConfig({
   experimental: {
     csp: {
       directives: [
-        "default-src 'self' 'sha256-dd4J3UnQShsOmqcYi4vN5BT3mGZB/0fOwBA72rsguKc=' 'sha256-kAuJtpHzsuUXU5fKQIGT7DNPr8DmAEAsB96A7yaxQ6I=' 'sha256-tSGVRioWH5Kkh/yge9evXQLN7uo4SMVa8/5rYE0Ad+k=' 'sha256-Epg1E01hrkVp73prHNyzTGMJ0rrPDw30WjGORyWDUU8=' 'sha256-vv9IoKo7BSLbWcUHr3tNmfNVmm5L/9Cfn2H6LMk7/ow=' 'sha256-QzWFZi+FLIx23tnm9SBU4aEgx4x8DsuASP07mfqol/c=' 'sha256-U7a72oKuFFz8D7GUHLA1NZ0ciymHmDOc9T9aVDg2rWU=' 'sha256-35KBScVH0mcisYaS+jYHDa1tlFGmOrghafQWiYvD7Us=' ", 
+        "default-src 'self' 'sha256-dd4J3UnQShsOmqcYi4vN5BT3mGZB/0fOwBA72rsguKc=' 'sha256-kAuJtpHzsuUXU5fKQIGT7DNPr8DmAEAsB96A7yaxQ6I=' 'sha256-tSGVRioWH5Kkh/yge9evXQLN7uo4SMVa8/5rYE0Ad+k=' 'sha256-Epg1E01hrkVp73prHNyzTGMJ0rrPDw30WjGORyWDUU8=' 'sha256-vv9IoKo7BSLbWcUHr3tNmfNVmm5L/9Cfn2H6LMk7/ow=' 'sha256-QzWFZi+FLIx23tnm9SBU4aEgx4x8DsuASP07mfqol/c=' 'sha256-U7a72oKuFFz8D7GUHLA1NZ0ciymHmDOc9T9aVDg2rWU=' 'sha256-35KBScVH0mcisYaS+jYHDa1tlFGmOrghafQWiYvD7Us=' 'sha256-IUIhtlRZo13rYeYt4ApdRMqCD8+pmnYJ9ykYDquELKw=' 'sha256-9fs5y51R4thITS/OJPAKUQ5/IjveC4p2nknfVgpk9nA=' ", 
         "img-src 'self' https://lipsum.app/",
         "font-src 'self' https://fonts.google.com/ https://fontsource.org/ data:font/woff2;base64,d09GMgABAAAAAA/kABAAAAAAKewAAA+DAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGoESG45OHIFKBmA/U1RBVC4AgwQRCAqmFKFyC4IWAAE2AiQDhAgEIAWERAeKGAwHG5olFeOYJbBxAIF/f8YE/18ncDoEspfpFY6A2La27VaF5oNYq90uYhtP9Wt9v/eGf8PBXiAyc1LFFCKDNzC14grrl6uXGOizO3FjBPVjvO7dvRCQSxyTcIAFAN35uuA6PhWuU6FIAqJM7uf5bfXnvoeAlNWgYj5xxEhoC7AwInFGjEIRmcx0dmfV3R+gE8V2GZOI4qUbDQiOF+BujW2r+4p45QiZkk1KhxRV9KX/3xvPo4CbzXhPGMkwnTrz489ZTSHx7QISqnOJEDEqfl/zfZcq2br4Rb9zwxIYgjwyNmHdNrV50JVNwOp/v9an7dt3ztT//ZdmAUCG/IAws5uwJLuO3uvXXf/u+/1pqqu2...GTFzYObz58cfnxFyCwOEGCEULwhJojDD+hcBEiRZVEFyNWnHgJBIRExCSksN0UCMrhYrp6+qX3mMrQqBzXbty6c+/BoyfPXrx6816RD5++fPvx64/Hr0wgxEXhfolUJlcoVYSxiamZuYWllbWNLVGA/Slf8qNFlSIXu7YvMQCh5LQ8BoUBCxhwOwU4wVR48+3l3JgaAELJaX2JBZyjfSle3wL9eVqExyJ2ILCgQAt3C7q+e3ibiGmVyuFOtwwauXEELbTUOHzuYjRndbI0cES5ogueD/ONmQbe/7vJcHNk2CtZwDtbwGACQYUeAgcmbBCgsE+OxdQECGpO70tskJzTl5Ir2SA9P4BgQ4UOE041OxQgUOGAAUGvNg8XsIFA4MzEwGImHWxg+t2eEUIM9+jDQSiq2D9BhdZJKfv1KJeeeMFi7gSZXuNkB5lgLe0iESL/9NUu4VqInIdi/uErvYjOtqLasyOvGMImpRgVw772uf76lmbZhsia/yzqjAEA",
       ],
@@ -52,6 +52,8 @@ export default defineConfig({
           "'sha256-p9VbHs/ClkQc+x63XdUjvCAgeWxA4ZGvpebJtMn9jbs='",
           "'sha256-kAuJtpHzsuUXU5fKQIGT7DNPr8DmAEAsB96A7yaxQ6I='",
           "'sha256-tSGVRioWH5Kkh/yge9evXQLN7uo4SMVa8/5rYE0Ad+k='",
+          "'sha256-IUIhtlRZo13rYeYt4ApdRMqCD8+pmnYJ9ykYDquELKw='",
+          "'sha256-9fs5y51R4thITS/OJPAKUQ5/IjveC4p2nknfVgpk9nA='",
         ]
       },
     }
