@@ -26,6 +26,8 @@ export default function Calendar({
   name = "selectedDate",
   selectedDays,
   setSelectedDays,
+  selectedDays,
+  setSelectedDays,
 }) {
   const now = new Date();
   const [month, setMonth] = useState(initialMonth ?? now.getMonth() + 1); // 1..12
@@ -36,7 +38,11 @@ export default function Calendar({
       const newArray = selectedDays.filter((c) => {
         return c !== day;
       });
+      const newArray = selectedDays.filter((c) => {
+        return c !== day;
+      });
       setSelectedDays(newArray);
+    } else {
     } else {
       setSelectedDays([...selectedDays, day]);
     }
@@ -152,6 +158,12 @@ export default function Calendar({
           week.map((day, di) => {
             const isSelected = day && selectedDays.includes(day);
             return (
+              <CalendarDay
+                day={day}
+                isSelected={isSelected}
+                onClick={handleClick}
+                key={wi + "-" + di}
+              />
               <CalendarDay
                 day={day}
                 isSelected={isSelected}
