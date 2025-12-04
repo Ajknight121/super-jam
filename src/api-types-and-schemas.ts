@@ -27,6 +27,16 @@ export type AuthIdSchema = zod.infer<typeof MemberIdSchema>;
 export const MeetingIdSchema = zod.nanoid();
 export type MeetingId = zod.infer<typeof MeetingIdSchema>;
 
+const UsernameSchema = zod.string().check(zod.minLength(1)).brand<"username">();
+export type Username = zod.infer<typeof UsernameSchema>;
+
+// An empty password is allowed:
+const PasswordSchema = zod.string().brand<"password">();
+export type Password = zod.infer<typeof PasswordSchema>;
+
+export const AuthCookieSchema = zod.nanoid().brand<"authCookie">();
+export type AuthCookie = zod.infer<typeof AuthCookieSchema>;
+
 // All timestamps in the API are ISO-8601 timestamps with second precision, ending with "Z" (meaning they are UTC time).
 const TimeSchema = zod.string().check(
   zod.iso.datetime({ offset: false, local: false, precision: 0 }),
@@ -61,8 +71,8 @@ export type UserAvailability = zod.infer<typeof UserAvailabilitySchema>;
 export const MeetingAvailabilitySchema = zod
   .record(MemberIdSchema, UserAvailabilitySchema)
   .check(
-    zod.overwrite((obj: object) =>
-      Object.fromEntries(Object.entries(obj).sort()),
+    zod.overwrite((meetingAvailability: object) =>
+      Object.fromEntries(Object.entries(meetingAvailability).sort()),
     ),
   );
 
@@ -142,36 +152,67 @@ export const IanaTimezoneSchema = zod.string().check(
 // TODO(samuel-skean): When reusing the shape, does that also reuse the validation? That is, is DatabaseMemberSchema correctly validated to have a memberId that is a nanoid?
 const APIMemberSchema = zod.object({
   memberId: MemberIdSchema,
-  name: zod.string().check(zod.minLength(1)),
+  name: UsernameSchema,
 });
 
 const DatabaseMemberSchema = zod.object({
   ...APIMemberSchema.def.shape,
-  authId: AuthIdSchema,
+  authId: zod.optional(AuthIdSchema),
+  hashedPassword: zod.string().check(zod.length(60)),
+  authCookie: zod.nanoid(),
 });
 
 export const APIMeetingSchema = zod.object({
   // Meeting names must be at least one character long.
   name: zod.string().check(zod.minLength(1)),
   availability: MeetingAvailabilitySchema,
-  members: zod.array(APIMemberSchema),
+  members: zod
+    .array(APIMemberSchema)
+    .check(zod.overwrite((members) => members.sort())),
   availabilityBounds: AvailabilityContraintsSchema,
   timeZone: IanaTimezoneSchema,
 });
 
 export const DatabaseMeetingSchema = zod.object({
   ...APIMeetingSchema.def.shape,
-  members: zod.array(DatabaseMemberSchema),
+  members: zod
+    .array(DatabaseMemberSchema)
+    .check(zod.overwrite((members) => members.sort())),
 });
+export type DatabaseMeeting = zod.infer<typeof DatabaseMeetingSchema>;
 
 // TODONOW(samuel-skean): .def vs .shape.def in zod mini. https://zod.dev/api?id=shape
 export type APIMeeting = zod.infer<typeof APIMeetingSchema>;
 
 export const UserSchema = zod.object({
-  defaultName: zod.string().check(zod.minLength(1)),
+  defaultName: UsernameSchema,
   // STRETCH: Support different names for each meeting. This may be the most sensitive data we deal with, honestly!
 });
 export type User = zod.infer<typeof UserSchema>;
+
+// Login stuff:
+// See the api routes under `src/pages/api/`, since, more than most endpoints, these rely on cookies for their meaning, which are not captured in the schema.
+// TODO(samuel-skean): Better names.
+export const RegisterRequestSchema = zod.object({
+  username: UsernameSchema,
+  // An empty password is allowed:
+  password: PasswordSchema,
+});
+export type RegisterRequest = zod.infer<typeof RegisterRequestSchema>;
+
+export const RegisterResponseSchema = zod.object({
+  memberId: MemberIdSchema,
+});
+export type RegisterResponse = zod.infer<typeof RegisterResponseSchema>;
+
+export const LoginRequestSchema = zod.object({
+  memberId: MemberIdSchema,
+  password: zod.string(),
+});
+type LoginRequest = zod.infer<typeof LoginRequestSchema>;
+
+// Mostly for completeness:
+export const LoginResponseSchema = zod.literal("");
 
 // Errors:
 
@@ -198,6 +239,14 @@ export const noSuchMeetingResponse = (): Response =>
       customMakemeetErrorMessage: "No such meeting.",
     } satisfies MakemeetError,
     { status: 404 },
+  );
+
+export const userAlreadyExistsResponse = (): Response =>
+  Response.json(
+    {
+      customMakemeetErrorMessage: "User with that name already exists.",
+    } satisfies MakemeetError,
+    { status: 400 },
   );
 
 export const undefinedInRequiredURLParamResponse = (): Response =>
@@ -235,3 +284,8 @@ export const zodErrorResponse = (zodError: zod.core.$ZodError) => {
     },
   );
 };
+
+export const unsupportedMethodResponse = (suggestion: string) =>
+  Response.json({
+    customMakemeetErrorMessage: `This method is not supported on this route. ${suggestion}`,
+  } satisfies MakemeetError);
