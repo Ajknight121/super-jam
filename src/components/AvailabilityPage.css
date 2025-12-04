@@ -5,6 +5,17 @@
   background-color: #fff8de;
 }
 
+/* Prevent iOS Safari auto-zoom on form controls */
+.prevent-ios-zoom input,
+.prevent-ios-zoom select,
+.prevent-ios-zoom textarea,
+.prevent-ios-zoom button,
+.prevent-ios-zoom .wide-input,
+.prevent-ios-zoom .time-input {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
 .meeting-details {
   text-align: center;
   align-content: center;
