@@ -15,7 +15,6 @@ export default function MeetingForm() {
   const [selectedDays, setSelectedDays] = useState([]);
   const [isRepeatingWeekly, setIsRepeatingWeekly] = useState(false);
   const [selectedRepeatDays, setSelectedRepeatDays] = useState([] as string[]);
-  const [selectedRepeatDays, setSelectedRepeatDays] = useState([] as string[]);
   const [meetingName, setMeetingName] = useState("");
   const [meetingNameError, setMeetingNameError] = useState(false);
   const [startTime, setStartTime] = useState("");
@@ -28,21 +27,15 @@ export default function MeetingForm() {
   const [timezone, setTimezone] = useState("America/Chicago");
 
   const handleRepeatDay = (day: string) => {
-  const handleRepeatDay = (day: string) => {
     if (selectedRepeatDays.includes(day)) {
-      const newArray = selectedRepeatDays.filter((c) => {
-        return c !== day;
-      });
       const newArray = selectedRepeatDays.filter((c) => {
         return c !== day;
       });
       setSelectedRepeatDays(newArray);
     } else {
-    } else {
       setSelectedRepeatDays([...selectedRepeatDays, day]);
     }
     console.log(day);
-  };
   };
 
   const handleCreateMeeting = async () => {
@@ -54,13 +47,7 @@ export default function MeetingForm() {
     const isTimeIncrementInvalid =
       (startTime && startMinutes % 15 !== 0) ||
       (endTime && endMinutes % 15 !== 0);
-    const isTimeIncrementInvalid =
-      (startTime && startMinutes % 15 !== 0) ||
-      (endTime && endMinutes % 15 !== 0);
 
-    const areDaysMissing = isRepeatingWeekly
-      ? selectedRepeatDays.length === 0
-      : selectedDays.length === 0;
     const areDaysMissing = isRepeatingWeekly
       ? selectedRepeatDays.length === 0
       : selectedDays.length === 0;
@@ -78,6 +65,7 @@ export default function MeetingForm() {
       areDaysMissing ||
       isTimeIncrementInvalid
     ) {
+<<<<<<< HEAD
     if (
       isMeetingNameMissing ||
       areTimesMissing ||
@@ -91,10 +79,11 @@ export default function MeetingForm() {
       isTimeIncrementInvalid ||
       areTimesEqual
     ) {
+=======
+>>>>>>> parent of 72cdd9e (Merge branch 'testing-development' into dev)
       return;
     }
 
-    const formattedDays = selectedDays.map((day) => {
     const formattedDays = selectedDays.map((day) => {
       return `${day}T00:00:00Z`;
     });
@@ -106,7 +95,6 @@ export default function MeetingForm() {
       availabilityBounds: {
         availableDayConstraints: {
           type: isRepeatingWeekly ? "daysOfWeek" : "specificDays",
-          days: isRepeatingWeekly ? [...selectedRepeatDays] : formattedDays,
           days: isRepeatingWeekly ? [...selectedRepeatDays] : formattedDays,
         },
         timeRangeForEachDay: {
@@ -124,7 +112,6 @@ export default function MeetingForm() {
       console.log("Successfully created meeting with ID:", meetingResult.id);
       window.location.href = `/availability/${meetingResult.id}`;
     } else {
-      alert("Error creating meeting");
       alert("Error creating meeting");
     }
   };
@@ -172,9 +159,6 @@ export default function MeetingForm() {
         {meetingNameError && (
           <div className="error-text">Meeting name is required.</div>
         )}
-        {meetingNameError && (
-          <div className="error-text">Meeting name is required.</div>
-        )}
 
         <div className="field">
           <div className="label-text">Possible Times:</div>
@@ -186,9 +170,6 @@ export default function MeetingForm() {
                 type="time"
                 step="900"
                 value={startTime}
-                onChange={(e) =>
-                  setStartTime(roundToNearest15Minutes(e.target.value))
-                }
                 onChange={(e) =>
                   setStartTime(roundToNearest15Minutes(e.target.value))
                 }
@@ -207,18 +188,10 @@ export default function MeetingForm() {
                 onChange={(e) =>
                   setEndTime(roundToNearest15Minutes(e.target.value))
                 }
-                onChange={(e) =>
-                  setEndTime(roundToNearest15Minutes(e.target.value))
-                }
               />
             </div>
           </div>
           <div className="timezone-row">
-            {timeIncrementError && (
-              <div className="error-text">
-                Time must be in 15 minute increments.
-              </div>
-            )}
             {timeIncrementError && (
               <div className="error-text">
                 Time must be in 15 minute increments.
@@ -233,18 +206,8 @@ export default function MeetingForm() {
               value={timezone}
               onChange={(e) => setTimezone(e.target.value.split(" ")[0])}
             >
-            <select
-              id="timezones"
-              name="timezones"
-              className="span5 time-group"
-              value={timezone}
-              onChange={(e) => setTimezone(e.target.value.split(" ")[0])}
-            >
               <option value="Africa/Abidjan">Africa/Abidjan GMT+0:00</option>
               <option value="Africa/Accra">Africa/Accra GMT+0:00</option>
-              <option value="Africa/Addis_Ababa">
-                Africa/Addis_Ababa GMT+3:00
-              </option>
               <option value="Africa/Addis_Ababa">
                 Africa/Addis_Ababa GMT+3:00
               </option>
@@ -262,25 +225,13 @@ export default function MeetingForm() {
               <option value="Africa/Bujumbura">
                 Africa/Bujumbura GMT+2:00
               </option>
-              <option value="Africa/Brazzaville">
-                Africa/Brazzaville GMT+1:00
-              </option>
-              <option value="Africa/Bujumbura">
-                Africa/Bujumbura GMT+2:00
-              </option>
               <option value="Africa/Cairo">Africa/Cairo GMT+2:00</option>
-              <option value="Africa/Casablanca">
-                Africa/Casablanca GMT+0:00
-              </option>
               <option value="Africa/Casablanca">
                 Africa/Casablanca GMT+0:00
               </option>
               <option value="Africa/Ceuta">Africa/Ceuta GMT+1:00</option>
               <option value="Africa/Conakry">Africa/Conakry GMT+0:00</option>
               <option value="Africa/Dakar">Africa/Dakar GMT+0:00</option>
-              <option value="Africa/Dar_es_Salaam">
-                Africa/Dar_es_Salaam GMT+3:00
-              </option>
               <option value="Africa/Dar_es_Salaam">
                 Africa/Dar_es_Salaam GMT+3:00
               </option>
@@ -293,9 +244,6 @@ export default function MeetingForm() {
               <option value="Africa/Johannesburg">
                 Africa/Johannesburg GMT+2:00
               </option>
-              <option value="Africa/Johannesburg">
-                Africa/Johannesburg GMT+2:00
-              </option>
               <option value="Africa/Juba">Africa/Juba GMT+3:00</option>
               <option value="Africa/Kampala">Africa/Kampala GMT+3:00</option>
               <option value="Africa/Khartoum">Africa/Khartoum GMT+2:00</option>
@@ -305,14 +253,8 @@ export default function MeetingForm() {
               <option value="Africa/Libreville">
                 Africa/Libreville GMT+1:00
               </option>
-              <option value="Africa/Libreville">
-                Africa/Libreville GMT+1:00
-              </option>
               <option value="Africa/Lome">Africa/Lome GMT+0:00</option>
               <option value="Africa/Luanda">Africa/Luanda GMT+1:00</option>
-              <option value="Africa/Lubumbashi">
-                Africa/Lubumbashi GMT+2:00
-              </option>
               <option value="Africa/Lubumbashi">
                 Africa/Lubumbashi GMT+2:00
               </option>
@@ -324,22 +266,10 @@ export default function MeetingForm() {
               <option value="Africa/Mogadishu">
                 Africa/Mogadishu GMT+3:00
               </option>
-              <option value="Africa/Mogadishu">
-                Africa/Mogadishu GMT+3:00
-              </option>
               <option value="Africa/Monrovia">Africa/Monrovia GMT+0:00</option>
               <option value="Africa/Nairobi">Africa/Nairobi GMT+3:00</option>
               <option value="Africa/Ndjamena">Africa/Ndjamena GMT+1:00</option>
               <option value="Africa/Niamey">Africa/Niamey GMT+1:00</option>
-              <option value="Africa/Nouakchott">
-                Africa/Nouakchott GMT+0:00
-              </option>
-              <option value="Africa/Ouagadougou">
-                Africa/Ouagadougou GMT+0:00
-              </option>
-              <option value="Africa/Porto-Novo">
-                Africa/Porto-Novo GMT+1:00
-              </option>
               <option value="Africa/Nouakchott">
                 Africa/Nouakchott GMT+0:00
               </option>
@@ -361,16 +291,7 @@ export default function MeetingForm() {
               <option value="America/Anguilla">
                 America/Anguilla GMT-4:00
               </option>
-              <option value="America/Anchorage">
-                America/Anchorage GMT-9:00
-              </option>
-              <option value="America/Anguilla">
-                America/Anguilla GMT-4:00
-              </option>
               <option value="America/Antigua">America/Antigua GMT-4:00</option>
-              <option value="America/Araguaina">
-                America/Araguaina GMT-3:00
-              </option>
               <option value="America/Araguaina">
                 America/Araguaina GMT-3:00
               </option>
@@ -389,26 +310,14 @@ export default function MeetingForm() {
               <option value="America/Argentina/Jujuy">
                 America/Argentina/Jujuy GMT-3:00
               </option>
-              <option value="America/Argentina/Cordoba">
-                America/Argentina/Cordoba GMT-3:00
-              </option>
-              <option value="America/Argentina/Jujuy">
-                America/Argentina/Jujuy GMT-3:00
-              </option>
               <option value="America/Argentina/La_Rioja">
                 America/Argentina/La_Rioja GMT-3:00
               </option>
               <option value="America/Argentina/Mendoza">
                 America/Argentina/Mendoza GMT-3:00
               </option>
-              <option value="America/Argentina/Mendoza">
-                America/Argentina/Mendoza GMT-3:00
-              </option>
               <option value="America/Argentina/Rio_Gallegos">
                 America/Argentina/Rio_Gallegos GMT-3:00
-              </option>
-              <option value="America/Argentina/Salta">
-                America/Argentina/Salta GMT-3:00
               </option>
               <option value="America/Argentina/Salta">
                 America/Argentina/Salta GMT-3:00
@@ -425,19 +334,7 @@ export default function MeetingForm() {
               <option value="America/Argentina/Ushuaia">
                 America/Argentina/Ushuaia GMT-3:00
               </option>
-              <option value="America/Argentina/Tucuman">
-                America/Argentina/Tucuman GMT-3:00
-              </option>
-              <option value="America/Argentina/Ushuaia">
-                America/Argentina/Ushuaia GMT-3:00
-              </option>
               <option value="America/Aruba">America/Aruba GMT-4:00</option>
-              <option value="America/Asuncion">
-                America/Asuncion GMT-4:00
-              </option>
-              <option value="America/Atikokan">
-                America/Atikokan GMT-5:00
-              </option>
               <option value="America/Asuncion">
                 America/Asuncion GMT-4:00
               </option>
@@ -452,20 +349,8 @@ export default function MeetingForm() {
               <option value="America/Barbados">
                 America/Barbados GMT-4:00
               </option>
-              <option value="America/Bahia_Banderas">
-                America/Bahia_Banderas GMT-6:00
-              </option>
-              <option value="America/Barbados">
-                America/Barbados GMT-4:00
-              </option>
               <option value="America/Belem">America/Belem GMT-3:00</option>
               <option value="America/Belize">America/Belize GMT-6:00</option>
-              <option value="America/Blanc-Sablon">
-                America/Blanc-Sablon GMT-4:00
-              </option>
-              <option value="America/Boa_Vista">
-                America/Boa_Vista GMT-4:00
-              </option>
               <option value="America/Blanc-Sablon">
                 America/Blanc-Sablon GMT-4:00
               </option>
@@ -483,20 +368,8 @@ export default function MeetingForm() {
               <option value="America/Campo_Grande">
                 America/Campo_Grande GMT-4:00
               </option>
-              <option value="America/Buenos_Aires">
-                America/Buenos_Aires GMT-3:00
-              </option>
-              <option value="America/Cambridge_Bay">
-                America/Cambridge_Bay GMT-7:00
-              </option>
-              <option value="America/Campo_Grande">
-                America/Campo_Grande GMT-4:00
-              </option>
               <option value="America/Cancun">America/Cancun GMT-5:00</option>
               <option value="America/Caracas">America/Caracas GMT-4:00</option>
-              <option value="America/Catamarca">
-                America/Catamarca GMT-3:00
-              </option>
               <option value="America/Catamarca">
                 America/Catamarca GMT-3:00
               </option>
@@ -505,20 +378,11 @@ export default function MeetingForm() {
               <option value="America/Chicago">America/Chicago GMT-6:00</option>
               <option value="America/Chihuahua">
                 America/Chihuahua GMT-7:00
-              <option value="America/Chicago">America/Chicago GMT-6:00</option>
-              <option value="America/Chihuahua">
-                America/Chihuahua GMT-7:00
-              </option>
-              <option value="America/Coral_Harbour">
-                America/Coral_Harbour GMT-5:00
               </option>
               <option value="America/Coral_Harbour">
                 America/Coral_Harbour GMT-5:00
               </option>
               <option value="America/Cordoba">America/Cordoba GMT-3:00</option>
-              <option value="America/Costa_Rica">
-                America/Costa_Rica GMT-6:00
-              </option>
               <option value="America/Costa_Rica">
                 America/Costa_Rica GMT-6:00
               </option>
@@ -528,45 +392,12 @@ export default function MeetingForm() {
               <option value="America/Danmarkshavn">
                 America/Danmarkshavn GMT+0:00
               </option>
-              <option value="America/Danmarkshavn">
-                America/Danmarkshavn GMT+0:00
-              </option>
               <option value="America/Dawson">America/Dawson GMT-8:00</option>
-              <option value="America/Dawson_Creek">
-                America/Dawson_Creek GMT-7:00
-              </option>
               <option value="America/Dawson_Creek">
                 America/Dawson_Creek GMT-7:00
               </option>
               <option value="America/Denver">America/Denver GMT-7:00</option>
               <option value="America/Detroit">America/Detroit GMT-5:00</option>
-              <option value="America/Dominica">
-                America/Dominica GMT-4:00
-              </option>
-              <option value="America/Edmonton">
-                America/Edmonton GMT-7:00
-              </option>
-              <option value="America/Eirunepe">
-                America/Eirunepe GMT-5:00
-              </option>
-              <option value="America/El_Salvador">
-                America/El_Salvador GMT-6:00
-              </option>
-              <option value="America/Ensenada">
-                America/Ensenada GMT-8:00
-              </option>
-              <option value="America/Fort_Nelson">
-                America/Fort_Nelson GMT-7:00
-              </option>
-              <option value="America/Fort_Wayne">
-                America/Fort_Wayne GMT-5:00
-              </option>
-              <option value="America/Fortaleza">
-                America/Fortaleza GMT-3:00
-              </option>
-              <option value="America/Glace_Bay">
-                America/Glace_Bay GMT-4:00
-              </option>
               <option value="America/Dominica">
                 America/Dominica GMT-4:00
               </option>
@@ -601,22 +432,7 @@ export default function MeetingForm() {
               <option value="America/Grand_Turk">
                 America/Grand_Turk GMT-5:00
               </option>
-              <option value="America/Goose_Bay">
-                America/Goose_Bay GMT-4:00
-              </option>
-              <option value="America/Grand_Turk">
-                America/Grand_Turk GMT-5:00
-              </option>
               <option value="America/Grenada">America/Grenada GMT-4:00</option>
-              <option value="America/Guadeloupe">
-                America/Guadeloupe GMT-4:00
-              </option>
-              <option value="America/Guatemala">
-                America/Guatemala GMT-6:00
-              </option>
-              <option value="America/Guayaquil">
-                America/Guayaquil GMT-5:00
-              </option>
               <option value="America/Guadeloupe">
                 America/Guadeloupe GMT-4:00
               </option>
@@ -632,9 +448,6 @@ export default function MeetingForm() {
               <option value="America/Hermosillo">
                 America/Hermosillo GMT-7:00
               </option>
-              <option value="America/Hermosillo">
-                America/Hermosillo GMT-7:00
-              </option>
               <option value="America/Indiana/Indianapolis">
                 America/Indiana/Indianapolis GMT-5:00
               </option>
@@ -644,29 +457,8 @@ export default function MeetingForm() {
               <option value="America/Indiana/Marengo">
                 America/Indiana/Marengo GMT-5:00
               </option>
-              <option value="America/Indiana/Knox">
-                America/Indiana/Knox GMT-6:00
-              </option>
-              <option value="America/Indiana/Marengo">
-                America/Indiana/Marengo GMT-5:00
-              </option>
               <option value="America/Indiana/Petersburg">
                 America/Indiana/Petersburg GMT-5:00
-              </option>
-              <option value="America/Indiana/Tell_City">
-                America/Indiana/Tell_City GMT-6:00
-              </option>
-              <option value="America/Indiana/Vevay">
-                America/Indiana/Vevay GMT-5:00
-              </option>
-              <option value="America/Indiana/Vincennes">
-                America/Indiana/Vincennes GMT-5:00
-              </option>
-              <option value="America/Indiana/Winamac">
-                America/Indiana/Winamac GMT-5:00
-              </option>
-              <option value="America/Indianapolis">
-                America/Indianapolis GMT-5:00
               </option>
               <option value="America/Indiana/Tell_City">
                 America/Indiana/Tell_City GMT-6:00
@@ -698,20 +490,8 @@ export default function MeetingForm() {
               <option value="America/Kralendijk">
                 America/Kralendijk GMT-4:00
               </option>
-              <option value="America/Kralendijk">
-                America/Kralendijk GMT-4:00
-              </option>
               <option value="America/La_Paz">America/La_Paz GMT-4:00</option>
               <option value="America/Lima">America/Lima GMT-5:00</option>
-              <option value="America/Los_Angeles">
-                America/Los_Angeles GMT-8:00
-              </option>
-              <option value="America/Louisville">
-                America/Louisville GMT-5:00
-              </option>
-              <option value="America/Lower_Princes">
-                America/Lower_Princes GMT-4:00
-              </option>
               <option value="America/Los_Angeles">
                 America/Los_Angeles GMT-8:00
               </option>
@@ -734,32 +514,11 @@ export default function MeetingForm() {
               <option value="America/Mazatlan">
                 America/Mazatlan GMT-7:00
               </option>
-              <option value="America/Martinique">
-                America/Martinique GMT-4:00
-              </option>
-              <option value="America/Matamoros">
-                America/Matamoros GMT-6:00
-              </option>
-              <option value="America/Mazatlan">
-                America/Mazatlan GMT-7:00
-              </option>
               <option value="America/Mendoza">America/Mendoza GMT-3:00</option>
               <option value="America/Menominee">
                 America/Menominee GMT-6:00
               </option>
-              <option value="America/Menominee">
-                America/Menominee GMT-6:00
-              </option>
               <option value="America/Merida">America/Merida GMT-6:00</option>
-              <option value="America/Metlakatla">
-                America/Metlakatla GMT-9:00
-              </option>
-              <option value="America/Mexico_City">
-                America/Mexico_City GMT-6:00
-              </option>
-              <option value="America/Miquelon">
-                America/Miquelon GMT-3:00
-              </option>
               <option value="America/Metlakatla">
                 America/Metlakatla GMT-9:00
               </option>
@@ -782,22 +541,7 @@ export default function MeetingForm() {
               <option value="America/Montserrat">
                 America/Montserrat GMT-4:00
               </option>
-              <option value="America/Monterrey">
-                America/Monterrey GMT-6:00
-              </option>
-              <option value="America/Montevideo">
-                America/Montevideo GMT-3:00
-              </option>
-              <option value="America/Montreal">
-                America/Montreal GMT-5:00
-              </option>
-              <option value="America/Montserrat">
-                America/Montserrat GMT-4:00
-              </option>
               <option value="America/Nassau">America/Nassau GMT-5:00</option>
-              <option value="America/New_York">
-                America/New_York GMT-5:00
-              </option>
               <option value="America/New_York">
                 America/New_York GMT-5:00
               </option>
@@ -821,37 +565,7 @@ export default function MeetingForm() {
               <option value="America/Paramaribo">
                 America/Paramaribo GMT-3:00
               </option>
-              <option value="America/Pangnirtung">
-                America/Pangnirtung GMT-5:00
-              </option>
-              <option value="America/Paramaribo">
-                America/Paramaribo GMT-3:00
-              </option>
               <option value="America/Phoenix">America/Phoenix GMT-7:00</option>
-              <option value="America/Port-au-Prince">
-                America/Port-au-Prince GMT-5:00
-              </option>
-              <option value="America/Port_of_Spain">
-                America/Port_of_Spain GMT-4:00
-              </option>
-              <option value="America/Porto_Acre">
-                America/Porto_Acre GMT-5:00
-              </option>
-              <option value="America/Porto_Velho">
-                America/Porto_Velho GMT-4:00
-              </option>
-              <option value="America/Puerto_Rico">
-                America/Puerto_Rico GMT-4:00
-              </option>
-              <option value="America/Punta_Arenas">
-                America/Punta_Arenas GMT-3:00
-              </option>
-              <option value="America/Rainy_River">
-                America/Rainy_River GMT-6:00
-              </option>
-              <option value="America/Rankin_Inlet">
-                America/Rankin_Inlet GMT-6:00
-              </option>
               <option value="America/Port-au-Prince">
                 America/Port-au-Prince GMT-5:00
               </option>
@@ -884,34 +598,7 @@ export default function MeetingForm() {
               <option value="America/Rio_Branco">
                 America/Rio_Branco GMT-5:00
               </option>
-              <option value="America/Resolute">
-                America/Resolute GMT-6:00
-              </option>
-              <option value="America/Rio_Branco">
-                America/Rio_Branco GMT-5:00
-              </option>
               <option value="America/Rosario">America/Rosario GMT-3:00</option>
-              <option value="America/Santa_Isabel">
-                America/Santa_Isabel GMT-8:00
-              </option>
-              <option value="America/Santarem">
-                America/Santarem GMT-3:00
-              </option>
-              <option value="America/Santiago">
-                America/Santiago GMT-4:00
-              </option>
-              <option value="America/Santo_Domingo">
-                America/Santo_Domingo GMT-4:00
-              </option>
-              <option value="America/Sao_Paulo">
-                America/Sao_Paulo GMT-3:00
-              </option>
-              <option value="America/Scoresbysund">
-                America/Scoresbysund GMT-1:00
-              </option>
-              <option value="America/Shiprock">
-                America/Shiprock GMT-7:00
-              </option>
               <option value="America/Santa_Isabel">
                 America/Santa_Isabel GMT-8:00
               </option>
@@ -958,43 +645,13 @@ export default function MeetingForm() {
               <option value="America/Tegucigalpa">
                 America/Tegucigalpa GMT-6:00
               </option>
-              <option value="America/St_Barthelemy">
-                America/St_Barthelemy GMT-4:00
-              </option>
-              <option value="America/St_Johns">
-                America/St_Johns GMT-4:30
-              </option>
-              <option value="America/St_Kitts">
-                America/St_Kitts GMT-4:00
-              </option>
-              <option value="America/St_Lucia">
-                America/St_Lucia GMT-4:00
-              </option>
-              <option value="America/St_Thomas">
-                America/St_Thomas GMT-4:00
-              </option>
-              <option value="America/St_Vincent">
-                America/St_Vincent GMT-4:00
-              </option>
-              <option value="America/Swift_Current">
-                America/Swift_Current GMT-6:00
-              </option>
-              <option value="America/Tegucigalpa">
-                America/Tegucigalpa GMT-6:00
-              </option>
               <option value="America/Thule">America/Thule GMT-4:00</option>
-              <option value="America/Thunder_Bay">
-                America/Thunder_Bay GMT-5:00
-              </option>
               <option value="America/Thunder_Bay">
                 America/Thunder_Bay GMT-5:00
               </option>
               <option value="America/Tijuana">America/Tijuana GMT-8:00</option>
               <option value="America/Toronto">America/Toronto GMT-5:00</option>
               <option value="America/Tortola">America/Tortola GMT-4:00</option>
-              <option value="America/Vancouver">
-                America/Vancouver GMT-8:00
-              </option>
               <option value="America/Vancouver">
                 America/Vancouver GMT-8:00
               </option>
@@ -1005,55 +662,7 @@ export default function MeetingForm() {
               <option value="America/Winnipeg">
                 America/Winnipeg GMT-6:00
               </option>
-              <option value="America/Whitehorse">
-                America/Whitehorse GMT-8:00
-              </option>
-              <option value="America/Winnipeg">
-                America/Winnipeg GMT-6:00
-              </option>
               <option value="America/Yakutat">America/Yakutat GMT-9:00</option>
-              <option value="America/Yellowknife">
-                America/Yellowknife GMT-7:00
-              </option>
-              <option value="Antarctica/Casey">
-                Antarctica/Casey GMT+8:00
-              </option>
-              <option value="Antarctica/Davis">
-                Antarctica/Davis GMT+7:00
-              </option>
-              <option value="Antarctica/DumontDUrville">
-                Antarctica/DumontDUrville GMT+10:00
-              </option>
-              <option value="Antarctica/Macquarie">
-                Antarctica/Macquarie GMT+11:00
-              </option>
-              <option value="Antarctica/Mawson">
-                Antarctica/Mawson GMT+5:00
-              </option>
-              <option value="Antarctica/McMurdo">
-                Antarctica/McMurdo GMT+12:00
-              </option>
-              <option value="Antarctica/Palmer">
-                Antarctica/Palmer GMT-3:00
-              </option>
-              <option value="Antarctica/Rothera">
-                Antarctica/Rothera GMT-3:00
-              </option>
-              <option value="Antarctica/South_Pole">
-                Antarctica/South_Pole GMT+12:00
-              </option>
-              <option value="Antarctica/Syowa">
-                Antarctica/Syowa GMT+3:00
-              </option>
-              <option value="Antarctica/Troll">
-                Antarctica/Troll GMT+0:00
-              </option>
-              <option value="Antarctica/Vostok">
-                Antarctica/Vostok GMT+6:00
-              </option>
-              <option value="Arctic/Longyearbyen">
-                Arctic/Longyearbyen GMT+1:00
-              </option>
               <option value="America/Yellowknife">
                 America/Yellowknife GMT-7:00
               </option>
@@ -1132,9 +741,6 @@ export default function MeetingForm() {
               <option value="Asia/Ho_Chi_Minh">
                 Asia/Ho_Chi_Minh GMT+7:00
               </option>
-              <option value="Asia/Ho_Chi_Minh">
-                Asia/Ho_Chi_Minh GMT+7:00
-              </option>
               <option value="Asia/Hong_Kong">Asia/Hong_Kong GMT+8:00</option>
               <option value="Asia/Hovd">Asia/Hovd GMT+7:00</option>
               <option value="Asia/Irkutsk">Asia/Irkutsk GMT+8:00</option>
@@ -1156,12 +762,6 @@ export default function MeetingForm() {
               <option value="Asia/Kuala_Lumpur">
                 Asia/Kuala_Lumpur GMT+8:00
               </option>
-              <option value="Asia/Krasnoyarsk">
-                Asia/Krasnoyarsk GMT+7:00
-              </option>
-              <option value="Asia/Kuala_Lumpur">
-                Asia/Kuala_Lumpur GMT+8:00
-              </option>
               <option value="Asia/Kuching">Asia/Kuching GMT+8:00</option>
               <option value="Asia/Kuwait">Asia/Kuwait GMT+3:00</option>
               <option value="Asia/Macao">Asia/Macao GMT+8:00</option>
@@ -1171,12 +771,6 @@ export default function MeetingForm() {
               <option value="Asia/Manila">Asia/Manila GMT+8:00</option>
               <option value="Asia/Muscat">Asia/Muscat GMT+4:00</option>
               <option value="Asia/Nicosia">Asia/Nicosia GMT+2:00</option>
-              <option value="Asia/Novokuznetsk">
-                Asia/Novokuznetsk GMT+7:00
-              </option>
-              <option value="Asia/Novosibirsk">
-                Asia/Novosibirsk GMT+7:00
-              </option>
               <option value="Asia/Novokuznetsk">
                 Asia/Novokuznetsk GMT+7:00
               </option>
@@ -1202,9 +796,6 @@ export default function MeetingForm() {
               <option value="Asia/Srednekolymsk">
                 Asia/Srednekolymsk GMT+11:00
               </option>
-              <option value="Asia/Srednekolymsk">
-                Asia/Srednekolymsk GMT+11:00
-              </option>
               <option value="Asia/Taipei">Asia/Taipei GMT+8:00</option>
               <option value="Asia/Tashkent">Asia/Tashkent GMT+5:00</option>
               <option value="Asia/Tbilisi">Asia/Tbilisi GMT+4:00</option>
@@ -1220,19 +811,10 @@ export default function MeetingForm() {
               <option value="Asia/Ulaanbaatar">
                 Asia/Ulaanbaatar GMT+8:00
               </option>
-              <option value="Asia/Ujung_Pandang">
-                Asia/Ujung_Pandang GMT+8:00
-              </option>
-              <option value="Asia/Ulaanbaatar">
-                Asia/Ulaanbaatar GMT+8:00
-              </option>
               <option value="Asia/Ulan_Bator">Asia/Ulan_Bator GMT+8:00</option>
               <option value="Asia/Urumqi">Asia/Urumqi GMT+6:00</option>
               <option value="Asia/Ust-Nera">Asia/Ust-Nera GMT+10:00</option>
               <option value="Asia/Vientiane">Asia/Vientiane GMT+7:00</option>
-              <option value="Asia/Vladivostok">
-                Asia/Vladivostok GMT+10:00
-              </option>
               <option value="Asia/Vladivostok">
                 Asia/Vladivostok GMT+10:00
               </option>
@@ -1241,14 +823,8 @@ export default function MeetingForm() {
               <option value="Asia/Yekaterinburg">
                 Asia/Yekaterinburg GMT+5:00
               </option>
-              <option value="Asia/Yekaterinburg">
-                Asia/Yekaterinburg GMT+5:00
-              </option>
               <option value="Asia/Yerevan">Asia/Yerevan GMT+4:00</option>
               <option value="Atlantic/Azores">Atlantic/Azores GMT-1:00</option>
-              <option value="Atlantic/Bermuda">
-                Atlantic/Bermuda GMT-4:00
-              </option>
               <option value="Atlantic/Bermuda">
                 Atlantic/Bermuda GMT-4:00
               </option>
@@ -1256,29 +832,8 @@ export default function MeetingForm() {
               <option value="Atlantic/Cape_Verde">
                 Atlantic/Cape_Verde GMT-1:00
               </option>
-              <option value="Atlantic/Cape_Verde">
-                Atlantic/Cape_Verde GMT-1:00
-              </option>
               <option value="Atlantic/Faeroe">Atlantic/Faeroe GMT+0:00</option>
               <option value="Atlantic/Faroe">Atlantic/Faroe GMT+0:00</option>
-              <option value="Atlantic/Jan_Mayen">
-                Atlantic/Jan_Mayen GMT+1:00
-              </option>
-              <option value="Atlantic/Madeira">
-                Atlantic/Madeira GMT+0:00
-              </option>
-              <option value="Atlantic/Reykjavik">
-                Atlantic/Reykjavik GMT+0:00
-              </option>
-              <option value="Atlantic/South_Georgia">
-                Atlantic/South_Georgia GMT-2:00
-              </option>
-              <option value="Atlantic/St_Helena">
-                Atlantic/St_Helena GMT+0:00
-              </option>
-              <option value="Atlantic/Stanley">
-                Atlantic/Stanley GMT-3:00
-              </option>
               <option value="Atlantic/Jan_Mayen">
                 Atlantic/Jan_Mayen GMT+1:00
               </option>
@@ -1316,41 +871,11 @@ export default function MeetingForm() {
               <option value="Australia/Darwin">
                 Australia/Darwin GMT+9:30
               </option>
-              <option value="Australia/Adelaide">
-                Australia/Adelaide GMT+9:30
-              </option>
-              <option value="Australia/Brisbane">
-                Australia/Brisbane GMT+10:00
-              </option>
-              <option value="Australia/Broken_Hill">
-                Australia/Broken_Hill GMT+9:30
-              </option>
-              <option value="Australia/Canberra">
-                Australia/Canberra GMT+10:00
-              </option>
-              <option value="Australia/Currie">
-                Australia/Currie GMT+10:00
-              </option>
-              <option value="Australia/Darwin">
-                Australia/Darwin GMT+9:30
-              </option>
               <option value="Australia/Eucla">Australia/Eucla GMT+8:45</option>
               <option value="Australia/Hobart">
                 Australia/Hobart GMT+10:00
               </option>
-              <option value="Australia/Hobart">
-                Australia/Hobart GMT+10:00
-              </option>
               <option value="Australia/LHI">Australia/LHI GMT+10:30</option>
-              <option value="Australia/Lindeman">
-                Australia/Lindeman GMT+10:00
-              </option>
-              <option value="Australia/Lord_Howe">
-                Australia/Lord_Howe GMT+10:30
-              </option>
-              <option value="Australia/Melbourne">
-                Australia/Melbourne GMT+10:00
-              </option>
               <option value="Australia/Lindeman">
                 Australia/Lindeman GMT+10:00
               </option>
@@ -1366,19 +891,7 @@ export default function MeetingForm() {
               <option value="Australia/Queensland">
                 Australia/Queensland GMT+10:00
               </option>
-              <option value="Australia/Queensland">
-                Australia/Queensland GMT+10:00
-              </option>
               <option value="Australia/South">Australia/South GMT+9:30</option>
-              <option value="Australia/Sydney">
-                Australia/Sydney GMT+10:00
-              </option>
-              <option value="Australia/Tasmania">
-                Australia/Tasmania GMT+10:00
-              </option>
-              <option value="Australia/Victoria">
-                Australia/Victoria GMT+10:00
-              </option>
               <option value="Australia/Sydney">
                 Australia/Sydney GMT+10:00
               </option>
@@ -1392,13 +905,7 @@ export default function MeetingForm() {
               <option value="Australia/Yancowinna">
                 Australia/Yancowinna GMT+9:30
               </option>
-              <option value="Australia/Yancowinna">
-                Australia/Yancowinna GMT+9:30
-              </option>
               <option value="Brazil/Acre">Brazil/Acre GMT-5:00</option>
-              <option value="Brazil/DeNoronha">
-                Brazil/DeNoronha GMT-2:00
-              </option>
               <option value="Brazil/DeNoronha">
                 Brazil/DeNoronha GMT-2:00
               </option>
@@ -1413,23 +920,11 @@ export default function MeetingForm() {
               <option value="Canada/Newfoundland">
                 Canada/Newfoundland GMT-4:30
               </option>
-              <option value="Canada/Newfoundland">
-                Canada/Newfoundland GMT-4:30
-              </option>
               <option value="Canada/Pacific">Canada/Pacific GMT-8:00</option>
               <option value="Canada/Saskatchewan">
                 Canada/Saskatchewan GMT-6:00
               </option>
-              <option value="Canada/Saskatchewan">
-                Canada/Saskatchewan GMT-6:00
-              </option>
               <option value="Canada/Yukon">Canada/Yukon GMT-8:00</option>
-              <option value="Chile/Continental">
-                Chile/Continental GMT-4:00
-              </option>
-              <option value="Chile/EasterIsland">
-                Chile/EasterIsland GMT-6:00
-              </option>
               <option value="Chile/Continental">
                 Chile/Continental GMT-4:00
               </option>
@@ -1479,13 +974,7 @@ export default function MeetingForm() {
               <option value="Europe/Amsterdam">
                 Europe/Amsterdam GMT+1:00
               </option>
-              <option value="Europe/Amsterdam">
-                Europe/Amsterdam GMT+1:00
-              </option>
               <option value="Europe/Andorra">Europe/Andorra GMT+1:00</option>
-              <option value="Europe/Astrakhan">
-                Europe/Astrakhan GMT+4:00
-              </option>
               <option value="Europe/Astrakhan">
                 Europe/Astrakhan GMT+4:00
               </option>
@@ -1496,13 +985,7 @@ export default function MeetingForm() {
               <option value="Europe/Bratislava">
                 Europe/Bratislava GMT+1:00
               </option>
-              <option value="Europe/Bratislava">
-                Europe/Bratislava GMT+1:00
-              </option>
               <option value="Europe/Brussels">Europe/Brussels GMT+1:00</option>
-              <option value="Europe/Bucharest">
-                Europe/Bucharest GMT+2:00
-              </option>
               <option value="Europe/Bucharest">
                 Europe/Bucharest GMT+2:00
               </option>
@@ -1512,13 +995,7 @@ export default function MeetingForm() {
               <option value="Europe/Copenhagen">
                 Europe/Copenhagen GMT+1:00
               </option>
-              <option value="Europe/Copenhagen">
-                Europe/Copenhagen GMT+1:00
-              </option>
               <option value="Europe/Dublin">Europe/Dublin GMT+0:00</option>
-              <option value="Europe/Gibraltar">
-                Europe/Gibraltar GMT+1:00
-              </option>
               <option value="Europe/Gibraltar">
                 Europe/Gibraltar GMT+1:00
               </option>
@@ -1527,14 +1004,8 @@ export default function MeetingForm() {
               <option value="Europe/Isle_of_Man">
                 Europe/Isle_of_Man GMT+0:00
               </option>
-              <option value="Europe/Isle_of_Man">
-                Europe/Isle_of_Man GMT+0:00
-              </option>
               <option value="Europe/Istanbul">Europe/Istanbul GMT+3:00</option>
               <option value="Europe/Jersey">Europe/Jersey GMT+0:00</option>
-              <option value="Europe/Kaliningrad">
-                Europe/Kaliningrad GMT+2:00
-              </option>
               <option value="Europe/Kaliningrad">
                 Europe/Kaliningrad GMT+2:00
               </option>
@@ -1544,21 +1015,12 @@ export default function MeetingForm() {
               <option value="Europe/Ljubljana">
                 Europe/Ljubljana GMT+1:00
               </option>
-              <option value="Europe/Ljubljana">
-                Europe/Ljubljana GMT+1:00
-              </option>
               <option value="Europe/London">Europe/London GMT+0:00</option>
-              <option value="Europe/Luxembourg">
-                Europe/Luxembourg GMT+1:00
-              </option>
               <option value="Europe/Luxembourg">
                 Europe/Luxembourg GMT+1:00
               </option>
               <option value="Europe/Madrid">Europe/Madrid GMT+1:00</option>
               <option value="Europe/Malta">Europe/Malta GMT+1:00</option>
-              <option value="Europe/Mariehamn">
-                Europe/Mariehamn GMT+2:00
-              </option>
               <option value="Europe/Mariehamn">
                 Europe/Mariehamn GMT+2:00
               </option>
@@ -1571,16 +1033,10 @@ export default function MeetingForm() {
               <option value="Europe/Podgorica">
                 Europe/Podgorica GMT+1:00
               </option>
-              <option value="Europe/Podgorica">
-                Europe/Podgorica GMT+1:00
-              </option>
               <option value="Europe/Prague">Europe/Prague GMT+1:00</option>
               <option value="Europe/Riga">Europe/Riga GMT+2:00</option>
               <option value="Europe/Rome">Europe/Rome GMT+1:00</option>
               <option value="Europe/Samara">Europe/Samara GMT+4:00</option>
-              <option value="Europe/San_Marino">
-                Europe/San_Marino GMT+1:00
-              </option>
               <option value="Europe/San_Marino">
                 Europe/San_Marino GMT+1:00
               </option>
@@ -1589,23 +1045,14 @@ export default function MeetingForm() {
               <option value="Europe/Simferopol">
                 Europe/Simferopol GMT+3:00
               </option>
-              <option value="Europe/Simferopol">
-                Europe/Simferopol GMT+3:00
-              </option>
               <option value="Europe/Skopje">Europe/Skopje GMT+1:00</option>
               <option value="Europe/Sofia">Europe/Sofia GMT+2:00</option>
-              <option value="Europe/Stockholm">
-                Europe/Stockholm GMT+1:00
-              </option>
               <option value="Europe/Stockholm">
                 Europe/Stockholm GMT+1:00
               </option>
               <option value="Europe/Tallinn">Europe/Tallinn GMT+2:00</option>
               <option value="Europe/Tirane">Europe/Tirane GMT+1:00</option>
               <option value="Europe/Tiraspol">Europe/Tiraspol GMT+2:00</option>
-              <option value="Europe/Ulyanovsk">
-                Europe/Ulyanovsk GMT+4:00
-              </option>
               <option value="Europe/Ulyanovsk">
                 Europe/Ulyanovsk GMT+4:00
               </option>
@@ -1617,14 +1064,8 @@ export default function MeetingForm() {
               <option value="Europe/Volgograd">
                 Europe/Volgograd GMT+4:00
               </option>
-              <option value="Europe/Volgograd">
-                Europe/Volgograd GMT+4:00
-              </option>
               <option value="Europe/Warsaw">Europe/Warsaw GMT+1:00</option>
               <option value="Europe/Zagreb">Europe/Zagreb GMT+1:00</option>
-              <option value="Europe/Zaporozhye">
-                Europe/Zaporozhye GMT+2:00
-              </option>
               <option value="Europe/Zaporozhye">
                 Europe/Zaporozhye GMT+2:00
               </option>
@@ -1639,13 +1080,7 @@ export default function MeetingForm() {
               <option value="Indian/Antananarivo">
                 Indian/Antananarivo GMT+3:00
               </option>
-              <option value="Indian/Antananarivo">
-                Indian/Antananarivo GMT+3:00
-              </option>
               <option value="Indian/Chagos">Indian/Chagos GMT+6:00</option>
-              <option value="Indian/Christmas">
-                Indian/Christmas GMT+7:00
-              </option>
               <option value="Indian/Christmas">
                 Indian/Christmas GMT+7:00
               </option>
@@ -1654,14 +1089,8 @@ export default function MeetingForm() {
               <option value="Indian/Kerguelen">
                 Indian/Kerguelen GMT+5:00
               </option>
-              <option value="Indian/Kerguelen">
-                Indian/Kerguelen GMT+5:00
-              </option>
               <option value="Indian/Mahe">Indian/Mahe GMT+4:00</option>
               <option value="Indian/Maldives">Indian/Maldives GMT+5:00</option>
-              <option value="Indian/Mauritius">
-                Indian/Mauritius GMT+4:00
-              </option>
               <option value="Indian/Mauritius">
                 Indian/Mauritius GMT+4:00
               </option>
@@ -1675,9 +1104,6 @@ export default function MeetingForm() {
               <option value="Libya">Libya GMT+2:00</option>
               <option value="MET">MET GMT+1:00</option>
               <option value="MST7MDT">MST7MDT GMT-7:00</option>
-              <option value="Mexico/BajaNorte">
-                Mexico/BajaNorte GMT-8:00
-              </option>
               <option value="Mexico/BajaNorte">
                 Mexico/BajaNorte GMT-8:00
               </option>
@@ -1695,19 +1121,10 @@ export default function MeetingForm() {
               <option value="Pacific/Bougainville">
                 Pacific/Bougainville GMT+11:00
               </option>
-              <option value="Pacific/Auckland">
-                Pacific/Auckland GMT+12:00
-              </option>
-              <option value="Pacific/Bougainville">
-                Pacific/Bougainville GMT+11:00
-              </option>
               <option value="Pacific/Chatham">Pacific/Chatham GMT+12:45</option>
               <option value="Pacific/Chuuk">Pacific/Chuuk GMT+10:00</option>
               <option value="Pacific/Easter">Pacific/Easter GMT-6:00</option>
               <option value="Pacific/Efate">Pacific/Efate GMT+11:00</option>
-              <option value="Pacific/Enderbury">
-                Pacific/Enderbury GMT+13:00
-              </option>
               <option value="Pacific/Enderbury">
                 Pacific/Enderbury GMT+13:00
               </option>
@@ -1719,16 +1136,7 @@ export default function MeetingForm() {
               <option value="Pacific/Galapagos">
                 Pacific/Galapagos GMT-6:00
               </option>
-              <option value="Pacific/Funafuti">
-                Pacific/Funafuti GMT+12:00
-              </option>
-              <option value="Pacific/Galapagos">
-                Pacific/Galapagos GMT-6:00
-              </option>
               <option value="Pacific/Gambier">Pacific/Gambier GMT-9:00</option>
-              <option value="Pacific/Guadalcanal">
-                Pacific/Guadalcanal GMT+11:00
-              </option>
               <option value="Pacific/Guadalcanal">
                 Pacific/Guadalcanal GMT+11:00
               </option>
@@ -1742,26 +1150,11 @@ export default function MeetingForm() {
               <option value="Pacific/Kiritimati">
                 Pacific/Kiritimati GMT+14:00
               </option>
-              <option value="Pacific/Honolulu">
-                Pacific/Honolulu GMT-10:00
-              </option>
-              <option value="Pacific/Johnston">
-                Pacific/Johnston GMT-10:00
-              </option>
-              <option value="Pacific/Kiritimati">
-                Pacific/Kiritimati GMT+14:00
-              </option>
               <option value="Pacific/Kosrae">Pacific/Kosrae GMT+11:00</option>
               <option value="Pacific/Kwajalein">
                 Pacific/Kwajalein GMT+12:00
               </option>
-              <option value="Pacific/Kwajalein">
-                Pacific/Kwajalein GMT+12:00
-              </option>
               <option value="Pacific/Majuro">Pacific/Majuro GMT+12:00</option>
-              <option value="Pacific/Marquesas">
-                Pacific/Marquesas GMT-10:30
-              </option>
               <option value="Pacific/Marquesas">
                 Pacific/Marquesas GMT-10:30
               </option>
@@ -1773,13 +1166,7 @@ export default function MeetingForm() {
               <option value="Pacific/Pago_Pago">
                 Pacific/Pago_Pago GMT-11:00
               </option>
-              <option value="Pacific/Pago_Pago">
-                Pacific/Pago_Pago GMT-11:00
-              </option>
               <option value="Pacific/Palau">Pacific/Palau GMT+9:00</option>
-              <option value="Pacific/Pitcairn">
-                Pacific/Pitcairn GMT-8:00
-              </option>
               <option value="Pacific/Pitcairn">
                 Pacific/Pitcairn GMT-8:00
               </option>
@@ -1791,19 +1178,10 @@ export default function MeetingForm() {
               <option value="Pacific/Rarotonga">
                 Pacific/Rarotonga GMT-10:00
               </option>
-              <option value="Pacific/Port_Moresby">
-                Pacific/Port_Moresby GMT+10:00
-              </option>
-              <option value="Pacific/Rarotonga">
-                Pacific/Rarotonga GMT-10:00
-              </option>
               <option value="Pacific/Saipan">Pacific/Saipan GMT+10:00</option>
               <option value="Pacific/Samoa">Pacific/Samoa GMT-11:00</option>
               <option value="Pacific/Tahiti">Pacific/Tahiti GMT-10:00</option>
               <option value="Pacific/Tarawa">Pacific/Tarawa GMT+12:00</option>
-              <option value="Pacific/Tongatapu">
-                Pacific/Tongatapu GMT+13:00
-              </option>
               <option value="Pacific/Tongatapu">
                 Pacific/Tongatapu GMT+13:00
               </option>
@@ -1837,9 +1215,6 @@ export default function MeetingForm() {
               <option value="US/East-Indiana">US/East-Indiana GMT-5:00</option>
               <option value="US/Eastern">US/Eastern GMT-5:00</option>
               <option value="US/Hawaii">US/Hawaii GMT-10:00</option>
-              <option value="US/Indiana-Starke">
-                US/Indiana-Starke GMT-6:00
-              </option>
               <option value="US/Indiana-Starke">
                 US/Indiana-Starke GMT-6:00
               </option>
@@ -1893,8 +1268,6 @@ export default function MeetingForm() {
             checked={isRepeatingWeekly}
             onChange={(e) => setIsRepeatingWeekly(e.target.checked)}
           />
-            onChange={(e) => setIsRepeatingWeekly(e.target.checked)}
-          />
         </label>
 
         <div className="field">
@@ -1921,20 +1294,8 @@ export default function MeetingForm() {
               id="mon-btn"
               onClick={() => handleRepeatDay("monday")}
             >
-            <button
-              type="button"
-              className={`pill ${selectedRepeatDays.includes("monday") ? "selected" : ""}`}
-              id="mon-btn"
-              onClick={() => handleRepeatDay("monday")}
-            >
               Mon
             </button>
-            <button
-              type="button"
-              className={`pill ${selectedRepeatDays.includes("tuesday") ? "selected" : ""}`}
-              id="tues-btn"
-              onClick={() => handleRepeatDay("tuesday")}
-            >
             <button
               type="button"
               className={`pill ${selectedRepeatDays.includes("tuesday") ? "selected" : ""}`}
@@ -1949,20 +1310,8 @@ export default function MeetingForm() {
               id="weds-btn"
               onClick={() => handleRepeatDay("wednesday")}
             >
-            <button
-              type="button"
-              className={`pill ${selectedRepeatDays.includes("wednesday") ? "selected" : ""}`}
-              id="weds-btn"
-              onClick={() => handleRepeatDay("wednesday")}
-            >
               Weds
             </button>
-            <button
-              type="button"
-              className={`pill ${selectedRepeatDays.includes("thursday") ? "selected" : ""}`}
-              id="thrs-btn"
-              onClick={() => handleRepeatDay("thursday")}
-            >
             <button
               type="button"
               className={`pill ${selectedRepeatDays.includes("thursday") ? "selected" : ""}`}
@@ -1977,20 +1326,8 @@ export default function MeetingForm() {
               id="fri-btn"
               onClick={() => handleRepeatDay("friday")}
             >
-            <button
-              type="button"
-              className={`pill ${selectedRepeatDays.includes("friday") ? "selected" : ""}`}
-              id="fri-btn"
-              onClick={() => handleRepeatDay("friday")}
-            >
               Fri
             </button>
-            <button
-              type="button"
-              className={`pill ${selectedRepeatDays.includes("saturday") ? "selected" : ""}`}
-              id="sat-btn"
-              onClick={() => handleRepeatDay("saturday")}
-            >
             <button
               type="button"
               className={`pill ${selectedRepeatDays.includes("saturday") ? "selected" : ""}`}
@@ -2010,11 +1347,6 @@ export default function MeetingForm() {
           />
         </div>
         <div className="create-button-row">
-          <button
-            type="button"
-            id="create-button"
-            onClick={handleCreateMeeting}
-          >
           <button
             type="button"
             id="create-button"

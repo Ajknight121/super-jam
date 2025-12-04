@@ -2,16 +2,8 @@
 "use client";
 
 import clsx from "clsx";
-import clsx from "clsx";
 // Box bound drag select from: https://www.joshuawootonn.com/react-drag-to-select#intersection-state
 import {
-  createContext,
-  type ReactNode,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
   createContext,
   type ReactNode,
   useCallback,
@@ -35,7 +27,6 @@ class DOMVector {
   }
 
   getDiagonalLength(): number {
-    return Math.sqrt(this.magnitudeX ** 2 + this.magnitudeY ** 2);
     return Math.sqrt(this.magnitudeX ** 2 + this.magnitudeY ** 2);
   }
 
@@ -102,9 +93,6 @@ export function Root({
 
   const [dragVector, setDragVector] = useState<DOMVector | null>(null);
   const [scrollVector, setScrollVector] = useState<DOMVector | null>(null);
-  const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>(
-    initialItems ?? {},
-  );
   const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>(
     initialItems ?? {},
   );
