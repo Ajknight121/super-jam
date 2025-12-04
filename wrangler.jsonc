@@ -44,7 +44,12 @@
    * Environment Variables
    * https://developers.cloudflare.com/workers/wrangler/configuration/#environment-variables
    */
-  // "vars": { "MY_VARIABLE": "production_value" }
+  "vars": {
+    "MY_VARIABLE": "production_value",
+    "GOOGLE_CLIENT_ID": "701234683038-rf8ossu61ak8l81k1437pgm52eic1frt.apps.googleusercontent.com",
+    // WARNING: Sensitive values like GOOGLE_CLIENT_SECRET and AUTH_SECRET should NOT be stored here.
+    // Use secrets instead by running `npx wrangler secret put <NAME>` in your terminal.
+  },
   /**
    * Note: Use secrets to store sensitive data.
    * https://developers.cloudflare.com/workers/configuration/secrets/
@@ -76,6 +81,9 @@
           "bucket_name": "makemeet-dev-css-store"
         }
       ],
+      "vars": {
+        "GOOGLE_CLIENT_ID": "701234683038-rf8ossu61ak8l81k1437pgm52eic1frt.apps.googleusercontent.com"
+      }
     }
   }
 }

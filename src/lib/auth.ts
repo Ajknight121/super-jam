@@ -1,24 +1,28 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import type { Runtime } from "@astrojs/cloudflare";
-import { getDb } from "./db";
+import { drizzle } from "drizzle-orm/d1";
+import * as schema from "../db/schema"
 
-const auth = betterAuth((runtime: Runtime) => ({
-  database: drizzleAdapter(getDb(runtime), {
-    provider: "sqlite",
-  }),
-  socialProviders: {
-    google: {
-      clientId: runtime.env.GOOGLE_CLIENT_ID,
-      clientSecret: runtime.env.GOOGLE_CLIENT_SECRET,
-      scope: [
-        "openid",
-        "https://www.googleapis.com/auth/userinfo.email",
-        "https://www.googleapis.com/auth/userinfo.profile",
-        "https://www.googleapis.com/auth/calendar",
-      ],
+export const auth = (env: any) => {
+  // Connect to D1
+  // console.log(env)
+  const db = drizzle(env.DB);
+  
+  return betterAuth({
+    database: drizzleAdapter(db, {
+      provider: "sqlite",
+      schema: schema,
+    }),
+    socialProviders: {
+      google: {
+        clientId: env.GOOGLE_CLIENT_ID,
+        clientSecret: env.GOOGLE_CLIENT_SECRET,
+      },
     },
-  },
-}));
-
-export default auth;
+    // Add this to trust the host on Cloudflare
+    trustedOrigins: [
+       "http://localhost:4321", 
+       "https://makemeet.cloudcs484-0.workers.dev/"
+    ] 
+  });
+};

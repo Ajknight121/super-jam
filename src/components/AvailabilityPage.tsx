@@ -4,6 +4,7 @@ import "./AvailabilityPage.css";
 import { createUser } from "../lib/api/users";
 import SignIn from "./SignIn";
 import { authClient } from "../lib/auth-client";
+import GoogleLogin from "../lib/components/GoogleLogin";
 export default function AvailabilityPage({ meetingId }) {
   const [userId, setUserId] = useState<string | null>(null);
   const [authId, setAuthId] = useState<string | null>(null);
@@ -50,6 +51,12 @@ export default function AvailabilityPage({ meetingId }) {
     }
   }
 
+  const handleGoogleSignIn = async () => {
+    await authClient.signIn.social({
+      provider: "google",
+    })
+  }
+
   return (
     <div className="availability-page">
       <div className="availabilities">
@@ -59,12 +66,7 @@ export default function AvailabilityPage({ meetingId }) {
       <div className="login">
         {userId ? (
           <div>You are logged in. Add your availability above.
-            <a
-              href={`/auth/google?callbackURL=${encodeURIComponent(window.location.href)}`}
-              className="google-signin-button"
-            >
-              Sign in with Google
-            </a>
+            <GoogleLogin />
           </div>
         ) : (
           <div>

@@ -1,10 +1,9 @@
-
-import auth from "#/src/lib/auth";
-import type { APIRoute } from "astro"
+import { auth } from "../../../lib/auth";
+import type { APIRoute } from "astro";
 
 export const prerender = false;
 
 export const ALL: APIRoute = async (context) => {
-
-  return auth.handler(context.request);
-}
+  const betterAuth = auth(context.locals.runtime.env);
+  return betterAuth.handler(context.request);
+};
