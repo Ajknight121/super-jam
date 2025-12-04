@@ -9,6 +9,10 @@
   --pill-bg: #e6e6e6;
   --accent: #f2f2f2;
 }
+.prevent-ios-zoom, input, select, textarea, button, .wide-input, .time-input {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
 .meeting-wrap {
   display: flex;
   width: 100%;
