@@ -122,7 +122,7 @@ describe("PUT /api/meetings/[meetingId]/availability/[userId] (server handler)",
 
   it("Creates availability for existing user & meeting -> returns 201 and availability body", async () => {
     // existing user row
-    const userRow = { id: "u123", defaultName: "Sam" };
+    const userRow = { id: "aaaaaaaaaaaaaaaaaaaaa", defaultName: "Sam" };
 
     // existing meeting without this user's availability
     const meeting = {
@@ -163,7 +163,7 @@ describe("PUT /api/meetings/[meetingId]/availability/[userId] (server handler)",
     const context = makeApiContext({
       params: { meetingId: "m1", userId: userRow.id },
       jsonBody: newAvailability,
-      url: "https://example.test/api/meetings/m1/availability/u123",
+      url: "https://example.test/api/meetings/m1/availability/aaaaaaaaaaaaaaaaaaaaa",
     });
 
     const { PUT } = await import(
@@ -174,7 +174,7 @@ describe("PUT /api/meetings/[meetingId]/availability/[userId] (server handler)",
     // Because user wasn't previously present in initialMeeting.availability, endpoint returns 201
     expect(res.status).toBe(201);
     expect(res.headers.get("Location")).toBe(
-      "/api/meetings/m1/availability/u123",
+      "/api/meetings/m1/availability/aaaaaaaaaaaaaaaaaaaaa",
     );
 
     const body = (await res.json()) as string[];
