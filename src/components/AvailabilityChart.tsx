@@ -178,7 +178,7 @@ export default function AvailabilityChart({ meetingId, userId, authId}) {
   );
   const [isEditing, setIsEditing] = useState(false);
   const [flashNotice, setFlashNotice] = useState(false);
-  const [useCustomCss, setUseCustomCss] = useState(true);
+  const [useCustomCss, setUseCustomCss] = useState(false);
   const [cssFile, setCssFile] = useState<File | null>(null);
   const [cssCacheTime, setCssCacheTime] = useState(Date.now());
   const clientTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
