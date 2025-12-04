@@ -23,7 +23,7 @@ export default defineConfig({
       directives: [
         "default-src 'self'",
         "img-src 'self' https://lipsum.app/",
-        "font-src 'self' https://fonts.google.com/",
+        "font-src 'self' https://fonts.google.com/ https://fontsource.org/",
       ],
       styleDirective: {
         resources: [
@@ -33,7 +33,8 @@ export default defineConfig({
           "'sha256-m6quyuX3igpBZcDrVBilLiWjNYTfeeNFr5AzJ8Xra9U='",
           "'sha256-vv9IoKo7BSLbWcUHr3tNmfNVmm5L/9Cfn2H6LMk7/ow='",
           "'sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU='",
-          "'sha256-Hk70poV4gtPx3YsU2xuFYNYNK6O6ARdFd3JjccYJVOA='"
+          "'sha256-Hk70poV4gtPx3YsU2xuFYNYNK6O6ARdFd3JjccYJVOA='",
+          "'sha256-35KBScVH0mcisYaS+jYHDa1tlFGmOrghafQWiYvD7Us='"
         ]
       },
     }
