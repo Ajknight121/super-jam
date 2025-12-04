@@ -45,8 +45,11 @@ export default function MeetingForm() {
     const startMinutes = startTime ? parseInt(startTime.split(":")[1], 10) : 0;
     const endMinutes = endTime ? parseInt(endTime.split(":")[1], 10) : 0;
     const isTimeIncrementInvalid =
-      (startTime && startMinutes % 15 !== 0) ||
-      (endTime && endMinutes % 15 !== 0);
+      (!!startTime && startMinutes % 15 !== 0) ||
+      (!!endTime && endMinutes % 15 !== 0);
+
+    const areTimesEqual =
+      (startTime==endTime && !areTimesMissing)
 
     const areDaysMissing = isRepeatingWeekly
       ? selectedRepeatDays.length === 0
@@ -63,24 +66,9 @@ export default function MeetingForm() {
       isMeetingNameMissing ||
       areTimesMissing ||
       areDaysMissing ||
-      isTimeIncrementInvalid
-    ) {
-<<<<<<< HEAD
-    if (
-      isMeetingNameMissing ||
-      areTimesMissing ||
-      areDaysMissing ||
-      isTimeIncrementInvalid
-    ) {
-    if (
-      isMeetingNameMissing ||
-      areTimesMissing ||
-      areDaysMissing ||
       isTimeIncrementInvalid ||
       areTimesEqual
     ) {
-=======
->>>>>>> parent of 72cdd9e (Merge branch 'testing-development' into dev)
       return;
     }
 
@@ -191,12 +179,22 @@ export default function MeetingForm() {
               />
             </div>
           </div>
+          {timeIncrementError && (
+            <div className="error-text">
+              Time must be in 15 minute increments.
+            </div>
+          )}
+          {noTimeError && (
+            <div className="error-text">
+              Please enter a start and end time.
+            </div>
+          )}
+          {equalTimesError && (
+            <div className="error-text">
+              Start and end time must be different.
+            </div>
+          )}
           <div className="timezone-row">
-            {timeIncrementError && (
-              <div className="error-text">
-                Time must be in 15 minute increments.
-              </div>
-            )}
             <span className="label-text">Time Zone:</span>
 
             <select
