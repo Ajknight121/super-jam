@@ -23,6 +23,7 @@ export default function MeetingForm() {
   const [timeIncrementError, setTimeIncrementError] = useState(false);
   const [noTimeError, setNoTimeError] = useState(false);
   const [equalTimesError, setEqualTimesError] = useState(false);
+  const [backwardsTimesError, setBackwardsTimesError] = useState(false);
   const [daysError, setDaysError] = useState(false);
   const [timezone, setTimezone] = useState("America/Chicago");
 
@@ -51,23 +52,28 @@ export default function MeetingForm() {
     const areTimesEqual =
       (startTime==endTime && !areTimesMissing)
 
+    const areTimesBackwards = 
+      (endTime < startTime)
+
     const areDaysMissing = isRepeatingWeekly
       ? selectedRepeatDays.length === 0
       : selectedDays.length === 0;
 
     setMeetingNameError(isMeetingNameMissing);
-    setTimeError(areTimesMissing || isTimeIncrementInvalid || areTimesEqual);
+    setTimeError(areTimesMissing || isTimeIncrementInvalid || areTimesEqual || areTimesBackwards);
     setTimeIncrementError(isTimeIncrementInvalid);
     setNoTimeError(areTimesMissing);
     setEqualTimesError(areTimesEqual);
     setDaysError(areDaysMissing);
+    setBackwardsTimesError(areTimesBackwards);
 
     if (
       isMeetingNameMissing ||
       areTimesMissing ||
       areDaysMissing ||
       isTimeIncrementInvalid ||
-      areTimesEqual
+      areTimesEqual ||
+      areTimesBackwards
     ) {
       return;
     }
@@ -192,6 +198,11 @@ export default function MeetingForm() {
           {equalTimesError && (
             <div className="error-text">
               Start and end time must be different.
+            </div>
+          )}
+          {backwardsTimesError && (
+            <div className="error-text">
+              Start time must come before end time.
             </div>
           )}
           <div className="timezone-row">
