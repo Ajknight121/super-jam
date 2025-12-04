@@ -21,6 +21,8 @@ export default function MeetingForm() {
   const [endTime, setEndTime] = useState("");
   const [timeError, setTimeError] = useState(false);
   const [timeIncrementError, setTimeIncrementError] = useState(false);
+  const [noTimeError, setNoTimeError] = useState(false);
+  const [equalTimesError, setEqualTimesError] = useState(false);
   const [daysError, setDaysError] = useState(false);
   const [timezone, setTimezone] = useState("America/Chicago");
 
@@ -46,20 +48,26 @@ export default function MeetingForm() {
       (startTime && startMinutes % 15 !== 0) ||
       (endTime && endMinutes % 15 !== 0);
 
+    const areTimesEqual =
+      (startTime==endTime && !areTimesMissing)
+
     const areDaysMissing = isRepeatingWeekly
       ? selectedRepeatDays.length === 0
       : selectedDays.length === 0;
 
     setMeetingNameError(isMeetingNameMissing);
-    setTimeError(areTimesMissing || isTimeIncrementInvalid);
+    setTimeError(areTimesMissing || isTimeIncrementInvalid || areTimesEqual);
     setTimeIncrementError(isTimeIncrementInvalid);
+    setNoTimeError(areTimesMissing);
+    setEqualTimesError(areTimesEqual);
     setDaysError(areDaysMissing);
 
     if (
       isMeetingNameMissing ||
       areTimesMissing ||
       areDaysMissing ||
-      isTimeIncrementInvalid
+      isTimeIncrementInvalid ||
+      areTimesEqual
     ) {
       return;
     }
@@ -171,12 +179,22 @@ export default function MeetingForm() {
               />
             </div>
           </div>
+          {timeIncrementError && (
+            <div className="error-text">
+              Time must be in 15 minute increments.
+            </div>
+          )}
+          {noTimeError && (
+            <div className="error-text">
+              Please enter a start and end time.
+            </div>
+          )}
+          {equalTimesError && (
+            <div className="error-text">
+              Start and end time must be different.
+            </div>
+          )}
           <div className="timezone-row">
-            {timeIncrementError && (
-              <div className="error-text">
-                Time must be in 15 minute increments.
-              </div>
-            )}
             <span className="label-text">Time Zone:</span>
 
             <select
