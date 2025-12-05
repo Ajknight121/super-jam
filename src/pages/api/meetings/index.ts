@@ -4,6 +4,7 @@ import { drizzle } from "drizzle-orm/d1";
 import { nanoid } from "nanoid";
 import {
   APIMeetingSchema,
+  DatabaseMeetingSchema,
   jsonParseErrorResponse,
   type MakemeetError,
   zodErrorResponse,
@@ -31,7 +32,8 @@ export const POST = async ({
   if (meetingResult.error) {
     return zodErrorResponse(meetingResult.error);
   }
-  const meeting = meetingResult.data;
+  // Parse it as a DatabaseMeeting too just to make sure the schemas are entirely compatible.
+  const meeting = DatabaseMeetingSchema.parse(meetingResult.data);
 
   if (
     Object.keys(meeting.availability).length !== 0 ||
