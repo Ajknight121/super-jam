@@ -32,11 +32,18 @@ export default defineConfig({
         "media-src 'self'",
         "worker-src 'none'",
       ],
-      /* styleDirective: {
+      styleDirective: {
         resources: [
-
+          "'self'",
+          "'sha256-Epg1E01hrkVp73prHNyzTGMJ0rrPDw30WjGORyWDUU8='",
+          "'sha256-nV/G7sFVaJB03McwJHvCSHdKsvmG5uaOg0YFokvlKGA='",
+          "'sha256-6QP2Bi5lBQlaTKBDx758tKXVKebdak/FhsDTMUWewOI='",
+          "'sha256-vv9IoKo7BSLbWcUHr3tNmfNVmm5L/9Cfn2H6LMk7/ow='",
+          "'sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU='",
+          "'sha256-Hk70poV4gtPx3YsU2xuFYNYNK6O6ARdFd3JjccYJVOA='",
         ]
       },
+      /*
       scriptDirective: {
         resources: [
           "'self'",
