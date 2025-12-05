@@ -56,7 +56,7 @@ export const PUT = async ({
   const userExistsDbResult = await db
     .select()
     .from(users)
-    .where(eq(users.id, params.memberId));
+    .where(eq(users.authId, params.memberId));
 
   assert(userExistsDbResult.length <= 1);
 

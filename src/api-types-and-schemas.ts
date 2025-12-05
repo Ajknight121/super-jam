@@ -27,7 +27,7 @@ export type AuthIdSchema = zod.infer<typeof MemberIdSchema>;
 export const MeetingIdSchema = zod.nanoid();
 export type MeetingId = zod.infer<typeof MeetingIdSchema>;
 
-const UsernameSchema = zod.string().check(zod.minLength(1)).brand<"username">();
+export const UsernameSchema = zod.string().check(zod.minLength(1)).brand<"username">();
 export type Username = zod.infer<typeof UsernameSchema>;
 
 // An empty password is allowed:

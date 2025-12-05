@@ -35,7 +35,7 @@ vi.mock("nanoid", () => {
 vi.mock("drizzle-orm/d1", async () => {
   // The mock keeps an internal `store` that tests can replace via __setMockData.
   let store: {
-    selectResults?: { meetings?: any[]; users?: any[] };
+    selectResults?: { meetings?: any[]; members?: any[] };
     insertReturning?: any[];
     updateReturning?: any[];
   } = {};
@@ -53,7 +53,7 @@ vi.mock("drizzle-orm/d1", async () => {
                 return store.selectResults.meetings ?? [];
               }
               if (table && "defaultName" in table) {
-                return store.selectResults.users ?? [];
+                return store.selectResults.members ?? [];
               }
             } catch {
               // Fallback to empty
@@ -129,7 +129,7 @@ describe("POST /api/meetings (server handler)", () => {
     vi.resetAllMocks();
     // reset mock DB to defaults (no rows)
     (mockD1 as any).__setMockData({
-      selectResults: { meetings: [], users: [] },
+      selectResults: { meetings: [], members: [] },
       insertReturning: [{ id: "fixed-nanoid" }],
       updateReturning: [],
     });
@@ -139,6 +139,7 @@ describe("POST /api/meetings (server handler)", () => {
     const meeting = {
       name: "Team Sync",
       availability: {},
+      members: [],
       availabilityBounds: {
         availableDayConstraints: { type: "daysOfWeek", days: ["monday"] },
         timeRangeForEachDay: {
@@ -189,7 +190,7 @@ describe("GET /api/meetings/[meetingId] (server handler)", () => {
   beforeEach(async () => {
     vi.resetAllMocks();
     (mockD1 as any).__setMockData({
-      selectResults: { meetings: [], users: [] },
+      selectResults: { meetings: []/*, members: []*/ },
       insertReturning: [],
       updateReturning: [],
     });
@@ -199,6 +200,7 @@ describe("GET /api/meetings/[meetingId] (server handler)", () => {
     const sampleMeeting = {
       name: "Present Meeting",
       availability: {},
+      members: [],
       availabilityBounds: {
         availableDayConstraints: { type: "daysOfWeek", days: ["tuesday"] },
         timeRangeForEachDay: {
@@ -213,7 +215,7 @@ describe("GET /api/meetings/[meetingId] (server handler)", () => {
     (mockD1 as any).__setMockData({
       selectResults: {
         meetings: [{ jsonData: JSON.stringify(sampleMeeting) }],
-        users: [],
+        members: [],
       },
       insertReturning: [],
       updateReturning: [],
@@ -245,7 +247,7 @@ describe("GET /api/meetings/[meetingId] (server handler)", () => {
   it("Meeting not found returns 404", async () => {
     // Ensure no meeting rows
     (mockD1 as any).__setMockData({
-      selectResults: { meetings: [], users: [] },
+      selectResults: { meetings: [], members: [] },
       insertReturning: [],
       updateReturning: [],
     });

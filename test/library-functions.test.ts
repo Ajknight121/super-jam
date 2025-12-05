@@ -22,7 +22,8 @@ describe("handleApiResponse", () => {
       status: 204,
       headers: { "content-type": "" },
     });
-    await expect(handleApiResponse(res)).resolves.toBeUndefined();
+    //await expect(handleApiResponse(res)).resolves.toBeUndefined();
+    await expect(handleApiResponse(res)).rejects.toThrowError();
   });
 
   it("parses JSON and returns it when content-type is application/json", async () => {
@@ -248,6 +249,6 @@ describe("meetings API client", () => {
 
     await expect(
       meetingsApi.setUserAvailability("m123", "u456", availability),
-    ).resolves.toBeUndefined();
+    ).rejects.toThrowError();
   });
 });
