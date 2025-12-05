@@ -18,7 +18,26 @@ export default defineConfig({
 
     imageService: "cloudflare",
   }),
-  
+  experimental: {
+    csp: {
+      directives: [
+        "default-src 'self'",
+        "img-src 'self' https://lipsum.app/",
+        "font-src 'self' https://fonts.google.com/ https://fontsource.org/",
+      ],
+      /* styleDirective: {
+        resources: [
+
+        ]
+      },
+      scriptDirective: {
+        resources: [
+          "'self'",
+        ]
+      },
+      */
+    }
+  },
 
   integrations: [react()],
 });
