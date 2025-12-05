@@ -24,6 +24,14 @@ export default defineConfig({
         "default-src 'self'",
         "img-src 'self' https://lipsum.app/",
         "font-src 'self' https://fonts.google.com/ https://fontsource.org/",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "connect-src 'self'",
+        "frame-src 'self'",
+        "manifest-src 'self'",
+        "media-src 'self'",
+        "report-uri https://6932386003e177f52dcf1163.endpoint.csper.io/?v=0",
+        "worker-src 'none'",
       ],
       /* styleDirective: {
         resources: [
