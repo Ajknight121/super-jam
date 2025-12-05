@@ -3,8 +3,9 @@ import type { APIContext } from "astro";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import {
-  type APIMeeting,
   APIMeetingSchema,
+  type DatabaseMeeting,
+  DatabaseMeetingSchema,
   jsonParseErrorResponse,
   noSuchMeetingResponse,
   noSuchUserResponse,
@@ -79,22 +80,19 @@ export const PUT = async ({
     return noSuchMeetingResponse();
   }
 
-  const initialMeeting = APIMeetingSchema.parse(
+  const initialMeeting = DatabaseMeetingSchema.parse(
     JSON.parse(initialMeetingDbResult[0].jsonData),
   );
   const { availability: initialMeetingAvailability } = initialMeeting;
 
   // The `parse` here is necessary to sort the user ids and hide the order of insertion, but also allows additional transformations and dynamic checks on the meeting to be added to `api-types-and-schemas` with a minimum of fuss.
-  const newMeeting = APIMeetingSchema.parse({
+  const newMeeting = DatabaseMeetingSchema.parse({
     ...initialMeeting,
     availability: {
       ...initialMeetingAvailability,
       [params.memberId]: newAvailability,
     },
-  } satisfies APIMeeting);
-
-  // Just in case the database contains a user that doesn't have a nanoid, this'll catch that. It may catch other things too... best to find them in dev!
-  APIMeetingSchema.parse(newMeeting);
+  } satisfies DatabaseMeeting);
 
   const newMeetingUpdateDbResult = await db
     .update(meetings)
@@ -120,6 +118,7 @@ export const PUT = async ({
   }
 
   return Response.json(
+    // This ensures we only send the APIMeetingSchema fields to the client, since APIMeetingSchema is a zod.object, and those strip off unknown fields from the parsed result. Here's the best source I could trivially find: https://zod.dev/json-schema?id=object-schemas
     APIMeetingSchema.parse(JSON.parse(newMeetingUpdateDbResult[0].jsonData))
       .availability[params.memberId],
     responseInit,
