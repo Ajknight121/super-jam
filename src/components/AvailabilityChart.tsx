@@ -209,7 +209,6 @@ export default function AvailabilityChart({ meetingId, userId }) {
         setMeeting(exampleMeeting2);
         // Initialize selected items from fetched availability
         const initialAvailability = exampleMeeting2.availability[userId] ?? [];
-        console.log(userId, exampleMeeting2.availability[userId]);
         setSelectedItems(
           initialAvailability.reduce((acc, time) => {
             if (!time) return acc;

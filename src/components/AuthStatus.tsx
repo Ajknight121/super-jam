@@ -24,9 +24,9 @@ export default function AuthStatus() {
 
     // Determine the meetingId from the URL for the redirect
     const path = window.location.pathname;
-    const match = path.match(/\/meetings\/([^/]+)/);
+    const match = path.match(/\/availability\/([^/]+)/);
     const meetingId = match ? match[1] : null;
-
+    
     if (meetingId) {
       setSignInHref(`/api/auth/google?meetingId=${meetingId}`);
     }
@@ -36,13 +36,23 @@ export default function AuthStatus() {
     return <div className="p-4">Checking status...</div>;
   }
 
+  const handleSignOut = async () => {
+    const response = await fetch("/api/auth/logout", {
+      method: "POST",
+    });
+
+    if (response.ok) {
+      window.location.reload();
+    }
+  };
+
   if (user?.isLoggedIn) {
     return (
       <div className="p-4 border rounded bg-green-50">
         <p>Welcome back, {user.name}!</p>
-        <a href="/api/auth/logout" className="text-red-500 underline">
+        <button type='button' onClick={handleSignOut} className="text-red-500 underline">
           Sign out
-        </a>
+        </button>
       </div>
     );
   }

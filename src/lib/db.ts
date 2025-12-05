@@ -15,34 +15,68 @@ type DbClient = DrizzleD1Database<typeof schema>;
  * @param tokens The OAuth tokens from Google.
  * @returns The user record from the database.
  */
-export async function findOrCreateUser(
+// export async function findOrCreateUser(
+//   db: DbClient,
+//   googleUser: { sub: string; email: string; name: string; picture: string },
+//   tokens: { accessToken: string; refreshToken: string | null }
+// ) {
+//   const [user] = await db
+//     .insert(schema.users)
+//     .values({
+//       id: nanoid(), // Generate a unique ID for our system
+//       googleId: googleUser.sub,
+//       email: googleUser.email,
+//       name: googleUser.name,
+//       avatarUrl: googleUser.picture,
+//       googleAccessToken: tokens.accessToken,
+//       googleRefreshToken: tokens.refreshToken,
+//     })
+//     .onConflictDoUpdate({
+//       target: schema.users.googleId,
+//       set: {
+//         email: googleUser.email,
+//         name: googleUser.name,
+//         avatarUrl: googleUser.picture,
+//         googleAccessToken: tokens.accessToken,
+//         googleRefreshToken: tokens.refreshToken,
+//       },
+//     })
+//     .returning();
+
+//   return user;
+// }
+
+/**
+ * Finds a user by their Google ID.
+ * @param db The Drizzle database client.
+ * @param googleId The user's Google ID.
+ * @returns The user record from the database, or null if not found.
+ */
+export async function getUserFromGoogleId(db: DbClient, googleId: string) {
+  const [user] = await db
+    .select()
+    .from(schema.users)
+    .where(eq(schema.users.googleId, googleId));
+  return user || null;
+}
+
+/**
+ * Creates a new user in the database.
+ * @param db The Drizzle database client.
+ * @param data The user's data.
+ * @returns The newly created user record from the database.
+ */
+export async function createUser(
   db: DbClient,
-  googleUser: { sub: string; email: string; name: string; picture: string },
-  tokens: { accessToken: string; refreshToken: string | null }
+  data: { googleId: string; name: string;}
 ) {
   const [user] = await db
     .insert(schema.users)
     .values({
-      id: nanoid(), // Generate a unique ID for our system
-      googleId: googleUser.sub,
-      email: googleUser.email,
-      name: googleUser.name,
-      avatarUrl: googleUser.picture,
-      googleAccessToken: tokens.accessToken,
-      googleRefreshToken: tokens.refreshToken,
-    })
-    .onConflictDoUpdate({
-      target: schema.users.googleId,
-      set: {
-        email: googleUser.email,
-        name: googleUser.name,
-        avatarUrl: googleUser.picture,
-        googleAccessToken: tokens.accessToken,
-        googleRefreshToken: tokens.refreshToken,
-      },
+      id: nanoid(),
+      ...data,
     })
     .returning();
-
   return user;
 }
 
@@ -57,4 +91,39 @@ export async function createSession(db: DbClient, userId: string) {
   });
 
   return sessionToken;
+}
+
+/**
+ * Deletes a session from the database.
+ * @param db The Drizzle database client.
+ * @param sessionId The ID of the session to delete.
+ */
+export async function deleteSession(db: DbClient, sessionId: string) {
+  await db.delete(schema.sessions).where(eq(schema.sessions.id, sessionId));
+}
+
+/**
+ * Retrieves a session and the associated user from the database.
+ * @param db The Drizzle database client.
+ * @param sessionToken The session token to look up.
+ * @returns An object containing the user and session, or nulls if not found or expired.
+ */
+export async function getSessionAndUser(db: DbClient, sessionToken: string) {
+  const result = await db
+    .select({
+      user: schema.users,
+      session: schema.sessions,
+    })
+    .from(schema.sessions)
+    .innerJoin(schema.users, eq(schema.sessions.userId, schema.users.id))
+    .where(eq(schema.sessions.id, sessionToken));
+
+  if (result.length === 0) {
+    return { user: null, session: null };
+  }
+
+  const { user, session } = result[0];
+
+  // Return nulls if the session is expired
+  return session.expiresAt < new Date() ? { user: null, session: null } : { user, session };
 }

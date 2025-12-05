@@ -6,7 +6,6 @@ import { google } from "../../../../lib/oauth.ts";
 export const prerender = false;
 
 export const GET: APIRoute = async ({ cookies, redirect, url: currentUrl }) => {
-  console.log("auth-index")
   const state = generateState();
   const codeVerifier = generateCodeVerifier();
 

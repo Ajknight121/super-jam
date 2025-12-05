@@ -1,8 +1,9 @@
 // src/pages/api/auth/google/callback.ts
 import type { APIRoute } from "astro";
 import { google } from "../../../../lib/oauth.ts";
+import { decodeIdToken } from "arctic";
 import { drizzle } from "drizzle-orm/d1";
-import { findOrCreateUser, createSession } from "../../../../lib/db.ts";
+import { createSession, getUserFromGoogleId, createUser } from "../../../../lib/db.ts";
 
 export const prerender = false;
 
@@ -10,34 +11,54 @@ export const GET: APIRoute = async ({ locals, cookies, url, redirect }) => {
   console.log("auth-callback")
   const code = url.searchParams.get("code");
   const state = url.searchParams.get("state");
-  const storedState = cookies.get("google_oauth_state")?.value;
-  const storedCodeVerifier = cookies.get("google_code_verifier")?.value;
+  const storedState = cookies.get("google_oauth_state")?.value ?? null;
+  const storedCodeVerifier = cookies.get("google_code_verifier")?.value ?? null;
 
   if (!code || !storedState || !storedCodeVerifier || state !== storedState) {
     return new Response(null, { status: 400 });
   }
 
+  if (state !== storedState) {
+		return new Response(null, {
+			status: 400
+		});
+	}
+
   try {
     const tokens = await google.validateAuthorizationCode(code, storedCodeVerifier);
+
+    const claims = decodeIdToken(tokens.idToken());
+    const googleUserId = claims.sub;
+    const username = claims.name;
     
-    // Use the Access Token to get User Info
-    const googleUserResponse = await fetch("https://openidconnect.googleapis.com/v1/userinfo", {
-      headers: {
-        Authorization: `Bearer ${tokens.accessToken()}`,
-      },
-    });
-    const googleUser = await googleUserResponse.json();
+    // // Use the Access Token to get User Info
+    // const googleUserResponse = await fetch("https://openidconnect.googleapis.com/v1/userinfo", {
+    //   headers: {
+    //     Authorization: `Bearer ${tokens.accessToken()}`,
+    //   },
+    // });
+    // const googleUser = await googleUserResponse.json();
 
     const db = drizzle(locals.runtime.env.DB);
 
     // 1. Find or create the user and update their tokens
-    const user = await findOrCreateUser(db, googleUser, {
-      accessToken: tokens.accessToken(),
-      refreshToken: tokens.refreshToken(),
-    });
+    const existingUser = await getUserFromGoogleId(db,googleUserId)
+
+    // const user = await findOrCreateUser(db, googleUser, {
+    //   accessToken: tokens.accessToken(),
+    // });
+
+    
 
     // 2. Create a secure session for the user
-    const sessionToken = await createSession(db, user.id);
+    let sessionToken:string;
+    let user;
+    if (existingUser) {
+      sessionToken = await createSession(db, existingUser.id);
+    } else {
+      user = await createUser(db, {googleId:googleUserId, name:username})
+      sessionToken = await createSession(db, user.id)
+    }
 
     // Set the session cookie
     cookies.set("session", sessionToken, {
