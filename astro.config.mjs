@@ -30,7 +30,6 @@ export default defineConfig({
         "frame-src 'self'",
         "manifest-src 'self'",
         "media-src 'self'",
-        "report-uri https://6932386003e177f52dcf1163.endpoint.csper.io/?v=0",
         "worker-src 'none'",
       ],
       /* styleDirective: {
