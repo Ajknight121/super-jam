@@ -27,12 +27,18 @@ export type AuthIdSchema = zod.infer<typeof MemberIdSchema>;
 export const MeetingIdSchema = zod.nanoid();
 export type MeetingId = zod.infer<typeof MeetingIdSchema>;
 
-export const UsernameSchema = zod.string().check(zod.minLength(1)).brand<"username">();
+export const UsernameSchema = zod
+  .string()
+  .check(zod.minLength(1))
+  .brand<"username">();
 export type Username = zod.infer<typeof UsernameSchema>;
 
 // An empty password is allowed:
 const PasswordSchema = zod.string().brand<"password">();
 export type Password = zod.infer<typeof PasswordSchema>;
+
+export const HashedPasswordSchema = zod.string().check(zod.length(60));
+export type HashedPassword = zod.infer<typeof HashedPasswordSchema>;
 
 export const AuthCookieSchema = zod.nanoid().brand<"authCookie">();
 export type AuthCookie = zod.infer<typeof AuthCookieSchema>;
@@ -158,8 +164,8 @@ const APIMemberSchema = zod.object({
 const DatabaseMemberSchema = zod.object({
   ...APIMemberSchema.def.shape,
   authId: zod.optional(AuthIdSchema),
-  hashedPassword: zod.string().check(zod.length(60)),
-  authCookie: zod.nanoid(),
+  hashedPassword: HashedPasswordSchema,
+  authCookie: AuthCookieSchema,
 });
 
 export const APIMeetingSchema = zod.object({
@@ -207,12 +213,13 @@ export type RegisterResponse = zod.infer<typeof RegisterResponseSchema>;
 
 export const LoginRequestSchema = zod.object({
   memberId: MemberIdSchema,
-  password: zod.string(),
+  password: PasswordSchema,
 });
-type LoginRequest = zod.infer<typeof LoginRequestSchema>;
+export type LoginRequest = zod.infer<typeof LoginRequestSchema>;
 
 // Mostly for completeness:
 export const LoginResponseSchema = zod.literal("");
+export type LoginResponse = zod.infer<typeof LoginResponseSchema>;
 
 // Errors:
 
@@ -247,6 +254,14 @@ export const userAlreadyExistsResponse = (): Response =>
       customMakemeetErrorMessage: "User with that name already exists.",
     } satisfies MakemeetError,
     { status: 400 },
+  );
+
+export const incorrectPasswordResponse = (): Response =>
+  Response.json(
+    {
+      customMakemeetErrorMessage: "Incorrect password.",
+    } satisfies MakemeetError,
+    { status: 401 },
   );
 
 export const undefinedInRequiredURLParamResponse = (): Response =>

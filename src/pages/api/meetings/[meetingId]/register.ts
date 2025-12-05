@@ -9,7 +9,6 @@ import {
   type DatabaseMeeting,
   DatabaseMeetingSchema,
   jsonParseErrorResponse,
-  type MakemeetError,
   MemberIdSchema,
   noSuchMeetingResponse,
   RegisterRequestSchema,
@@ -20,6 +19,7 @@ import {
   zodErrorResponse,
 } from "#/src/api-types-and-schemas";
 import { meetings } from "#/src/db/schema";
+import { hashPassword, setAuthCookie } from "#/src/lib/server_helpers";
 
 export const prerender = false;
 
@@ -83,10 +83,7 @@ export const POST = async ({
     return userAlreadyExistsResponse();
   }
 
-  // Heavily inspired by https://github.com/acm-uic/WebMinigames/blob/551faa90d13ff34504c3170319bd4497d2b09d48/backend/controllers/user.js#L24-L27, and I don't know the underlying math or theory much.
-  const saltRounds = 10;
-  const salt = await genSalt(saltRounds);
-  const hashedPassword = await hash(registerRequestBody.password, salt);
+  const hashedPassword = await hashPassword(registerRequestBody.password);
 
   const memberId = MemberIdSchema.parse(nanoid());
   const authCookie = AuthCookieSchema.parse(nanoid());
@@ -113,9 +110,7 @@ export const POST = async ({
   // If this fails, we updated too many rows!
   assert(newMeetingUpdateDbResult.length === 1);
 
-  cookies.set(`auth-cookie-for-meeting-${params.meetingId}`, authCookie, {
-    httpOnly: true,
-  });
+  setAuthCookie(cookies, params.meetingId, authCookie);
 
   return Response.json({
     memberId: memberId,
