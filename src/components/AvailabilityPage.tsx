@@ -3,6 +3,7 @@ import AvailabilityChart from "./AvailabilityChart";
 import "./AvailabilityPage.css";
 import { createUser } from "../lib/api/users";
 import SignIn from "./SignIn";
+import AuthStatus from "./AuthStatus";
 
 export default function AvailabilityPage({ meetingId }) {
   const [userId, setUserId] = useState<string | null>(null);
@@ -37,6 +38,7 @@ export default function AvailabilityPage({ meetingId }) {
       setBusy(false);
     }
   }
+  const [user, setUser] = useState(null)
 
   return (
     <div className="availability-page">
@@ -45,8 +47,11 @@ export default function AvailabilityPage({ meetingId }) {
       </div>
 
       <div className="login">
+        <AuthStatus user={user} meetingId={meetingId}/>
         {userId ? (
-          <div>You are logged in. Add your availability above.</div>
+          <div>You are logged in. Add your availability above.
+          </div>
+          
         ) : (
           <SignIn
             name={name}

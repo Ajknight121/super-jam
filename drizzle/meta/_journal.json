@@ -22,6 +22,13 @@
       "when": 1763487828927,
       "tag": "0002_happy_talon",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1764903440011,
+      "tag": "0003_goofy_captain_universe",
+      "breakpoints": true
     }
   ]
 }
