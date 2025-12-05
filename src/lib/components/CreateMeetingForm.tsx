@@ -17,8 +17,8 @@ export default function MeetingForm() {
   const [selectedRepeatDays, setSelectedRepeatDays] = useState([] as string[]);
   const [meetingName, setMeetingName] = useState("");
   const [meetingNameError, setMeetingNameError] = useState(false);
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
+  const [startTime, setStartTime] = useState("09:00");
+  const [endTime, setEndTime] = useState("17:00");
   const [timeError, setTimeError] = useState(false);
   const [timeIncrementError, setTimeIncrementError] = useState(false);
   const [noTimeError, setNoTimeError] = useState(false);
@@ -58,6 +58,7 @@ export default function MeetingForm() {
     const areDaysMissing = isRepeatingWeekly
       ? selectedRepeatDays.length === 0
       : selectedDays.length === 0;
+
 
     setMeetingNameError(isMeetingNameMissing);
     setTimeError(areTimesMissing || isTimeIncrementInvalid || areTimesEqual || areTimesBackwards);
@@ -114,6 +115,7 @@ export default function MeetingForm() {
     if (!time) return "";
 
     const [hours, minutes] = time.split(":").map(Number);
+    if (minutes < 10) return time;
     const totalMinutes = hours * 60 + minutes;
     const roundedTotalMinutes = Math.round(totalMinutes / 15) * 15;
 
