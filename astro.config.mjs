@@ -35,12 +35,16 @@ export default defineConfig({
       styleDirective: {
         resources: [
           "'self'",
+          // default hashes
           "'sha256-Epg1E01hrkVp73prHNyzTGMJ0rrPDw30WjGORyWDUU8='",
           "'sha256-nV/G7sFVaJB03McwJHvCSHdKsvmG5uaOg0YFokvlKGA='",
           "'sha256-6QP2Bi5lBQlaTKBDx758tKXVKebdak/FhsDTMUWewOI='",
           "'sha256-vv9IoKo7BSLbWcUHr3tNmfNVmm5L/9Cfn2H6LMk7/ow='",
           "'sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU='",
+          // calendar hash
           "'sha256-Hk70poV4gtPx3YsU2xuFYNYNK6O6ARdFd3JjccYJVOA='",
+          // mystery availability hash
+          "'sha256-35KBScVH0mcisYaS+jYHDa1tlFGmOrghafQWiYvD7Us='",
         ]
       },
       /*
