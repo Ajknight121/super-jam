@@ -113,7 +113,9 @@ export const POST = async ({
   // If this fails, we updated too many rows!
   assert(newMeetingUpdateDbResult.length === 1);
 
-  cookies.set(`auth-cookie-for-meeting-${params.meetingId}`, authCookie);
+  cookies.set(`auth-cookie-for-meeting-${params.meetingId}`, authCookie, {
+    httpOnly: true,
+  });
 
   return Response.json({
     memberId: memberId,
