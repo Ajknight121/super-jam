@@ -1,10 +1,12 @@
 import type {
   APIMeeting,
   MeetingAvailability,
+  RegisterResponse,
   UserAvailability,
 } from "#/src/api-types-and-schemas";
 import {
   APIMeetingSchema,
+  LoginRequestSchema,
   MeetingAvailabilitySchema,
   UserAvailabilitySchema,
 } from "#/src/api-types-and-schemas";
@@ -69,6 +71,40 @@ export async function setUserAvailability(
   await handleApiResponse(res);
 }
 
+// Log in a user for a meeting
+export async function loginUser(
+  meetingId: string,
+  memberId: string,
+  password: string,
+): Promise<void> {
+  const res = await fetch(
+    `/api/meetings/${encodeURIComponent(meetingId)}/login`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ memberId, password }),
+    },
+  );
+  await handleApiResponse(res);
+}
+
+// Register a new user for a meeting
+export async function registerUser(
+  meetingId: string,
+  username: string,
+  password: string,
+): Promise<RegisterResponse> {
+  const res = await fetch(
+    `/api/meetings/${encodeURIComponent(meetingId)}/register`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password }),
+    },
+  );
+
+  return handleApiResponse(res);
+}
 // Get or set a meeting name
 // name endpoint currently unimplemented - adjust when implemented
 export async function getMeetingName(meetingId: string): Promise<string> {

@@ -35,6 +35,7 @@ export const GET = async ({
   }
 
   return Response.json(
+    // This ensures we only send the APIMeetingSchema fields to the client, since APIMeetingSchema is a zod.object, and those strip off unknown fields from the parsed result. Here's the best source I could trivially find: https://zod.dev/json-schema?id=object-schemas
     APIMeetingSchema.parse(JSON.parse(dbResult[0].jsonData)),
   );
 };

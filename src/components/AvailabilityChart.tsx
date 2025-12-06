@@ -1,7 +1,7 @@
 /** biome-ignore-all lint/a11y/noStaticElementInteractions: <explanation> */
 /** biome-ignore-all lint/a11y/useKeyWithClickEvents: <explanation> */
 import { useCallback, useEffect, useState } from "react";
-import type { APIMeeting } from "#/src/api-types-and-schemas";
+import { UsernameSchema, type APIMeeting } from "#/src/api-types-and-schemas";
 import { getMeeting, setUserAvailability } from "../lib/api/meetings";
 
 import "./AvailabilityChart.css";
@@ -56,20 +56,20 @@ const exampleMeeting2: APIMeeting = {
   members: [
     {
       memberId: "user1",
-      name: "Adrian Knight",
+      name: UsernameSchema.parse("Adrian Knight"),
     },
     {
       memberId: "user2",
-      name: "Mac Payton",
+      name: UsernameSchema.parse("Mac Payton"),
     },
     {
       memberId: "user3",
-      name: "Samuel Skean",
+      name: UsernameSchema.parse("Samuel Skean"),
     },
 
     {
       memberId: "user4",
-      name: "Aaron Willming",
+      name: UsernameSchema.parse("Aaron Willming"),
     },
   ],
 };
@@ -170,7 +170,7 @@ function useDynamicStylesheet(url: string, enabled: boolean) {
   }, [url, enabled]);
 }
 
-export default function AvailabilityChart({ meetingId, userId }) {
+export default function AvailabilityChart({ meetingId, userId }: { meetingId: string; userId: string }) {
   const [meeting, setMeeting] = useState<APIMeeting | undefined>(undefined);
   const [error, setError] = useState(null);
   const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>(
@@ -178,10 +178,11 @@ export default function AvailabilityChart({ meetingId, userId }) {
   );
   const [isEditing, setIsEditing] = useState(false);
   const [flashNotice, setFlashNotice] = useState(false);
-  const [useCustomCss, setUseCustomCss] = useState(true);
+  const [useCustomCss, setUseCustomCss] = useState(false);
   const [cssFile, setCssFile] = useState<File | null>(null);
   const [cssCacheTime, setCssCacheTime] = useState(Date.now());
   const clientTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const [busyTimes, setBusyTimes] = useState<Record<string, boolean>>({});
 
   const colors = Array.from({ length: maxSegments }, (_, i) => {
     const ratio = maxSegments > 1 ? i / (maxSegments - 1) : 0;
@@ -205,11 +206,10 @@ export default function AvailabilityChart({ meetingId, userId }) {
           }, {}),
         );
       } catch (err) {
-        setError(err);
+        setError(err as null);
         setMeeting(exampleMeeting2);
         // Initialize selected items from fetched availability
         const initialAvailability = exampleMeeting2.availability[userId] ?? [];
-        console.log(userId, exampleMeeting2.availability[userId]);
         setSelectedItems(
           initialAvailability.reduce((acc, time) => {
             if (!time) return acc;
@@ -230,6 +230,52 @@ export default function AvailabilityChart({ meetingId, userId }) {
   useEffect(() => {
     getCurrentMeeting(meetingId);
   }, [meetingId, getCurrentMeeting]);
+
+  useEffect(() => {
+    const fetchCalendarEvents = async () => {
+      if (!meeting || !userId) return;
+
+      const days = meeting.availabilityBounds.availableDayConstraints.days;
+      if (days.length === 0) return;
+
+      const timeMin = days[0];
+      const lastDay = new Date(days[days.length - 1]);
+      lastDay.setUTCHours(23, 59, 59, 999);
+      const timeMax = lastDay.toISOString();
+
+      try {
+        const response = await fetch("/api/auth/google/events", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ timeMin, timeMax }),
+        });
+
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const busySlots: Record<string, boolean> = {};
+        const busyIntervals = data.calendars?.primary?.busy ?? [];
+
+        busyIntervals.forEach((interval: { start: string; end: string }) => {
+          const startTime = new Date(interval.start);
+          const endTime = new Date(interval.end);
+
+          // Iterate from the start to the end of the interval in 15-minute increments
+          let currentTime = startTime;
+          while (currentTime < endTime) {
+            const slotTime = `${currentTime.toISOString().split(".")[0]}Z`;
+            busySlots[slotTime] = true;
+            currentTime = new Date(currentTime.getTime() + 15 * 60 * 1000); // Add 15 minutes
+          }
+        });
+        setBusyTimes(busySlots);
+      } catch (error) {
+        console.error("Failed to fetch calendar events:", error);
+      }
+    };
+
+    fetchCalendarEvents();
+  }, [meeting, userId]);
 
   const handleSelectionChange = async (items: Record<string, boolean>) => {
     setSelectedItems(items);
@@ -398,6 +444,7 @@ export default function AvailabilityChart({ meetingId, userId }) {
                         key={adjustedTime}
                         timeId={adjustedTime}
                         color={""}
+                        isBusy={busyTimes[adjustedTime]}
                       />
                     );
                   })}
@@ -441,6 +488,7 @@ export default function AvailabilityChart({ meetingId, userId }) {
                         key={adjustedTime}
                         timeId={adjustedTime}
                         color={color}
+                        isBusy={busyTimes[adjustedTime]}
                       />
                     );
                   })}
