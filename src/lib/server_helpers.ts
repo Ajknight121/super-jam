@@ -2,6 +2,7 @@ import type { AstroCookies } from "astro";
 import { genSalt, hash } from "bcrypt-ts";
 import {
   type AuthCookie,
+  AuthCookieSchema,
   type HashedPassword,
   HashedPasswordSchema,
   type MeetingId,
@@ -18,6 +19,27 @@ export const hashPassword = async (
   // NOTE: The below `.parse` is entirely overhead, I'm just adding it to be safe.
   const hashedPassword = HashedPasswordSchema.parse(await hash(password, salt));
   return hashedPassword;
+};
+
+export const getAuthCookie = (
+  cookies: AstroCookies,
+  meetingId: MeetingId,
+): AuthCookie | undefined => {
+  const cookieString = cookies.get(
+    `auth-cookie-for-meeting-${meetingId}`,
+  )?.value;
+
+  if (cookieString === undefined) {
+    return undefined;
+  }
+
+  const authCookieResult = AuthCookieSchema.safeParse(cookieString);
+  if (authCookieResult.error) {
+    // TODO: Handle this better, give the client a specific error?
+    return undefined;
+  }
+
+  return authCookieResult.data;
 };
 
 export const setAuthCookie = (

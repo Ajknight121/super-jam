@@ -256,12 +256,34 @@ export const userAlreadyExistsResponse = (): Response =>
     { status: 400 },
   );
 
+// AuthN and AuthZ:
+
 export const incorrectPasswordResponse = (): Response =>
   Response.json(
     {
       customMakemeetErrorMessage: "Incorrect password.",
     } satisfies MakemeetError,
     { status: 401 },
+  );
+
+export const notAuthenticatedResponse = (): Response =>
+  Response.json(
+    {
+      customMakemeetErrorMessage:
+        "You are not authenticated. Please login to this meeting first.",
+    } satisfies MakemeetError,
+    {
+      status: 401,
+    },
+  );
+
+export const notAuthorizedForThisAvailabilityUpdateResponse = (): Response =>
+  Response.json(
+    {
+      customMakemeetErrorMessage:
+        "You are not authorized to update this user's member. Please login as that member and try again.",
+    } satisfies MakemeetError,
+    { status: 403 },
   );
 
 export const undefinedInRequiredURLParamResponse = (): Response =>
