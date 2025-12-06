@@ -14,12 +14,17 @@
 
 import type { APIContext } from "astro";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { hashPassword } from "#/src/lib/server_helpers.ts";
 
-vi.mock("drizzle-orm", () => {
+// Mock `drizzle-orm`'s `eq` function
+vi.mock("drizzle-orm", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("drizzle-orm")>();
   return {
+    ...actual,
     eq: (left: unknown, right: unknown) => ({ left, right }),
   };
 });
+
 
 vi.mock("nanoid", () => {
   return {
@@ -79,22 +84,37 @@ vi.mock("drizzle-orm/d1", async () => {
 
 // Import the mocked module statically (vi.mock is hoisted so this is our mock)
 import * as mockD1 from "drizzle-orm/d1";
+//import { hash } from "node:crypto";
 
 function makeApiContext(opts: {
   params?: Record<string, string | undefined>;
   jsonBody?: unknown;
   url?: string;
+  meetingIdForCookie?: string;
+  authCookieValue?: string;
 }) {
   const {
     params = {},
     jsonBody = undefined,
     url = "https://example.test/",
+    meetingIdForCookie = params.meetingId ?? "test-meeting-id",
+    authCookieValue = "test-cookie",
   } = opts;
 
   const request = {
     json: async () => jsonBody,
     url,
   } as unknown as Request;
+
+  const cookies = {
+    get: (name: string) => {
+      const expected = `auth-cookie-for-meeting-${meetingIdForCookie}`;
+      if (name === expected) {
+        return { value: authCookieValue };
+      }
+      return undefined;
+    },
+  } as any;
 
   const context = {
     params,
@@ -104,6 +124,7 @@ function makeApiContext(opts: {
       },
     },
     request,
+    cookies,
   } as unknown as APIContext;
 
   return context;
@@ -122,13 +143,23 @@ describe("PUT /api/meetings/[meetingId]/availability/[memberId] (server handler)
 
   it("Creates availability for existing member & meeting -> returns 201 and availability body", async () => {
     // existing member row
-    const memberRow = { id: "aaaaaaaaaaaaaaaaaaaaa", defaultName: "Sam" };
+    const memberRow = { 
+      id: "aaaaaaaaaaaaaaaaaaaaa", 
+      defaultName: "Sam", 
+      hashedPassword: await hashPassword("test-hash" as any),
+      authCookie: "aaaaaaaaaaaaaaaaaaaaa" as any
+    };
 
     // existing meeting without this member's availability
     const meeting = {
       name: "Weekly",
       availability: {}, // empty
-      members: [{ memberId: memberRow.id, name: memberRow.defaultName }],
+      members: [{ 
+        memberId: memberRow.id, 
+        name: memberRow.defaultName,
+        hashedPassword: memberRow.hashedPassword,
+        authCookie: memberRow.authCookie 
+      }],
       availabilityBounds: {
         availableDayConstraints: { type: "daysOfWeek", days: ["monday"] },
         timeRangeForEachDay: {
@@ -165,6 +196,8 @@ describe("PUT /api/meetings/[meetingId]/availability/[memberId] (server handler)
       params: { meetingId: "m1", memberId: memberRow.id },
       jsonBody: newAvailability,
       url: "https://example.test/api/meetings/m1/availability/aaaaaaaaaaaaaaaaaaaaa",
+      meetingIdForCookie: "m1",
+      authCookieValue: memberRow.authCookie,
     });
 
     const { PUT } = await import(

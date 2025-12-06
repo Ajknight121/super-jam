@@ -14,9 +14,11 @@
 import type { APIContext } from "astro";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-// Mock `drizzle-orm`'s `eq` to return a plain object we can inspect in the fake DB.
-vi.mock("drizzle-orm", () => {
+// Mock `drizzle-orm`'s `eq` function
+vi.mock("drizzle-orm", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("drizzle-orm")>();
   return {
+    ...actual,
     eq: (left: unknown, right: unknown) => ({ left, right }),
   };
 });

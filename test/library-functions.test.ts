@@ -16,6 +16,9 @@ import * as usersApi from "../src/lib/api/users";
  * - Fallback to JSON parsing when content-type is wrong but body is JSON.
  * - Throws when content-type unsupported and JSON parse fails.
  */
+
+vi.stubGlobal("window", { location: { origin: "http://localhost" } });
+
 describe("handleApiResponse", () => {
   it("returns undefined for 204 No Content", async () => {
     const res = new Response(null, {
@@ -180,6 +183,7 @@ describe("meetings API client", () => {
     const sampleMeeting = {
       name: "Team Sync",
       availability: {},
+      members: [],
       availabilityBounds: {
         availableDayConstraints: { type: "daysOfWeek", days: ["monday"] },
         timeRangeForEachDay: {
@@ -206,7 +210,10 @@ describe("meetings API client", () => {
     const meetingPartial = { name: "x" };
     const fakeResponse = new Response(JSON.stringify({ id: "m1" }), {
       status: 201,
-      headers: { "content-type": "application/json" },
+      headers: { 
+        "content-type": "application/json",
+        Location: "/api/meeetings/m1",
+      },
     });
 
     globalThis.fetch = vi.fn(async (input: RequestInfo, init?: RequestInit) => {
