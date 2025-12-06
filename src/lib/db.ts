@@ -68,7 +68,13 @@ export async function getUserFromGoogleId(db: DbClient, googleId: string) {
  */
 export async function createUser(
   db: DbClient,
-  data: { googleId: string; name: string;}
+  data: {
+    googleId: string;
+    name: string;
+    email: string;
+    googleAccessToken: string;
+    googleRefreshToken: string | null;
+  }
 ) {
   const [user] = await db
     .insert(schema.users)

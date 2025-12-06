@@ -385,7 +385,7 @@ export function Item({ children, id }: { id: string; children: ReactNode }) {
   );
 }
 
-export function InputCell({ timeId, color }) {
+export function InputCell({ timeId, color, isBusy }) {
   const selectedItems = useContext(SelectedItemContext);
 
   const timeString = (() => {
@@ -399,7 +399,7 @@ export function InputCell({ timeId, color }) {
     <div
       data-item={timeId}
       className={`cell pointer-events-none select-none ${selectedItems[timeId] ? "selected" : ""}`}
-      style={{ backgroundColor: color ? color : "" }}
+      style={{ backgroundColor: isBusy ? "red" : color ? color : "" }}
     >
       {timeString}
     </div>

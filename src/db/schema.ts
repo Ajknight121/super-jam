@@ -10,8 +10,8 @@ export const users = sqliteTable("users", {
   id: text("id").primaryKey(), // nanoID
   googleId: text("google_id").unique(),
   name: text("name"),
+  email: text("email"),
   googleAccessToken: text("google_access_token"),
-  googleRefreshToken: text("google_refresh_token"),
 });
 
 export const sessions = sqliteTable("sessions", {

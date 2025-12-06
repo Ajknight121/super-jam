@@ -182,6 +182,7 @@ export default function AvailabilityChart({ meetingId, userId }) {
   const [cssFile, setCssFile] = useState<File | null>(null);
   const [cssCacheTime, setCssCacheTime] = useState(Date.now());
   const clientTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const [busyTimes, setBusyTimes] = useState<Record<string, boolean>>({});
 
   const colors = Array.from({ length: maxSegments }, (_, i) => {
     const ratio = maxSegments > 1 ? i / (maxSegments - 1) : 0;
@@ -229,6 +230,52 @@ export default function AvailabilityChart({ meetingId, userId }) {
   useEffect(() => {
     getCurrentMeeting(meetingId);
   }, [meetingId, getCurrentMeeting]);
+
+  useEffect(() => {
+    const fetchCalendarEvents = async () => {
+      if (!meeting || !userId) return;
+
+      const days = meeting.availabilityBounds.availableDayConstraints.days;
+      if (days.length === 0) return;
+
+      const timeMin = days[0];
+      const lastDay = new Date(days[days.length - 1]);
+      lastDay.setUTCHours(23, 59, 59, 999);
+      const timeMax = lastDay.toISOString();
+
+      try {
+        const response = await fetch("/api/auth/google/events", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ timeMin, timeMax }),
+        });
+
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const busySlots: Record<string, boolean> = {};
+        const busyIntervals = data.calendars?.primary?.busy ?? [];
+
+        busyIntervals.forEach((interval: { start: string; end: string }) => {
+          const startTime = new Date(interval.start);
+          const endTime = new Date(interval.end);
+
+          // Iterate from the start to the end of the interval in 15-minute increments
+          let currentTime = startTime;
+          while (currentTime < endTime) {
+            const slotTime = `${currentTime.toISOString().split(".")[0]}Z`;
+            busySlots[slotTime] = true;
+            currentTime = new Date(currentTime.getTime() + 15 * 60 * 1000); // Add 15 minutes
+          }
+        });
+        setBusyTimes(busySlots);
+      } catch (error) {
+        console.error("Failed to fetch calendar events:", error);
+      }
+    };
+
+    fetchCalendarEvents();
+  }, [meeting, userId]);
 
   const handleSelectionChange = async (items: Record<string, boolean>) => {
     setSelectedItems(items);
@@ -397,6 +444,7 @@ export default function AvailabilityChart({ meetingId, userId }) {
                         key={adjustedTime}
                         timeId={adjustedTime}
                         color={""}
+                        isBusy={busyTimes[adjustedTime]}
                       />
                     );
                   })}
@@ -440,6 +488,7 @@ export default function AvailabilityChart({ meetingId, userId }) {
                         key={adjustedTime}
                         timeId={adjustedTime}
                         color={color}
+                        isBusy={busyTimes[adjustedTime]}
                       />
                     );
                   })}

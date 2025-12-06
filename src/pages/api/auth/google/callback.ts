@@ -30,6 +30,7 @@ export const GET: APIRoute = async ({ locals, cookies, url, redirect }) => {
     const claims = decodeIdToken(tokens.idToken());
     const googleUserId = claims.sub;
     const username = claims.name;
+    const email = claims.email;
     
     // // Use the Access Token to get User Info
     // const googleUserResponse = await fetch("https://openidconnect.googleapis.com/v1/userinfo", {
@@ -56,7 +57,12 @@ export const GET: APIRoute = async ({ locals, cookies, url, redirect }) => {
     if (existingUser) {
       sessionToken = await createSession(db, existingUser.id);
     } else {
-      user = await createUser(db, {googleId:googleUserId, name:username})
+      user = await createUser(db, {
+        googleId: googleUserId,
+        name: username,
+        email: email,
+        googleAccessToken: tokens.accessToken(),
+      });
       sessionToken = await createSession(db, user.id)
     }
 
