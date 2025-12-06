@@ -91,6 +91,21 @@
   padding: 14px 0px 0px;
   border-radius: 6px;
 }
+
+/* Keep long select contents inside the card bounds */
+.timezone-row .time-group {
+  flex: 1 1 0;
+  min-width: 0; /* allow flex child to shrink below its content width */
+}
+
+.timezone-row select,
+.timezone-row .wide-input,
+.timezone-row .time-input {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
 .time-input {
   border: 0;
   background: transparent;

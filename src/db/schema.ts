@@ -2,7 +2,7 @@ import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
 import { relations } from "drizzle-orm";
 
 export const meetings = sqliteTable("meetings", {
-  id: text().primaryKey(), // nanoID
+  id: text().primaryKey(), // meetingId (nanoID)
   jsonData: text().notNull(),
 });
 

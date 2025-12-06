@@ -1,7 +1,7 @@
 /** biome-ignore-all lint/a11y/noStaticElementInteractions: <explanation> */
 /** biome-ignore-all lint/a11y/useKeyWithClickEvents: <explanation> */
 import { useCallback, useEffect, useState } from "react";
-import type { APIMeeting } from "#/src/api-types-and-schemas";
+import { UsernameSchema, type APIMeeting } from "#/src/api-types-and-schemas";
 import { getMeeting, setUserAvailability } from "../lib/api/meetings";
 
 import "./AvailabilityChart.css";
@@ -56,20 +56,20 @@ const exampleMeeting2: APIMeeting = {
   members: [
     {
       memberId: "user1",
-      name: "Adrian Knight",
+      name: UsernameSchema.parse("Adrian Knight"),
     },
     {
       memberId: "user2",
-      name: "Mac Payton",
+      name: UsernameSchema.parse("Mac Payton"),
     },
     {
       memberId: "user3",
-      name: "Samuel Skean",
+      name: UsernameSchema.parse("Samuel Skean"),
     },
 
     {
       memberId: "user4",
-      name: "Aaron Willming",
+      name: UsernameSchema.parse("Aaron Willming"),
     },
   ],
 };
@@ -170,7 +170,7 @@ function useDynamicStylesheet(url: string, enabled: boolean) {
   }, [url, enabled]);
 }
 
-export default function AvailabilityChart({ meetingId, userId }) {
+export default function AvailabilityChart({ meetingId, userId }: { meetingId: string; userId: string }) {
   const [meeting, setMeeting] = useState<APIMeeting | undefined>(undefined);
   const [error, setError] = useState(null);
   const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>(
@@ -206,7 +206,7 @@ export default function AvailabilityChart({ meetingId, userId }) {
           }, {}),
         );
       } catch (err) {
-        setError(err);
+        setError(err as null);
         setMeeting(exampleMeeting2);
         // Initialize selected items from fetched availability
         const initialAvailability = exampleMeeting2.availability[userId] ?? [];

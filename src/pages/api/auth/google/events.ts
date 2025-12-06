@@ -4,13 +4,6 @@ import { google } from "../../../../lib/oauth";
 export const prerender = false;
 
 export const POST: APIRoute = async ({ request, locals }) => {
-  // console.log(locals.user)
-  // console.log(locals.user.googleAccessToken)
-  // if (!locals.user || !locals.user.googleAccessToken) {
-  //   return new Response(JSON.stringify({ error: "Unauthorized" }), {
-  //     status: 401,
-  //   });
-  // }
 
   const { timeMin, timeMax } = await request.json();
 
