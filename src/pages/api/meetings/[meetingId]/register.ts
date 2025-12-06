@@ -1,6 +1,5 @@
 import assert from "node:assert";
 import type { APIContext } from "astro";
-import { genSalt, hash } from "bcrypt-ts";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import { nanoid } from "nanoid";
