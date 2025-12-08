@@ -49,7 +49,7 @@ export default function AuthStatus() {
   if (user?.isLoggedIn) {
     return (
       <div className="p-4 border rounded bg-green-50">
-        <p>Welcome back, {user.name}!</p>
+        <p>Welcome, {user.name}! <br/>Your busy calendar events are marked in red</p>
         <button type='button' onClick={handleSignOut} className="text-red-500 underline">
           Sign out
         </button>

@@ -233,7 +233,7 @@ export default function AvailabilityChart({ meetingId, userId }: { meetingId: st
 
   useEffect(() => {
     const fetchCalendarEvents = async () => {
-      if (!meeting || !userId) return;
+      if (!meeting) return;
 
       const days = meeting.availabilityBounds.availableDayConstraints.days;
       if (days.length === 0) return;
@@ -275,7 +275,7 @@ export default function AvailabilityChart({ meetingId, userId }: { meetingId: st
     };
 
     fetchCalendarEvents();
-  }, [meeting, userId]);
+  }, [meeting]);
 
   const handleSelectionChange = async (items: Record<string, boolean>) => {
     setSelectedItems(items);
@@ -312,16 +312,6 @@ export default function AvailabilityChart({ meetingId, userId }: { meetingId: st
 
   const totalPeople = Object.keys(availability).length;
 
-  const dayOffsets: { [key: string]: number } = {
-    monday: 0,
-    tuesday: 1,
-    wednesday: 2,
-    thursday: 3,
-    friday: 4,
-    saturday: 5,
-    sunday: 6,
-  };
-
   // Generate an array representing the 15-minute time slots for a day
   const numberOfSlots = calculateTimeSlots(
     timeRangeForEachDay.start,
@@ -343,23 +333,41 @@ export default function AvailabilityChart({ meetingId, userId }: { meetingId: st
       : 0;
 
   const highlightLogin = () => {
-    if (!userId) {
-      setFlashNotice(true);
-      setTimeout(() => {
-        setFlashNotice(false);
-      }, 1000); // Duration of the animation
-    }
+    if (userId) return;
+    setFlashNotice(true);
+    setTimeout(() => {
+      setFlashNotice(false);
+    }, 1000); // Duration of the animation
   };
+
+  const dayOffsets: { [key: string]: number } = {
+    monday: 0,
+    tuesday: 1,
+    wednesday: 2,
+    thursday: 3,
+    friday: 4,
+    saturday: 5,
+    sunday: 6,
+  };
+
+  const sortedDays = [...availableDayConstraints.days].sort((a, b) => {
+    if (availableDayConstraints.type === "daysOfWeek") {
+      return (
+        (dayOffsets[a.toLowerCase()] ?? 7) - (dayOffsets[b.toLowerCase()] ?? 7)
+      );
+    }
+    return new Date(a).getTime() - new Date(b).getTime();
+  });
 
   const chartHeader = (
     <div className="availability-chart-days">
-      {availabilityBounds.availableDayConstraints.type === "daysOfWeek"
-        ? availabilityBounds.availableDayConstraints.days.map((day) => (
+      {sortedDays.map((day) =>
+        availableDayConstraints.type === "daysOfWeek" ? (
             <div key={day} className="availability-chart-day">
               <div className="day-name">{day}</div>
             </div>
-          ))
-        : availabilityBounds.availableDayConstraints.days.map((day) => {
+        ) : (
+          (() => {
             const date = new Date(day);
             const formattedDate = date.toLocaleDateString("en-US", {
               month: "short",
@@ -372,7 +380,9 @@ export default function AvailabilityChart({ meetingId, userId }: { meetingId: st
                 <div className="day-name">{formattedDate}</div>
               </div>
             );
-          })}
+          })()
+        ),
+      )}
     </div>
   );
 
@@ -417,7 +427,7 @@ export default function AvailabilityChart({ meetingId, userId }: { meetingId: st
           >
             {chartHeader}
             <div className="availability-chart-grid">
-              {availableDayConstraints.days.map((day) => (
+              {sortedDays.map((day) => (
                 <div key={day} className="availability-chart-grid-day">
                   {timeSlots.map((time) => {
                     let adjustedTime = time;
@@ -459,7 +469,7 @@ export default function AvailabilityChart({ meetingId, userId }: { meetingId: st
               className="availability-chart-grid view-only"
               onClick={highlightLogin}
             >
-              {availableDayConstraints.days.map((day) => (
+              {sortedDays.map((day) => (
                 <div key={day} className="availability-chart-grid-day">
                   {timeSlots.map((time) => {
                     let adjustedTime = time;

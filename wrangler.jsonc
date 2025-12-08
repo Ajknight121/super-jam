@@ -52,6 +52,19 @@
    * Note: Use secrets to store sensitive data.
    * https://developers.cloudflare.com/workers/configuration/secrets/
    */
+
+   "secrets_store_secrets": [
+    {
+      "binding": "GOOGLE_CLIENT_ID",
+      "store_id": "d5b0d72e0c21462dae1d1effe29e3df1",
+      "secret_name": "GOOGLE_CLIENT_ID"
+    },
+    {
+      "binding": "GOOGLE_CLIENT_SECRET",
+      "store_id": "d5b0d72e0c21462dae1d1effe29e3df1",
+      "secret_name": "GOOGLE_CLIENT_SECRET"
+    }
+  ],
   /**
    * Static Assets
    * https://developers.cloudflare.com/workers/static-assets/binding/
