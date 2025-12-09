@@ -44,7 +44,7 @@
    * Environment Variables
    * https://developers.cloudflare.com/workers/wrangler/configuration/#environment-variables
    */
-  "vars": { 
+  "vars": {
     "DEV": false,
     "PROD_URL": "https://makemeet.cloudcs484-0.workers.dev"
   },
@@ -53,7 +53,7 @@
    * https://developers.cloudflare.com/workers/configuration/secrets/
    */
 
-   "secrets_store_secrets": [
+  "secrets_store_secrets": [
     {
       "binding": "GOOGLE_CLIENT_ID",
       "store_id": "d5b0d72e0c21462dae1d1effe29e3df1",
@@ -91,7 +91,23 @@
           "binding": "css-bucket",
           "bucket_name": "makemeet-dev-css-store"
         }
+      ]
+    },
+    "public-samuel-skean": {
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "makemeet-public-db",
+          "database_id": "bab9b11d-d7fe-413a-b778-c97b738d4685",
+          "migrations_dir": "./drizzle/"
+        }
       ],
+      "r2_buckets": [
+        {
+          "binding": "css-bucket",
+          "bucket_name": "makemeet-public-css-store"
+        }
+      ]
     }
   }
 }
