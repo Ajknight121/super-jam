@@ -107,7 +107,7 @@
           "binding": "css-bucket",
           "bucket_name": "makemeet-public-css-store"
         }
-      ]
+      ],"name": "makemeet"
     }
   }
 }
