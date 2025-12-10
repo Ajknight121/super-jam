@@ -5,7 +5,10 @@ Figma: https://www.figma.com/file/4oVfPhHyw6Ly7gCcOtonXx?node-id=0:1&t=rNSL0lxVJ
 
 Adrian's cloudflare deployment, automatic from main branch: https://makemeet.cloudcs484-0.workers.dev/
 
-Samuel's cloudflare deployment, automatic from dev branch: https://makemeet-dev-samuel-skean.samuel-skean.workers.dev/
+Samuel's dev cloudflare deployment, automatic from dev branch: https://makemeet-dev-samuel-skean.samuel-skean.workers.dev/
+
+Samuel's public cloudflare deployment, automatic from main branch: https://makemeet.samuel-skean.workers.dev/
+- This deployment is for handing out to people who might be interested in the app. It should not be used for development. It's basically the closest to the actual hosted version of the app that we have.
 
 # Astro Starter Kit: Basics
 
