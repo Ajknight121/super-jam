@@ -48,10 +48,14 @@ export default function AvailabilityPage({ meetingId }) {
         }
       }
     } catch (err: any) {
+      if (err.message.includes("Incorrect password")) {
+        setError("Incorrect Password")
+        return;
+      }
       if (err.response) {
         // Handle specific API errors
         const errorData = await err.response.json();
-        setError(errorData.error || "An unknown error occurred.");
+        setError(errorData.error.message || "An unknown error occurred.");
       } else {
         setError(err?.message ?? "An unknown error occurred.");
       }

@@ -43,7 +43,7 @@ export default function SignIn({
       ) : null}
 
       <button type="submit" disabled={busy} style={{ marginTop: 10 }}>
-        {busy ? "Creating User..." : "Submit"}
+        {busy ? "Loading..." : "Submit"}
       </button>
     </form>
   );
