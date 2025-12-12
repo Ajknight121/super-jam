@@ -1,10 +1,8 @@
 // src/pages/api/auth/me.ts
 import type { APIRoute } from "astro";
-import { drizzle } from "drizzle-orm/d1";
 import { eq } from "drizzle-orm";
+import { drizzle } from "drizzle-orm/d1";
 import { sessions, users } from "../../../db/schema";
-
-export const prerender = false;
 
 export const GET: APIRoute = async ({ locals, cookies }) => {
   const sessionToken = cookies.get("session")?.value;
@@ -26,7 +24,10 @@ export const GET: APIRoute = async ({ locals, cookies }) => {
     .innerJoin(users, eq(sessions.userId, users.id));
 
   if (session?.user) {
-    return new Response(JSON.stringify({ isLoggedIn: true, name: session.user.name }), { status: 200 });
+    return new Response(
+      JSON.stringify({ isLoggedIn: true, name: session.user.name }),
+      { status: 200 },
+    );
   }
 
   return new Response(JSON.stringify({ isLoggedIn: false }), { status: 200 });

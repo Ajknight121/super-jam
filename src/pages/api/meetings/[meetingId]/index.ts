@@ -12,8 +12,6 @@ import {
 } from "#/src/api-types-and-schemas";
 import { meetings } from "#/src/db/schema";
 
-export const prerender = false;
-
 export const GET = async ({
   params,
   locals,

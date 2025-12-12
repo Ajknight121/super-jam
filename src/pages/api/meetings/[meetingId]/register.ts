@@ -20,8 +20,6 @@ import {
 import { meetings } from "#/src/db/schema";
 import { hashPassword, setAuthCookie } from "#/src/lib/server_helpers";
 
-export const prerender = false;
-
 // Also logs the user in with their new identity, if they were not logged in.
 export const POST = async ({
   params,
@@ -35,7 +33,7 @@ export const POST = async ({
   if (params.meetingId === undefined) {
     return undefinedInRequiredURLParamResponse();
   }
-  
+
   let unvalidatedRegisterRequest: unknown;
   try {
     unvalidatedRegisterRequest = await request.json();
@@ -46,7 +44,7 @@ export const POST = async ({
   const registerRequestResult = RegisterRequestSchema.safeParse(
     unvalidatedRegisterRequest,
   );
-  
+
   if (registerRequestResult.error) {
     return zodErrorResponse(registerRequestResult.error);
   }

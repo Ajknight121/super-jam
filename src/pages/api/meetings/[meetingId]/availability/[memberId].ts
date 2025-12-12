@@ -19,7 +19,6 @@ import { meetings } from "#/src/db/schema";
 import { getAuthCookie } from "#/src/lib/server_helpers";
 
 // This should be a `UserAvailability` (see `src/api-types-and-schemas.ts`) with [userId]'s availability for [meetingId].
-export const prerender = false;
 
 export const GET = () => {
   return new Response("Unimplemented", {

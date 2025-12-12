@@ -18,8 +18,6 @@ import {
 import { meetings } from "#/src/db/schema";
 import { setAuthCookie } from "#/src/lib/server_helpers";
 
-export const prerender = false;
-
 // TODO
 export const POST = async ({
   params,

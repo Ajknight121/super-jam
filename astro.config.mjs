@@ -6,6 +6,7 @@ import { defineConfig } from "astro/config";
 
 // https://astro.build/config
 export default defineConfig({
+  output: "server",
   vite: {
     build: {
       sourcemap: true,
@@ -45,7 +46,7 @@ export default defineConfig({
           "'sha256-Hk70poV4gtPx3YsU2xuFYNYNK6O6ARdFd3JjccYJVOA='",
           // mystery availability hash
           "'sha256-35KBScVH0mcisYaS+jYHDa1tlFGmOrghafQWiYvD7Us='",
-        ]
+        ],
       },
       /*
       scriptDirective: {
@@ -54,7 +55,7 @@ export default defineConfig({
         ]
       },
       */
-    }
+    },
   },
 
   integrations: [react()],

@@ -1,8 +1,6 @@
 import type { APIRoute } from "astro";
 import CleanCSS from "clean-css";
 
-export const prerender = false;
-
 const cleanCss = new CleanCSS({
   level: 1, // Basic optimizations, good for security cleaning
 });

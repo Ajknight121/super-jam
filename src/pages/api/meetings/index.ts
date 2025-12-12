@@ -12,8 +12,6 @@ import {
 import { meetings } from "#/src/db/schema";
 
 // TODO: For MVP.
-export const prerender = false;
-
 export const POST = async ({
   locals,
   request,
