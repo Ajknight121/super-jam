@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import AvailabilityChart from "./AvailabilityChart";
-import "./AvailabilityPage.css";
-import SignIn from "./SignIn";
-import AuthStatus from "./AuthStatus";
-import { getMeeting, loginUser, registerUser } from "../lib/api/meetings";
-import { type APIMeeting } from "#/src/api-types-and-schemas";
+import AvailabilityChart from "#/src/components/AvailabilityChart";
+import "#/src/components/AvailabilityPage.css";
+import type { APIMeeting } from "#/src/api-types-and-schemas";
+import AuthStatus from "#/src/components/AuthStatus";
+import SignIn from "#/src/components/SignIn";
+import { getMeeting, loginUser, registerUser } from "#/src/lib/api/meetings";
 
 export default function AvailabilityPage({ meetingId }) {
   const [userId, setUserId] = useState<string>("");
@@ -49,7 +49,7 @@ export default function AvailabilityPage({ meetingId }) {
       }
     } catch (err: any) {
       if (err.message.includes("Incorrect password")) {
-        setError("Incorrect Password")
+        setError("Incorrect Password");
         return;
       }
       if (err.response) {
@@ -63,7 +63,7 @@ export default function AvailabilityPage({ meetingId }) {
       setBusy(false);
     }
   }
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     async function fetchMeeting() {
@@ -83,15 +83,17 @@ export default function AvailabilityPage({ meetingId }) {
   return (
     <div className="availability-page">
       <div className="availabilities">
-        <AvailabilityChart meeting={meeting} meetingId={meetingId} userId={userId} />
+        <AvailabilityChart
+          meeting={meeting}
+          meetingId={meetingId}
+          userId={userId}
+        />
       </div>
 
       <div className="login">
-        <AuthStatus user={user} meetingId={meetingId}/>
+        <AuthStatus user={user} meetingId={meetingId} />
         {userId ? (
-          <div>You are logged in. Add your availability above.
-          </div>
-          
+          <div>You are logged in. Add your availability above.</div>
         ) : (
           <SignIn
             name={name}

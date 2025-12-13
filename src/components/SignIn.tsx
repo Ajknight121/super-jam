@@ -1,4 +1,4 @@
-import "./SignIn.css";
+import "#/src/components/SignIn.css";
 
 export default function SignIn({
   name,

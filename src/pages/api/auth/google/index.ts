@@ -1,7 +1,8 @@
 // src/pages/api/auth/google/index.ts
+
+import { generateCodeVerifier, generateState } from "arctic";
 import type { APIRoute } from "astro";
-import { generateState, generateCodeVerifier } from "arctic";
-import { google } from "../../../../lib/oauth.ts";
+import { google } from "#/src/lib/oauth.ts";
 
 export const prerender = false;
 
@@ -11,7 +12,11 @@ export const GET: APIRoute = async ({ cookies, redirect, url: currentUrl }) => {
 
   const meetingId = currentUrl.searchParams.get("meetingId");
 
-  const url = await google.createAuthorizationURL(state, codeVerifier, ["profile", "email",'https://www.googleapis.com/auth/calendar.readonly']);
+  const url = await google.createAuthorizationURL(state, codeVerifier, [
+    "profile",
+    "email",
+    "https://www.googleapis.com/auth/calendar.readonly",
+  ]);
 
   // Store state/verifier in httpOnly cookies so we can verify them in the callback
   cookies.set("google_oauth_state", state, {

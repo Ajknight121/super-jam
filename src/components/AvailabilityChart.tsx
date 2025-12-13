@@ -1,11 +1,11 @@
 /** biome-ignore-all lint/a11y/noStaticElementInteractions: <explanation> */
 /** biome-ignore-all lint/a11y/useKeyWithClickEvents: <explanation> */
 import { useCallback, useEffect, useState } from "react";
-import { UsernameSchema, type APIMeeting } from "#/src/api-types-and-schemas";
-import { getMeeting, setUserAvailability } from "../lib/api/meetings";
+import { type APIMeeting, UsernameSchema } from "#/src/api-types-and-schemas";
+import { getMeeting, setUserAvailability } from "#/src/lib/api/meetings";
 
-import "./AvailabilityChart.css";
-import { Root as DragSelect, InputCell } from "./DragSelect";
+import "#/src/components/AvailabilityChart.css";
+import { Root as DragSelect, InputCell } from "#/src/components/DragSelect";
 
 const exampleMeeting2: APIMeeting = {
   name: "Example Meeting (Failed to Load)",
@@ -170,7 +170,13 @@ function useDynamicStylesheet(url: string, enabled: boolean) {
   }, [url, enabled]);
 }
 
-export default function AvailabilityChart({ meetingId, userId }: { meetingId: string; userId: string }) {
+export default function AvailabilityChart({
+  meetingId,
+  userId,
+}: {
+  meetingId: string;
+  userId: string;
+}) {
   const [meeting, setMeeting] = useState<APIMeeting | undefined>(undefined);
   const [error, setError] = useState(null);
   const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>(
@@ -363,9 +369,9 @@ export default function AvailabilityChart({ meetingId, userId }: { meetingId: st
     <div className="availability-chart-days">
       {sortedDays.map((day) =>
         availableDayConstraints.type === "daysOfWeek" ? (
-            <div key={day} className="availability-chart-day">
-              <div className="day-name">{day}</div>
-            </div>
+          <div key={day} className="availability-chart-day">
+            <div className="day-name">{day}</div>
+          </div>
         ) : (
           (() => {
             const date = new Date(day);

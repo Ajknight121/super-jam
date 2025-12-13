@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { handleApiResponse } from "../src/lib/api";
-import * as meetingsApi from "../src/lib/api/meetings";
-import * as usersApi from "../src/lib/api/users";
+import { handleApiResponse } from "#/src/lib/api";
+import * as meetingsApi from "#/src/lib/api/meetings";
+import * as usersApi from "#/src/lib/api/users";
 
 /**
  * Tests for handleApiResponse function.
@@ -210,7 +210,7 @@ describe("meetings API client", () => {
     const meetingPartial = { name: "x" };
     const fakeResponse = new Response(JSON.stringify({ id: "m1" }), {
       status: 201,
-      headers: { 
+      headers: {
         "content-type": "application/json",
         Location: "/api/meeetings/m1",
       },

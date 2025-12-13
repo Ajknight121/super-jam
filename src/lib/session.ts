@@ -1,8 +1,11 @@
 // src/lib/session.ts
 import type { APIContext } from "astro";
-import { getSessionAndUser, deleteSession as dbDeleteSession } from "./db";
 import type { DrizzleD1Database } from "drizzle-orm/d1";
-import * as schema from "../db/schema";
+import type * as schema from "#/src/db/schema";
+import {
+  deleteSession as dbDeleteSession,
+  getSessionAndUser,
+} from "#/src/lib/db";
 
 type DbClient = DrizzleD1Database<typeof schema>;
 
@@ -37,8 +40,17 @@ export async function invalidateSession(db: DbClient, sessionId: string) {
  * @param token The session token to set.
  * @param expiresAt The expiration date for the cookie.
  */
-export function setSessionTokenCookie(context: APIContext, token: string, expiresAt: Date) {
-  context.cookies.set("session", token, { path: "/", expires: expiresAt, httpOnly: true, secure: import.meta.env.PROD });
+export function setSessionTokenCookie(
+  context: APIContext,
+  token: string,
+  expiresAt: Date,
+) {
+  context.cookies.set("session", token, {
+    path: "/",
+    expires: expiresAt,
+    httpOnly: true,
+    secure: import.meta.env.PROD,
+  });
 }
 
 /**

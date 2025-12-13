@@ -1,5 +1,5 @@
 // src/components/AuthStatus.tsx
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from "react";
 
 interface AuthProps {
   user: {
@@ -9,15 +9,15 @@ interface AuthProps {
 }
 
 export default function AuthStatus() {
-  const [user, setUser] = useState<AuthProps['user']>(null);
+  const [user, setUser] = useState<AuthProps["user"]>(null);
   const [loading, setLoading] = useState(true);
   const [signInHref, setSignInHref] = useState("/api/auth/google");
 
   useEffect(() => {
     // Fetch user status from our new API endpoint
-    fetch('/api/auth/me')
-      .then(res => res.json())
-      .then(data => {
+    fetch("/api/auth/me")
+      .then((res) => res.json())
+      .then((data) => {
         setUser(data);
         setLoading(false);
       });
@@ -26,7 +26,7 @@ export default function AuthStatus() {
     const path = window.location.pathname;
     const match = path.match(/\/availability\/([^/]+)/);
     const meetingId = match ? match[1] : null;
-    
+
     if (meetingId) {
       setSignInHref(`/api/auth/google?meetingId=${meetingId}`);
     }
@@ -49,8 +49,15 @@ export default function AuthStatus() {
   if (user?.isLoggedIn) {
     return (
       <div className="p-4 border rounded bg-green-50">
-        <p>Welcome, {user.name}! <br/>Your busy calendar events are marked in red</p>
-        <button type='button' onClick={handleSignOut} className="text-red-500 underline">
+        <p>
+          Welcome, {user.name}! <br />
+          Your busy calendar events are marked in red
+        </p>
+        <button
+          type="button"
+          onClick={handleSignOut}
+          className="text-red-500 underline"
+        >
           Sign out
         </button>
       </div>

@@ -1,8 +1,9 @@
 // src/lib/db.ts
-import { drizzle, DrizzleD1Database } from "drizzle-orm/d1";
+
 import { eq } from "drizzle-orm";
+import { type DrizzleD1Database, drizzle } from "drizzle-orm/d1";
 import { nanoid } from "nanoid";
-import * as schema from "../db/schema";
+import * as schema from "#/src/db/schema";
 
 type DbClient = DrizzleD1Database<typeof schema>;
 
@@ -74,7 +75,7 @@ export async function createUser(
     email: string;
     googleAccessToken: string;
     googleRefreshToken: string | null;
-  }
+  },
 ) {
   const [user] = await db
     .insert(schema.users)
@@ -131,5 +132,7 @@ export async function getSessionAndUser(db: DbClient, sessionToken: string) {
   const { user, session } = result[0];
 
   // Return nulls if the session is expired
-  return session.expiresAt < new Date() ? { user: null, session: null } : { user, session };
+  return session.expiresAt < new Date()
+    ? { user: null, session: null }
+    : { user, session };
 }

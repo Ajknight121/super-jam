@@ -1,16 +1,18 @@
 import type { APIRoute } from "astro";
-import { google } from "../../../../lib/oauth";
+import { google } from "#/src/lib/oauth";
 
 export const prerender = false;
 
 export const POST: APIRoute = async ({ request, locals }) => {
-
   const { timeMin, timeMax } = await request.json();
 
   if (!timeMin || !timeMax) {
-    return new Response(JSON.stringify({ error: "timeMin and timeMax are required" }), {
-      status: 400,
-    });
+    return new Response(
+      JSON.stringify({ error: "timeMin and timeMax are required" }),
+      {
+        status: 400,
+      },
+    );
   }
 
   try {
@@ -29,9 +31,15 @@ export const POST: APIRoute = async ({ request, locals }) => {
       }),
     });
 
-    return new Response(await response.text(), { status: response.status, headers: { "Content-Type": "application/json" } });
+    return new Response(await response.text(), {
+      status: response.status,
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (e) {
     console.error(e);
-    return new Response(JSON.stringify({ error: "Failed to fetch calendar events" }), { status: 500 });
+    return new Response(
+      JSON.stringify({ error: "Failed to fetch calendar events" }),
+      { status: 500 },
+    );
   }
 };

@@ -2,7 +2,7 @@
 import type { APIRoute } from "astro";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
-import { sessions, users } from "../../../db/schema";
+import { sessions, users } from "#/src/db/schema";
 
 export const GET: APIRoute = async ({ locals, cookies }) => {
   const sessionToken = cookies.get("session")?.value;

@@ -2,10 +2,10 @@
   MeetingForm component: reproduces the layout in the screenshots.
   This is primarily styling + markup; small interactivity via HTML/CSS.
 */
-import Calendar from "./Calendar.jsx";
-import "./CreateMeetingForm.css";
+import Calendar from "#/src/components/Calendar.jsx";
+import "#/src/components/CreateMeetingForm.css";
 import { useState } from "react";
-import { createMeeting } from "../api/meetings.js";
+import { createMeeting } from "#/src/lib/api/meetings.js";
 
 const _now = new Date();
 const _calendarMonth = _now.getMonth() + 1;
@@ -49,19 +49,21 @@ export default function MeetingForm() {
       (!!startTime && startMinutes % 15 !== 0) ||
       (!!endTime && endMinutes % 15 !== 0);
 
-    const areTimesEqual =
-      (startTime==endTime && !areTimesMissing)
+    const areTimesEqual = startTime == endTime && !areTimesMissing;
 
-    const areTimesBackwards = 
-      (endTime < startTime)
+    const areTimesBackwards = endTime < startTime;
 
     const areDaysMissing = isRepeatingWeekly
       ? selectedRepeatDays.length === 0
       : selectedDays.length === 0;
 
-
     setMeetingNameError(isMeetingNameMissing);
-    setTimeError(areTimesMissing || isTimeIncrementInvalid || areTimesEqual || areTimesBackwards);
+    setTimeError(
+      areTimesMissing ||
+        isTimeIncrementInvalid ||
+        areTimesEqual ||
+        areTimesBackwards,
+    );
     setTimeIncrementError(isTimeIncrementInvalid);
     setNoTimeError(areTimesMissing);
     setEqualTimesError(areTimesEqual);
@@ -193,9 +195,7 @@ export default function MeetingForm() {
             </div>
           )}
           {noTimeError && (
-            <div className="error-text">
-              Please enter a start and end time.
-            </div>
+            <div className="error-text">Please enter a start and end time.</div>
           )}
           {equalTimesError && (
             <div className="error-text">
