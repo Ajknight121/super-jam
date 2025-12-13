@@ -9,7 +9,13 @@
   --pill-bg: #e6e6e6;
   --accent: #f2f2f2;
 }
-.prevent-ios-zoom, input, select, textarea, button, .wide-input, .time-input {
+.prevent-ios-zoom,
+input,
+select,
+textarea,
+button,
+.wide-input,
+.time-input {
   font-size: 16px;
   -webkit-text-size-adjust: 100%;
 }
@@ -109,7 +115,7 @@
 .time-input {
   border: 0;
   background: transparent;
-  font-size: 14px;
+  font-size: 16px;
   padding: 0;
 }
 
