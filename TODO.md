@@ -1,5 +1,3 @@
-NOTES(samuel-skean): I'm using the authId as the cookie. Everyone will have exactly one, generated on first registration with a meeting.
-
 - [x] Decide between Unix timestamps and ISO 8601 UTC-anchored strings in the API.
   - We've decided on ISO 8601 timestamps.
 - [x] Do we want the fancy time types in our REST API/validators, or not? I can't see why we'd want to care about the fact that these ints are times on the server, so I guess its a readability vs shenanigans tradeoff more than a simplicity vs complex functionality tradeoff. And I don't see the readability argument when we can have type aliases.
