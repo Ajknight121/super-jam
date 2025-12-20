@@ -192,7 +192,7 @@ describe("GET /api/meetings/[meetingId] (server handler)", () => {
   beforeEach(async () => {
     vi.resetAllMocks();
     (mockD1 as any).__setMockData({
-      selectResults: { meetings: []/*, members: []*/ },
+      selectResults: { meetings: [] /*, members: []*/ },
       insertReturning: [],
       updateReturning: [],
     });

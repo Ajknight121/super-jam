@@ -2,9 +2,9 @@
 import { defineMiddleware, sequence } from "astro:middleware";
 import { drizzle } from "drizzle-orm/d1";
 import {
-  validateSessionToken,
-  setSessionTokenCookie,
   deleteSessionTokenCookie,
+  setSessionTokenCookie,
+  validateSessionToken,
 } from "./lib/session";
 
 const authMiddleware = defineMiddleware(async (context, next) => {

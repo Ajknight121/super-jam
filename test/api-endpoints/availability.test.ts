@@ -25,7 +25,6 @@ vi.mock("drizzle-orm", async (importOriginal) => {
   };
 });
 
-
 vi.mock("nanoid", () => {
   return {
     nanoid: () => "fixed-nanoid",
@@ -84,6 +83,7 @@ vi.mock("drizzle-orm/d1", async () => {
 
 // Import the mocked module statically (vi.mock is hoisted so this is our mock)
 import * as mockD1 from "drizzle-orm/d1";
+
 //import { hash } from "node:crypto";
 
 function makeApiContext(opts: {
@@ -143,23 +143,25 @@ describe("PUT /api/meetings/[meetingId]/availability/[memberId] (server handler)
 
   it("Creates availability for existing member & meeting -> returns 201 and availability body", async () => {
     // existing member row
-    const memberRow = { 
-      id: "aaaaaaaaaaaaaaaaaaaaa", 
-      defaultName: "Sam", 
+    const memberRow = {
+      id: "aaaaaaaaaaaaaaaaaaaaa",
+      defaultName: "Sam",
       hashedPassword: await hashPassword("test-hash" as any),
-      authCookie: "aaaaaaaaaaaaaaaaaaaaa" as any
+      authCookie: "aaaaaaaaaaaaaaaaaaaaa" as any,
     };
 
     // existing meeting without this member's availability
     const meeting = {
       name: "Weekly",
       availability: {}, // empty
-      members: [{ 
-        memberId: memberRow.id, 
-        name: memberRow.defaultName,
-        hashedPassword: memberRow.hashedPassword,
-        authCookie: memberRow.authCookie 
-      }],
+      members: [
+        {
+          memberId: memberRow.id,
+          name: memberRow.defaultName,
+          hashedPassword: memberRow.hashedPassword,
+          authCookie: memberRow.authCookie,
+        },
+      ],
       availabilityBounds: {
         availableDayConstraints: { type: "daysOfWeek", days: ["monday"] },
         timeRangeForEachDay: {

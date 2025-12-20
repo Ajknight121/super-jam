@@ -11,5 +11,5 @@ const GOOGLE_CALLBACK_URL =
 export const google = new Google(
   import.meta.env.GOOGLE_CLIENT_ID,
   import.meta.env.GOOGLE_CLIENT_SECRET,
-  GOOGLE_CALLBACK_URL
+  GOOGLE_CALLBACK_URL,
 );

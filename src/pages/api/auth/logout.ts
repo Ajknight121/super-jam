@@ -1,8 +1,8 @@
 import type { APIContext } from "astro";
 import { drizzle } from "drizzle-orm/d1";
 import {
-  invalidateSession,
   deleteSessionTokenCookie,
+  invalidateSession,
 } from "../../../lib/session";
 
 export const prerender = false;
