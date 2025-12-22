@@ -12,6 +12,7 @@ export const users = sqliteTable("users", {
   name: text("name"),
   email: text("email"),
   googleAccessToken: text("google_access_token"),
+  googleRefreshToken: text("google_refresh_token")
 });
 
 export const sessions = sqliteTable("sessions", {

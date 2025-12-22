@@ -2,7 +2,9 @@
 
 import { decodeIdToken } from "arctic";
 import type { APIRoute } from "astro";
+import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
+import { users } from "#/src/db/schema";
 import {
   createSession,
   createUser,
@@ -40,27 +42,25 @@ export const GET: APIRoute = async ({ locals, cookies, url, redirect }) => {
     const username = claims.name;
     const email = claims.email;
 
-    // // Use the Access Token to get User Info
-    // const googleUserResponse = await fetch("https://openidconnect.googleapis.com/v1/userinfo", {
-    //   headers: {
-    //     Authorization: `Bearer ${tokens.accessToken()}`,
-    //   },
-    // });
-    // const googleUser = await googleUserResponse.json();
+    // Use the Access Token to get User Info
 
     const db = drizzle(locals.runtime.env.DB);
 
     // 1. Find or create the user and update their tokens
     const existingUser = await getUserFromGoogleId(db, googleUserId);
 
-    // const user = await findOrCreateUser(db, googleUser, {
-    //   accessToken: tokens.accessToken(),
-    // });
-
     // 2. Create a secure session for the user
     let sessionToken: string;
     let user;
     if (existingUser) {
+      console.log("existing")
+      // Update the access token for the existing user
+      await db
+        .update(users)
+        .set({
+          googleAccessToken: tokens.accessToken(),
+        })
+        .where(eq(users.id, existingUser.id));
       sessionToken = await createSession(db, existingUser.id);
     } else {
       user = await createUser(db, {

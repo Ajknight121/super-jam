@@ -1,5 +1,4 @@
 import type { APIRoute } from "astro";
-import { google } from "#/src/lib/oauth";
 
 export const prerender = false;
 
@@ -13,6 +12,12 @@ export const POST: APIRoute = async ({ request, locals }) => {
         status: 400,
       },
     );
+  }
+
+  if (!locals.user || !locals.user.googleAccessToken) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+    });
   }
 
   try {

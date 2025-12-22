@@ -1,17 +1,19 @@
 type Runtime = import("@astrojs/cloudflare").Runtime<Env>;
 
-export interface Session {
-  id: string;
-  expiresAt: Date;
-  userId: number;
+interface Session {
+	id: string;
+	expiresAt: Date;
+	userId: number;
 }
 
 declare namespace App {
-  interface Locals extends Runtime {
-    sessions: Session | null;
+  interface Locals {
+    runtime: Runtime & { env: Env };
+    session: Session | null,
     user: {
       isLoggedIn: boolean;
       name: string;
+      googleAccessToken: string;
     } | null;
   }
 }

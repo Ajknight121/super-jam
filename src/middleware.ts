@@ -1,4 +1,5 @@
 // src/middleware.ts
+import type { APIContext } from "astro";
 import { defineMiddleware, sequence } from "astro:middleware";
 import { drizzle } from "drizzle-orm/d1";
 import {
@@ -7,9 +8,9 @@ import {
   validateSessionToken,
 } from "./lib/session";
 
-const authMiddleware = defineMiddleware(async (context, next) => {
+const authMiddleware = defineMiddleware(async (context: APIContext, next) => {
   const token = context.cookies.get("session")?.value ?? null;
-  if (token === null) {
+  if (token === null) { // Not signed in
     context.locals.session = null;
     context.locals.user = null;
     return next();
